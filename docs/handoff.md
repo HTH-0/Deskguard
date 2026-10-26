@@ -1,0 +1,117 @@
+# 이어서 작업하기
+
+다른 컴퓨터나 새 세션에서 이어서 작업할 때 가장 먼저 읽는 문서이다. 세션을 마칠 때마다 갱신한다.
+
+기준일: 2026-10-26
+
+## 1. 한눈에 보기
+
+- 프로젝트: Deskguard. 사내 HR 헬프데스크 챗봇으로 들어가는 프롬프트를 패턴 필터와 판정 모델로 검사해 프롬프트 인젝션과 도메인 정책 위반을 차단하는 게이트웨이이다. ([README.md](../README.md))
+- 현재 위치: 도메인 정책, 평가 데이터, 명세서가 확정되었고 판정 모델(Jev) 한국어 PoC가 합격 기준을 모두 충족했다. 다음은 설계서이다.
+- 기술: Spring Boot 4.1.1, Java 17, Maven. 응답 모델은 Gemini(`gemini-3.6-flash`, 무료 티어), 판정 모델 후보 1순위는 Jev(`jev-1.14.0`)이다.
+- 기존 코드(`backend/`)는 3단계 프록시 골격이다. 패턴 필터와 판정 모델은 아직 구현하지 않았다.
+
+## 2. 단계 상태
+
+| 단계 | 내용 | 상태 |
+|---|---|---|
+| 1~3 | API 테스트, 데이터셋, 프록시 골격 | 완료 |
+| 2.4~2.9 | 주제 방향(도메인 정책 추가), 정책서, 룰 후보 검증, 정상 풀 보강 | 완료 |
+| 3 | 명세서 (`spec.md`) | 완료, 확정 |
+| 2.5 | Jev 한국어 PoC | 완료, 합격. 채택은 사용자 승인 대기 |
+| 4.5 | PoC 약점 개선 (라벨 기준, 점검 문장 확장, 질문 v2) | 대기. `design.md` 4절 |
+| 5 | 설계서 (`design.md`) | 1절(판정 질문)만 작성됨 |
+| 7 | 3단계 코드의 특성화 테스트 | 대기 |
+| 8 | 작업 목록과 TDD 구현 | 대기 |
+| 6 | 탐지율·오탐율 측정 (eval 사용) | 대기 |
+
+## 3. 사용자 결정 대기 목록
+
+| 번호 | 항목 | 권장 | 근거 |
+|---|---|---|---|
+| 1 | Jev를 판정 모델로 채택 | 승인 | [DECISIONS.md](../DECISIONS.md) "Jev 한국어 PoC 결과" |
+| 2 | 라벨 기준 A1("챗봇에게 처리를 요구하는가"와 "규정·가능 여부를 묻는가")과 A-15, A-18, B-13, B-02 처리 | 기준 승인 후 문장별 판단 | [design.md](design.md) 4.1, 4.2 |
+| 3 | 점검 문장 확장(65문장, 사용자 직접 작성 40%)의 진행 시점과 합격 기준 N1~N6 | 설계서와 병행 | design.md 4.3 |
+| 4 | 개발사 문의 메일 발송(약관 R8) | 발송, PoC는 이미 완료 | 이 문서 9절 초안 |
+| 5 | 저장소를 공개로 바꾸기 전 점검(R12) | 공개 전에 수행 | [open-risks.md](open-risks.md) R12 |
+| 6 | 도메인 문장의 최종 데이터 파일화(컬럼 구성, 출처·검수 기록) | 설계서 이후 | [review-sheet.md](review-sheet.md), `docs/poc/data.tsv` |
+| 7 | 사용자 작성 문장의 IT 편중과 어휘 반복 보정 | 선택 | DECISIONS.md "F-2 사용자 작성 문장 확정" |
+
+## 4. 다음 작업 (제안 순서)
+
+1. 위 결정 1~3을 확인한다.
+2. 설계서(스텝 5)를 이어서 쓴다. 포함할 것: 구성요소와 요청 흐름, 패턴 필터(비활성 구성요소, 패턴 목록이 비면 통과), `Judge` 인터페이스, 판정 모델 설정(버전 ID 고정), 재시도와 타임아웃, 로깅, 측정 모드(응답 모델 호출 생략), 테스트 전략 절(계층별 도구, 외부 호출 금지, 수용 기준 AC 번호와 테스트의 대응).
+3. 3단계 코드의 특성화 테스트(스텝 7): `mvn test`가 통과하는지 확인하고, 현재 동작을 테스트로 고정한다. 테스트 의존성은 Spring Boot 4에서 모듈이 나뉘었을 수 있으므로 컴파일로 확인한다.
+4. 작업 목록(`tasks.md`)을 쓰고 TDD로 구현한다(스텝 8). 첫 후보는 임계값 경계 시험(AC-3.6~AC-3.8)이다.
+5. 6단계 측정은 eval 문장을 처음 여는 단계이다. 그 전에 질문 v2와 임계값을 확정한다.
+
+## 5. 새 컴퓨터에서 시작하기 (Windows 기준)
+
+필요한 것: Git, JDK 17(Temurin), Maven 3.9.x, Python 3(`backend/scripts/run_batch.py`용), PowerShell
+
+```powershell
+git clone https://github.com/HTH-0/Deskguard.git
+cd Deskguard
+
+# 이 저장소에만 적용하는 커밋 정보 (전역 설정은 건드리지 않는다)
+git config user.name "HTH-0"
+git config user.email "192852807+HTH-0@users.noreply.github.com"
+
+# API 키는 저장소에 없다. 각 콘솔에서 발급해 환경변수로만 설정한다 (새 터미널부터 적용)
+setx GEMINI_API_KEY "발급받은_키"
+setx TYPESAFE_API_KEY "발급받은_키"
+
+# 빌드 확인 (현재 테스트는 0건)
+cd backend
+mvn -B -q test
+```
+
+- Gemini 키: aistudio.google.com, Jev 키: https://console.typesafe.ai/keys
+- 저장소는 비공개이므로 clone과 push에 GitHub 로그인이 필요하다.
+- Claude Code로 작업하면 저장소 루트의 `CLAUDE.md`와 `AGENTS.md`가 자동으로 적용된다. 응답 규칙은 한국어, 계획 후 승인, 작업 스텝 단위 보고이다.
+- PoC 도구의 실행 방법은 [../tools/README.md](../tools/README.md)에 있다.
+
+## 6. 지켜야 할 규칙
+
+1. `dataset.csv`의 `split=eval` 행은 6단계 측정 전까지 열지 않는다. 룰, 질문, 임계값은 design 데이터와 사전 정의로 정한다.
+2. API 키를 파일, 로그, 대화에 붙여넣지 않는다.
+3. 패턴 필터와 판정을 붙이기 전에는 `run_batch.py`로 공격 문장을 Gemini에 보내지 않는다. 무료 티어는 입력을 제품 개선에 쓰고 사람이 검토할 수 있다(R8, R11).
+4. 확정한 합격 기준은 낮추지 않는다. 부족하면 점검 문장을 늘린다.
+5. 외부 LLM이 낸 결과는 코드나 실험으로 검증한 뒤 채택한다. 지금까지 두 번 모두 검증 후 결론이 달라졌다.
+6. 결정이 생기면 그 자리에서 [DECISIONS.md](../DECISIONS.md)에 후보, 선택, 이유를 기록한다.
+7. 금지 콘텐츠 유형(`disallowed_content`)과 영어 hard negative는 외부 서비스로 보내지 않는다.
+
+## 7. 문서 지도
+
+| 문서 | 질문 | 수명 |
+|---|---|---|
+| [constitution.md](constitution.md) | 바뀌지 않는 원칙 | 영구 |
+| [domain-policy.md](domain-policy.md) | 무엇을 허용하고 금지하는가 | 영구 |
+| [spec.md](spec.md) | 무엇을 만드는가 (요구사항, 수용 기준, API 계약) | 영구, 확정 |
+| [design.md](design.md) | 어떻게 만드는가 (질문 문구, 약점 메모, 구조는 작성 예정) | 영구, 작성 중 |
+| [rule-criteria.md](rule-criteria.md) | 패턴 필터에 패턴을 넣는 기준 | 영구 |
+| [open-risks.md](open-risks.md) | 무엇이 불확실한가 (R1~R12) | 누적 |
+| [../DECISIONS.md](../DECISIONS.md) | 왜 그렇게 정했는가 | 누적 |
+| [review-sheet.md](review-sheet.md) | 시험 문장 판정 기록 (도메인 문장 원본 포함) | 임시, 데이터 파일화 후 정리 |
+| [rule-selection.md](rule-selection.md) | 룰 선정표 (종료, 근거 문장 보존) | 임시 |
+| [poc/](poc/) | PoC 데이터와 결과 | 보존 |
+| [archive/](archive/) | 불채택된 외부 LLM 룰 후보 | 보관 |
+| [../프로젝트_정리.md](../프로젝트_정리.md), [../AI보안_프로젝트_주제_후보.md](../AI보안_프로젝트_주제_후보.md) | 변경 전 로드맵과 주제 후보 | 참고용, 갱신 안 함 |
+
+## 8. 작업용 파일이 있는 곳
+
+- PoC 도구: `tools/poc/`, PoC 데이터와 결과: `docs/poc/` (`data.tsv`는 도메인 문장 184개의 ID와 원문이 있는 유일한 합본이다.)
+- 정규식 시험 하네스: `tools/rulecheck/`
+- 이전 세션의 임시 작업 폴더(컴퓨터의 임시 폴더)는 이 컴퓨터에만 있으므로 의존하지 않는다.
+
+## 9. 부록: 개발사 문의 메일 초안 (발송은 사용자)
+
+> Subject: Using Jev to classify adversarial prompts for a guardrail evaluation
+>
+> Hello, I am building a portfolio project that screens user prompts for an in-company HR/IT helpdesk chatbot (prompt-injection attempts and policy violations such as asking for other people's data). I plan to send adversarial and benign text samples to Jev only as classification input (Noul questions), never to generate content. My dataset is small (about 200 sentences, mostly Korean).
+>
+> 1. Is this kind of evaluation acceptable under the Acceptable Use Policy (section 3.4 mentions driving the model to contravene policies)?
+> 2. Do you have guidance for writing Noul questions and criteria for prompt-injection and policy-violation detection, especially for Korean text?
+> 3. Are there known weaknesses with adversarial input that I should test first?
+>
+> Thank you.

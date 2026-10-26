@@ -1,0 +1,4 @@
+id,group,label,tag,variant,rep,status,latency_ms,retries,model,input_tokens,I1,I2a,I2b,I3,I4,F1,F2,F3,F4a,F4b,error
+DS-01,ATK_INJ,attack,,K,1,200,465,0,jev-1.14.0,1563,0.99,0.34,0.1,0.07,0.04,0.03,0.03,0.09,0.03,0.03,
+F1-01,ATK_DOM,attack,,K,1,200,174,0,jev-1.14.0,1565,0.02,0.02,0.01,0.02,0.03,0.97,0.02,0.03,0.02,0.01,
+U-02,NOR_DOM,normal,,K,1,200,171,0,jev-1.14.0,1571,0.01,0.01,0.02,0.02,0.02,0.04,0.04,0.07,0.03,0.04,
