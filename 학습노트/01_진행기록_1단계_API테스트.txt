@@ -1,0 +1,159 @@
+====================================================
+1단계 — LLM API 단독 테스트 진행 기록
+(PowerShell로 Gemini API를 직접 호출해본 과정)
+====================================================
+
+■ 전체 흐름 한눈에 보기
+--------------------------------------------------
+1) 키를 환경변수에 저장한다
+2) 보낼 데이터(JSON)를 만든다
+3) Invoke-RestMethod로 API에 요청을 보낸다
+4) 응답이 JSON으로 돌아온다 (파워쉘이 자동으로 객체로 바꿔줌)
+5) 그 객체 안에서 원하는 값(답변 텍스트)만 꺼낸다
+
+이 5단계는 나중에 스프링부트(자바) 코드로 프록시를 만들 때도
+문법만 다를 뿐 똑같이 반복된다. 그래서 1단계를 미리 해보는 것.
+
+(실제 API 응답이 어떤 모양인지는 별도 파일 "API_응답_예시.txt" 참고)
+
+
+■ 1) 키를 환경변수에 저장
+--------------------------------------------------
+$env:GEMINI_API_KEY = "AIza..."
+
+- $env:이름 은 "이번 터미널 창이 켜져 있는 동안만" 유지되는 임시 저장소.
+- 코드에 키를 직접 박아넣지 않고 분리해두는 연습.
+  → 3단계에서 application.yml + .gitignore로 하는 것과 같은 목적.
+- 창을 닫으면 사라짐 → 새 창 열 때마다 다시 입력해야 함.
+
+
+■ 2) 보낼 데이터(JSON) 만들기
+--------------------------------------------------
+$body = @{
+    contents = @(
+        @{ parts = @(@{ text = "안녕, 테스트 메시지야" }) }
+    )
+} | ConvertTo-Json -Depth 5
+
+- @{ } = 해시테이블 (자바의 Map, JSON의 객체와 비슷한 것)
+- @( ) = 배열
+- Gemini API가 요구하는 요청 형식이
+  { "contents": [ { "parts": [ { "text": "..." } ] } ] }
+  이런 모양이라, 그 모양 그대로 파워쉘 객체로 만든 것.
+- | ConvertTo-Json  → 파워쉘 객체를 진짜 JSON 문자열로 변환.
+  API는 파워쉘 객체를 모르고 순수 텍스트(JSON)만 알아듣기 때문에 필요.
+- -Depth 5  → ConvertTo-Json은 기본 2단계 중첩까지만 변환함.
+  지금 구조는 contents → parts → text 로 3단계라 Depth를 안 주면 잘림.
+
+
+■ 3) 실제 API 호출
+--------------------------------------------------
+Invoke-RestMethod -Uri "https://.../gemini-3.6-flash:generateContent?key=$env:GEMINI_API_KEY" `
+  -Method Post -ContentType "application/json" -Body $body
+
+- Invoke-RestMethod = HTTP 요청을 실제로 보내는 명령어 (이 과정의 핵심)
+  -Uri          : 어디로 보낼지 주소
+  -Method Post  : "데이터를 보내서 처리해달라" (GET은 조회만, POST는 실행/생성)
+  -ContentType  : "내가 보내는 건 JSON이다"라고 서버에 알려줌
+  -Body         : 2)에서 만든 JSON을 실어 보냄
+- URL 안의 ":generateContent" = "이 모델에게 generateContent(생성) 동작을 시켜라"
+  → REST API는 보통 URL에 "무엇에게 / 무엇을 시킬지"가 그대로 드러남
+- 스프링부트의 RestTemplate이 하는 일도 결국 이거랑 동일
+  (URL/헤더/바디 구성 → 전송 → 응답 수신)
+
+
+■ 4) 안 될 때 원인을 찾은 과정 (실제로 겪은 트러블슈팅 #1 — 모델명)
+--------------------------------------------------
+[문제 상황]
+- OpenAI로 처음 시도 → "insufficient_quota" (크레딧 0원, ChatGPT 구독과 API 과금은 별개)
+- Gemini로 전환 후 gemini-2.0-flash → 404 (애초에 존재하지 않는 모델명)
+- gemini-2.5-flash-lite → 404
+- gemini-2.5-flash → 404
+
+[원인 조사 1: 실제 쓸 수 있는 모델 목록 조회]
+Invoke-RestMethod -Uri ".../models?key=$env:GEMINI_API_KEY" -Method Get |
+  Select-Object -ExpandProperty models |
+  Where-Object { $_.supportedGenerationMethods -contains "generateContent" } |
+  Select-Object name
+
+- -Method Get = "조회만 해줘" (Post와 달리 뭘 만들거나 바꾸지 않음)
+- | (파이프) = 앞 명령어의 결과를 다음 명령어로 계속 넘기는 것
+- Where-Object = 조건에 맞는 것만 걸러내기 (엑셀 필터와 비슷)
+- Select-Object = 특정 항목(열)만 뽑아서 보여주기
+
+[원인 조사 2: 진짜 에러 메시지 꺼내보기]
+try {
+    Invoke-RestMethod -Uri "..." -Method Post -ContentType "application/json" -Body $body
+} catch {
+    $stream = $_.Exception.Response.GetResponseStream()
+    $reader = New-Object System.IO.StreamReader($stream)
+    $reader.ReadToEnd()
+}
+
+- try { } catch { } = "일단 시도하고, 에러 나면 catch 블록에서 처리"
+- Invoke-RestMethod는 에러가 나면 서버가 보낸 진짜 이유를 기본적으로 숨김
+- catch 안에서 에러 응답의 원본 데이터 통로(스트림)를 직접 열어서
+  StreamReader로 그 안의 실제 내용을 문자로 읽어냄
+- 결과: "gemini-2.5-flash는 신규 사용자에게 서비스 종료됨,
+        gemini-3.6-flash를 쓰라"는 구글 서버의 실제 메시지를 확인
+- gemini-3.6-flash로 재시도 → 성공 (에러는 없어졌지만, 5)에서 또 다른 문제 발견)
+
+
+■ 5) 성공한 응답에서 원하는 값 꺼내기
+--------------------------------------------------
+$response = Invoke-RestMethod -Uri "..." -Method Post -ContentType "application/json" -Body $body
+$response.candidates[0].content.parts[0].text
+
+- $response = ...  ← 이 "=" 이 핵심.
+  이게 없으면 결과가 화면에 한 번 출력되고 사라짐.
+  "=" 을 붙여야 이후 줄에서 계속 꺼내 쓸 수 있음.
+- .candidates[0].content.parts[0].text
+  = 중첩된 객체를 안으로 파고 들어가는 문법
+    .candidates      → 응답 안의 candidates 항목으로 이동
+    [0]              → 그 배열의 첫 번째 원소로 이동 (배열은 0번부터 셈)
+    .content.parts[0].text → 계속 파고 들어가 실제 텍스트에 도달
+- 나중에 자바(스프링부트)에서는 Jackson이 만들어준 DTO 클래스의
+  getter 메서드로 이거랑 똑같은 일을 하게 됨
+  (예: response.getCandidates().get(0).getContent().getParts().get(0).getText())
+
+
+■ 6) 표로 안 보이는 세부 항목 펼쳐보기
+--------------------------------------------------
+$response.usageMetadata | Format-List
+$response | ConvertTo-Json -Depth 10   ← 전체 구조를 안 잘리게 다 보고 싶을 때
+
+- 파워쉘 기본 출력은 표(Table) 형식이라 값이 길면 "..."으로 잘려서 보임
+- Format-List = 표 대신 항목을 세로로 하나씩 다 펼쳐서 보여줌
+- ConvertTo-Json = 객체를 다시 JSON 텍스트로 바꿔서 원본 그대로 보여줌
+
+
+■ 7) 두 번째 트러블슈팅 — 한글이 깨져서 전달됨 (인코딩 버그)
+--------------------------------------------------
+전체 구조를 펼쳐보니(6번), 모델이 "질문이 물음표로 다 깨져서 왔다"고 답함.
+→ 한글로 보낸 질문 자체가 API에 도착하기 전에 깨진 것.
+
+[원인] PowerShell 5.1의 Invoke-RestMethod는 문자열을 body로 보낼 때
+  UTF-8이 아닌 시스템 기본 인코딩으로 변환해서 전송하는 오래된 특성이 있음.
+  한글처럼 UTF-8 멀티바이트 문자가 이 과정에서 깨짐.
+  (참고: 자바/스프링부트는 기본이 UTF-8이라 이 문제를 겪지 않을 가능성이 높음.
+   그래도 3단계에서 한 번은 한글 프롬프트로 실제 테스트해서 재확인할 것)
+
+[해결] body를 문자열이 아니라 UTF-8 바이트로 명시적으로 변환해서 전송
+  $utf8Body = [System.Text.Encoding]::UTF8.GetBytes($body)
+  Invoke-RestMethod -Uri "..." -Method Post `
+    -ContentType "application/json; charset=utf-8" -Body $utf8Body
+
+
+■ 최종 정리
+--------------------------------------------------
+- 최종 확정 모델: gemini-3.6-flash (응답용/판정용 모두 동일 모델)
+- API 키 발급처: aistudio.google.com
+- 겪은 트러블슈팅 2건: ① 모델명 404 (문서/기억 대신 실제 조회로 해결)
+                       ② 한글 인코딩 깨짐 (PowerShell 특성, UTF-8 바이트 변환으로 해결)
+- 이번 과정에서 익힌 것:
+  1. 환경변수로 비밀값 분리하기
+  2. 요청 데이터를 구조화해서 JSON으로 만들기
+  3. HTTP 요청 보내기 (Invoke-RestMethod / 나중엔 RestTemplate)
+  4. 에러가 나면 서버의 진짜 메시지를 파고들어 확인하기
+  5. 응답 객체 안에서 원하는 값을 경로(.candidates[0]...)로 찾아 꺼내기
+- 이 5가지는 3단계(스프링부트 프록시)에서 문법만 자바로 바뀌어 그대로 반복됨.

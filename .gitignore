@@ -1,0 +1,19 @@
+# 빌드 산출물
+backend/target/
+target/
+
+# 편집기 설정
+.vscode/
+.idea/
+*.iml
+
+# 비밀 값 (API 키는 환경변수로만 주입한다)
+.env
+*.env.local
+application-local.yml
+
+# 로그와 임시 파일
+*.log
+*.tmp
+.DS_Store
+Thumbs.db

@@ -1,0 +1,105 @@
+====================================================
+Gemini API (generateContent) 응답 예시 모음
+====================================================
+이 파일은 "무슨 명령어를 왜 썼는지"가 아니라,
+"실제 API가 어떤 모양의 데이터를 주고받는지"만 모아둔 참고 자료.
+진행 과정/트러블슈팅은 "01_진행기록_1단계_API테스트.txt" 참고.
+
+
+■ 요청(Request) 모양
+--------------------------------------------------
+POST https://generativelanguage.googleapis.com/v1beta/models/{모델명}:generateContent?key={API키}
+
+Body:
+{
+  "contents": [
+    {
+      "parts": [
+        { "text": "여기에 사용자 프롬프트가 들어감" }
+      ]
+    }
+  ]
+}
+
+
+■ 응답(Response) 모양 — 주석 단 예시
+--------------------------------------------------
+{
+  "candidates": [                          // 모델이 만들어낸 답변 후보들 (보통 1개)
+    {
+      "content": {                         // 후보 하나의 실제 내용
+        "role": "model",                   // 이 메시지를 누가 말했는지 (모델이 답한 것)
+        "parts": [                         // 답변이 조각(part)들로 나뉘어 옴 (텍스트/이미지 등)
+          {
+            "text": "안녕하세요! 잘 받았습니다."   // ★ 최종적으로 원하는 실제 답변 문자열
+          }
+        ]
+      },
+      "finishReason": "STOP",              // 왜 답변을 멈췄는지 (STOP=정상 종료, MAX_TOKENS=길이 제한 등)
+      "index": 0                           // 후보 중 몇 번째인지 (0부터 시작)
+    }
+  ],
+  "usageMetadata": {                       // 이번 호출에 토큰(=과금 단위)이 얼마나 쓰였는지
+    "promptTokenCount": 10,                // 내가 보낸 질문이 소모한 토큰 수
+    "candidatesTokenCount": 68,            // 눈에 보이는 답변(text)이 소모한 토큰 수
+    "thoughtsTokenCount": 652,             // 화면엔 안 보이지만 모델이 "생각"하는 데 쓴 토큰 수
+    "totalTokenCount": 730                 // 위 세 개를 다 합친 실제 과금 대상 총합
+  },
+  "modelVersion": "gemini-3.6-flash"       // 실제로 응답한 모델 버전
+}
+
+★ 코드에서 실제로 쓰는 건 딱 한 줄뿐:
+  candidates[0] → content → parts[0] → text
+  (나머지 필드는 디버깅/로그용이지, 사용자에게 보여줄 답변 자체는 이 한 줄에만 있음)
+
+
+■ 실제로 호출해서 받은 원본 응답 (2026-09-16, 버그 있는 상태 그대로)
+--------------------------------------------------
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "보내주신 텍스트가 인코딩 오류로 인해 모두 물음표(?)로 깨져서 보입니다. ...
+                      다시 한 번 작성해서 보내주시겠어요?"
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "index": 0
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 10,
+    "candidatesTokenCount": 66,
+    "totalTokenCount": 717,
+    "promptTokensDetails": [ { "modality": "TEXT", "tokenCount": 10 } ],
+    "thoughtsTokenCount": 641,
+    "serviceTier": "standard"
+  },
+  "modelVersion": "gemini-3.6-flash",
+  "responseId": "GvWpavPbPJ_jrfcPuIHRyAg"
+}
+
+※ 이 응답이 이상하게 나온 이유(한글 인코딩 버그)와 해결법은
+  "01_진행기록_1단계_API테스트.txt"의 7번 항목에 정리되어 있음.
+
+
+■ 필드 사전 (새로 나올 때마다 여기 추가)
+--------------------------------------------------
+- candidates              : 모델이 만든 답변 후보 목록
+- content.role            : 메시지를 누가 말했는지 ("model" = AI, "user" = 사용자)
+- content.parts[].text    : 실제 답변 문자열 ★ 가장 중요
+- finishReason            : 답변이 왜 끝났는지 (STOP=정상, MAX_TOKENS=길이제한, SAFETY=안전필터 등)
+- index                   : 후보 배열 안에서의 순번
+- usageMetadata           : 토큰(과금) 사용량 정보 묶음
+- promptTokenCount        : 입력(질문)이 소모한 토큰 수
+- candidatesTokenCount    : 눈에 보이는 출력(답변)이 소모한 토큰 수
+- thoughtsTokenCount      : 화면에 안 보이는 내부 "생각" 과정에 쓰인 토큰 수 (과금엔 포함됨)
+- totalTokenCount         : 전체 합계 (실제 과금 기준)
+- promptTokensDetails     : 입력 토큰을 모달리티(TEXT/IMAGE 등)별로 나눠 보여줌
+- thoughtSignature        : 모델의 내부 사고 과정을 나타내는 불투명한 토큰. 해석/사용 안 함
+- modelVersion            : 실제로 응답을 생성한 모델 버전
+- responseId              : 이 호출 하나를 식별하는 고유 ID (로그 추적용)

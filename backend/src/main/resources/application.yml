@@ -1,0 +1,14 @@
+server:
+  port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true   # 요청/응답 인코딩을 무조건 UTF-8로 강제 (이 컴퓨터의 기본 인코딩이 MS949라 안전장치로 추가)
+
+gemini:
+  # 실제 키 값은 여기 적지 않는다. 환경변수 GEMINI_API_KEY에서 읽어온다.
+  # (보안 프로젝트에서 키를 파일에 그대로 적으면 안 된다 - 3단계 완료 기준에 명시된 부분)
+  api-key: ${GEMINI_API_KEY}
+  model: gemini-3.6-flash
+  base-url: https://generativelanguage.googleapis.com/v1beta/models
