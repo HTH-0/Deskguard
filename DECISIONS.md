@@ -379,3 +379,14 @@
 - 결정: D6 판정 호출 타임아웃은 연결 2초와 읽기 3초(PoC p95 222ms, 최대 약 550ms의 10배 이상). D7 재시도는 429, 529만 최대 2회(200ms, 400ms 지수 백오프)이고 타임아웃과 5xx는 재시도 없이 차단한다(최악 대기 약 10초). D8 측정 모드는 통과와 차단 모두 200과 같은 형식으로 응답한다. D9 프롬프트 해시는 SHA-256 앞 16자리이며 완전한 익명화가 아님을 명시한다. D10 질문 파일은 `src/main/resources/judge/questions.tsv`이고 설계서 1.3절과의 일치는 구현 단계에서 자동으로 확인한다. D11 차단은 반환값이고 판정 실패만 예외이다.
 - HTTP 클라이언트: 판정 호출은 `RestClient`로 한다. 처음에는 기존 방식(`RestTemplate`)을 권장했으나, 스프링이 후속 버전(7.1)에서 `RestTemplate`을 사용 중단 예정으로 표시하고 `spring-boot-starter-restclient`가 이미 pom.xml에 있어서 바꿨다. 기존 Gemini 호출은 스텝 7에서 현재 동작을 테스트로 고정하기 전에는 바꾸지 않는다.
 - 코드 점검에서 발견한 문제: 입력 검증이 없다(FR-1은 신규 구현). Gemini 키를 URL 쿼리에 넣고 `GlobalExceptionHandler`가 `ex.getMessage()`를 응답에 싣는 구조라 키가 노출될 가능성이 있다(실제 발생은 미확인, 스텝 7에서 확인).
+
+## 2026-10-27 3단계 코드 특성화 테스트 (스텝 7)
+- 작업: `backend/src/test/java/com/promptgateway/controller/ChatControllerCharacterizationTest.java`에 테스트 14건을 추가해 현재 `/api/chat` 동작을 고정했다. 기존 소스와 pom.xml은 바꾸지 않았다. MockMvc는 `standaloneSetup`으로 쓰므로 별도 테스트 스타터를 추가하지 않았고(스프링 컨텍스트와 키 환경변수가 필요 없다), 응답 모델(Gemini)은 `MockRestServiceServer`로 대체했다.
+- 검증: `mvn -B test`가 14건 모두 통과한다. `GEMINI_API_KEY`와 `TYPESAFE_API_KEY`를 제거한 상태에서도 통과하므로 외부 호출이 없다(NFR-2).
+- 고정한 동작: 정상 200과 `{"answer": ...}`, Gemini 401은 401 `UPSTREAM_UNAUTHORIZED`, 429는 429 `UPSTREAM_RATE_LIMITED`, 그 밖의 4xx는 같은 상태 코드의 `UPSTREAM_CLIENT_ERROR`, 5xx와 응답 형식 오류와 후보 없음은 500 `INTERNAL_ERROR`, 연결 오류와 타임아웃은 504 `UPSTREAM_TIMEOUT`.
+- 발견 사항(현재 동작 그대로 기록, 수정은 스텝 8):
+  1. 입력 검증이 없다. 빈 문자열, 공백뿐인 문자열, 1,001자 입력이 모두 Gemini까지 전달된다(FR-1은 신규 구현).
+  2. 깨진 요청 본문(JSON 형식 오류)이 400이 아니라 500 `INTERNAL_ERROR`로 응답된다. 일반 예외 처리기가 모든 예외를 잡기 때문이다.
+  3. 4xx와 5xx 오류 응답의 `message`에 외부 응답 본문, 요청 주소, 클래스 이름 같은 내부 정보가 그대로 실린다(정보 노출 위험).
+  4. Gemini 키는 URL 쿼리(`?key=`)로 전달된다. 단, 점검한 7가지 시나리오(401, 429, 400, 500, 연결 오류, 깨진 응답, JSON 아님)에서 응답 본문에 키가 실리지 않았다. 스프링이 예외 메시지에서 쿼리 문자열을 빼 주기 때문이다. 설계서 O1은 "확인한 범위에서 노출 없음"으로 정리한다. 스프링 버전이 바뀌면 달라질 수 있어 테스트로 고정했다.
+- 처리 방침: 1~3은 스텝 8에서 수용 기준(AC-1.x, AC-5.x)과 함께 고치고, 고치기 전에 이 테스트가 먼저 깨지는 것을 확인한다.
