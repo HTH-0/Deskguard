@@ -6,10 +6,10 @@
 
 | 그룹 | 번호 | 작업 | 수용 기준 | 상태 |
 |---|---|---|---|---|
-| A 순수 로직 | T1 | `BlockDecider` | AC-3.5, 3.6, 3.7, 3.10 | 대기 |
-| | T2 | `InputValidator` | AC-1.1~1.3 | 대기 |
-| | T3 | `PatternFilter` | AC-2.1~2.3 | 대기 |
-| | T4 | `QuestionSet`과 질문 파일 | AC-3.9 | 대기 |
+| A 순수 로직 | T1 | `BlockDecider` | AC-3.5, 3.6, 3.7, 3.10 | 완료 |
+| | T2 | `InputValidator` | AC-1.1~1.3 | 완료 |
+| | T3 | `PatternFilter` | AC-2.1~2.3 | 완료 |
+| | T4 | `QuestionSet`과 질문 파일 | AC-3.9 | 완료 |
 | B 판정 호출 | T5 | `JevJudge` 정상 경로 | AC-3.3, 3.4, 3.9 | 대기 |
 | | T6 | `JevJudge` 실패 경로와 재시도 | AC-6.1~6.4 | 대기 |
 | C 조립 | T7 | `ChatGateway` | AC-3.1, 3.2, 4.2, 6.x, 8.1 | 대기 |
