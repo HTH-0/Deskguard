@@ -12,3 +12,21 @@ gemini:
   api-key: ${GEMINI_API_KEY}
   model: gemini-3.6-flash
   base-url: https://generativelanguage.googleapis.com/v1beta/models
+
+# 판정 모델(Jev) 호출 설정. 기본값은 docs/design.md 6장과 같다.
+judge:
+  # 실제 키 값은 여기 적지 않는다. 환경변수 TYPESAFE_API_KEY에서 읽어온다.
+  api-key: ${TYPESAFE_API_KEY}
+  base-url: https://api.typesafe.ai
+  model: jev-1.14.0            # 별칭(jev-latest)은 쓰지 않는다. 버전 ID로 고정한다.
+  threshold: 0.5               # 질문 하나라도 이 값 이상이면 차단 (임계값과 같아도 차단)
+  connect-timeout: 2s
+  read-timeout: 3s
+  max-retries: 2               # 429, 529일 때만 다시 시도
+  retry-backoff: 200ms         # 200ms, 400ms로 두 배씩 늘어난다
+  questions-file: judge/questions.tsv
+
+# 게이트웨이 설정
+gateway:
+  max-prompt-length: 1000
+  patterns: []                 # 패턴 필터의 패턴. 비어 있으면 모든 요청을 판정 단계로 보낸다.

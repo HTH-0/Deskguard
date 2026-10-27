@@ -205,6 +205,9 @@ v1 시험 결과를 본 뒤 고친 문구이다. 4.1, 4.2의 개선안 A3, B1, B
 | 신규 | `log.GatewayLogger` | 요청마다 한 줄의 구조화 로그를 남긴다. 키와 원문을 기본으로 숨긴다. | FR-7 |
 | 기존 | `service.GeminiService` | 응답 모델 호출. 스텝 7의 특성화 테스트로 현재 동작을 고정하기 전에는 바꾸지 않는다. | FR-4 |
 | 기존 | `exception.GlobalExceptionHandler` | 입력 검증 실패와 응답 모델 호출 실패를 기존 형식으로 변환한다. | AC-4.3 |
+| 신규 | `service.AnswerGenerator` (인터페이스) | `GeminiService`가 구현한다. `ChatGateway`가 Gemini 코드를 모르게 하고 시험에서 가짜로 바꿔 끼운다. (구현 중 추가) | FR-4, NFR-2 |
+| 신규 | `gateway.GatewayResult` | 처리 결과 값(통과 또는 차단, 단계, 패턴 ID, 실패 종류, 판정 결과, 답변). (구현 중 추가) | 5.3 S1 |
+| 신규 | `config.GatewayConfig`, `JudgeProperties`, `GatewayProperties` | 설정 값을 읽고 검증해 부품을 만들어 연결한다. 잘못된 설정이면 서버가 시작되지 않는다. (구현 중 추가) | AC-2.4, 3.8 |
 
 ### 5.2 요청 흐름
 
@@ -308,6 +311,8 @@ logging:
 ### 7.1 차단 응답
 
 - 본문 `{"blocked": true, "message": "정책에 따라 요청이 차단되었습니다"}`와 403이다. 패턴 차단, 판정 차단, 판정 실패 차단 모두 같은 객체를 돌려준다(AC-5.1~5.3). 이 객체를 만드는 곳을 하나로 두어 단계별로 달라질 수 없게 한다.
+
+오류 응답 코드(구현 결과): 입력 검증 실패는 400 `INVALID_PROMPT`, 깨진 요청 본문은 400 `INVALID_REQUEST`, 응답 모델 오류는 기존 코드(`UPSTREAM_UNAUTHORIZED`, `UPSTREAM_RATE_LIMITED`, `UPSTREAM_CLIENT_ERROR`, `UPSTREAM_TIMEOUT`, `INTERNAL_ERROR`)이다. 모든 오류의 `message`는 고정 문구이며 외부 응답 본문, 주소, 클래스 이름은 싣지 않고 로그에만 남긴다(D12).
 
 ### 7.2 로깅
 

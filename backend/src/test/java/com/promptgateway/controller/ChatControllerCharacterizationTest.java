@@ -1,6 +1,13 @@
 package com.promptgateway.controller;
 
 import com.promptgateway.exception.GlobalExceptionHandler;
+import com.promptgateway.filter.PatternFilter;
+import com.promptgateway.gateway.ChatGateway;
+import com.promptgateway.gateway.InputValidator;
+import com.promptgateway.judge.BlockDecider;
+import com.promptgateway.judge.Judge;
+import com.promptgateway.judge.JudgeResult;
+import com.promptgateway.judge.QuestionSet;
 import com.promptgateway.service.GeminiService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +24,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
@@ -32,6 +42,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
  * 무엇이 바뀌는지 알려준다. 바뀌는 것이 의도라면 설계서와 명세서를 먼저 고치고 이 테스트를 고친다.
  *
  * 외부 호출은 없다. 응답 모델(Gemini)은 MockRestServiceServer로 대체하고 키는 가짜 값을 쓴다.
+ *
+ * 스텝 8(T9)에서 의도적으로 바뀐 동작은 설계 결정 D12, D13에 따라 테스트를 고쳤다:
+ * 입력 검증(빈 문자열, 공백, 1,001자는 400), 깨진 요청 본문은 400, 오류 응답의 message는 고정 문구.
  */
 class ChatControllerCharacterizationTest {
 
@@ -50,7 +63,16 @@ class ChatControllerCharacterizationTest {
         ReflectionTestUtils.setField(service, "apiKey", FAKE_KEY);
         ReflectionTestUtils.setField(service, "model", "test-model");
         ReflectionTestUtils.setField(service, "baseUrl", "https://gemini.test/v1beta/models");
-        mockMvc = MockMvcBuilders.standaloneSetup(new ChatController(service))
+        // 스텝 8 이후의 컨트롤러는 ChatGateway를 거친다. 판정은 항상 통과시키는 가짜로 두어서
+        // 이 시험이 응답 모델 쪽 동작(Gemini 호출과 오류 변환)만 보게 한다.
+        Judge alwaysPass = prompt -> {
+            Map<String, Double> low = new LinkedHashMap<>();
+            QuestionSet.EXPECTED_IDS.forEach(id -> low.put(id, 0.01));
+            return new JudgeResult(low, "jev-1.14.0", 1);
+        };
+        ChatGateway gateway = new ChatGateway(new InputValidator(1000), new PatternFilter(List.of()), alwaysPass,
+                new BlockDecider(QuestionSet.EXPECTED_IDS, 0.5), service);
+        mockMvc = MockMvcBuilders.standaloneSetup(new ChatController(gateway))
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .build();
     }
@@ -93,35 +115,29 @@ class ChatControllerCharacterizationTest {
     }
 
     @Test
-    @DisplayName("현재는 입력 검증이 없다: 빈 문자열도 Gemini까지 전달된다 (FR-1은 신규 구현)")
-    void emptyPromptIsForwarded() throws Exception {
-        server.expect(requestTo(GEMINI_URL)).andRespond(withSuccess(OK_BODY, MediaType.APPLICATION_JSON));
-
+    @DisplayName("[T9에서 바뀜] 빈 문자열은 400이고 Gemini를 호출하지 않는다 (FR-1)")
+    void emptyPromptIsRejected() throws Exception {
         MockHttpServletResponse r = chat("{\"prompt\":\"\"}");
 
-        assertThat(r.getStatus()).isEqualTo(200);
-        server.verify();
+        assertThat(r.getStatus()).isEqualTo(400);
+        server.verify(); // 기대한 요청이 없으므로 Gemini 호출이 있었다면 여기서 실패한다
     }
 
     @Test
-    @DisplayName("현재는 입력 검증이 없다: 공백뿐인 문자열도 Gemini까지 전달된다")
-    void blankPromptIsForwarded() throws Exception {
-        server.expect(requestTo(GEMINI_URL)).andRespond(withSuccess(OK_BODY, MediaType.APPLICATION_JSON));
-
+    @DisplayName("[T9에서 바뀜] 공백뿐인 문자열은 400이고 Gemini를 호출하지 않는다 (FR-1)")
+    void blankPromptIsRejected() throws Exception {
         MockHttpServletResponse r = chat("{\"prompt\":\"   \"}");
 
-        assertThat(r.getStatus()).isEqualTo(200);
+        assertThat(r.getStatus()).isEqualTo(400);
         server.verify();
     }
 
     @Test
-    @DisplayName("현재는 입력 검증이 없다: 1,001자 입력도 Gemini까지 전달된다")
-    void tooLongPromptIsForwarded() throws Exception {
-        server.expect(requestTo(GEMINI_URL)).andRespond(withSuccess(OK_BODY, MediaType.APPLICATION_JSON));
-
+    @DisplayName("[T9에서 바뀜] 1,001자 입력은 400이고 Gemini를 호출하지 않는다 (FR-1)")
+    void tooLongPromptIsRejected() throws Exception {
         MockHttpServletResponse r = chat("{\"prompt\":\"" + "가".repeat(1001) + "\"}");
 
-        assertThat(r.getStatus()).isEqualTo(200);
+        assertThat(r.getStatus()).isEqualTo(400);
         server.verify();
     }
 
@@ -148,7 +164,7 @@ class ChatControllerCharacterizationTest {
     }
 
     @Test
-    @DisplayName("그 밖의 Gemini 4xx는 같은 상태 코드의 UPSTREAM_CLIENT_ERROR이고, 메시지에 Gemini 응답 본문이 그대로 실린다")
+    @DisplayName("그 밖의 Gemini 4xx는 같은 상태 코드의 UPSTREAM_CLIENT_ERROR이다 ([T9에서 바뀜] 메시지에 Gemini 응답 본문을 싣지 않는다)")
     void upstream400() throws Exception {
         geminiReturns(HttpStatus.BAD_REQUEST, "{\"error\":\"bad request\"}");
 
@@ -156,7 +172,7 @@ class ChatControllerCharacterizationTest {
 
         assertThat(r.getStatus()).isEqualTo(400);
         assertThat(body(r)).contains("\"error\":\"UPSTREAM_CLIENT_ERROR\"");
-        assertThat(body(r)).contains("bad request"); // 외부 응답 내용이 노출된다(정보 노출 위험으로 기록)
+        assertThat(body(r)).doesNotContain("bad request").doesNotContain("gemini.test"); // 외부 응답과 주소를 싣지 않는다(D12)
     }
 
     @Test
@@ -222,11 +238,11 @@ class ChatControllerCharacterizationTest {
     }
 
     @Test
-    @DisplayName("요청 본문이 깨진 JSON이면 현재는 500 INTERNAL_ERROR이다 (일반 예외 처리기가 잡는다)")
+    @DisplayName("[T9에서 바뀜] 요청 본문이 깨진 JSON이면 500이 아니라 400이다 (D13)")
     void malformedRequestBody() throws Exception {
         MockHttpServletResponse r = chat("{not json");
 
-        assertThat(r.getStatus()).isEqualTo(500);
-        assertThat(body(r)).contains("\"error\":\"INTERNAL_ERROR\"");
+        assertThat(r.getStatus()).isEqualTo(400);
+        assertThat(body(r)).contains("\"error\":\"INVALID_REQUEST\"");
     }
 }
