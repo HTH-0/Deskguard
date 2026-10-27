@@ -1,8 +1,8 @@
 # 설계서
 
-[spec.md](spec.md)의 요구사항을 어떻게 만족시킬지 정한다. 이 문서는 현재 1절(판정 질문)만 작성되어 있다. 구조, 구성요소, 테스트 전략은 스텝 5에서 이어서 쓴다.
+[spec.md](spec.md)의 요구사항을 어떻게 만족시킬지 정한다. 1~4절은 판정 질문과 약점 개선, 5~9절은 구조, 판정 호출, 로깅, 테스트 전략이다. 모두 2026-10-27에 사용자가 확정했다.
 
-상태: 부분 작성 (2026-10-26)
+상태: 확정 (2026-10-27). 구현 중 어긋나면 이 문서를 먼저 고치고 DECISIONS.md에 기록한다.
 
 ## 1. 판정 질문 v1, v2
 
@@ -185,3 +185,200 @@ v1 시험 결과를 본 뒤 고친 문구이다. 4.1, 4.2의 개선안 A3, B1, B
 | 5 | 회색 구간 확인 단계 (A5) | 설계서 이후 선택 |
 
 설계서(스텝 5) 작성과 병행할 수 있다. 질문 v2는 6단계 eval 전에 고정한다.
+
+## 5. 구성요소와 요청 흐름
+
+상태: 확정 (2026-10-27). [spec.md](spec.md)의 FR-1~FR-9를 만족시키는 구조를 정한다. 기존 코드의 패키지는 `com.promptgateway`이다.
+
+### 5.1 구성요소
+
+| 구분 | 클래스 | 역할 | 요구사항 |
+|---|---|---|---|
+| 기존 | `controller.ChatController` | 요청 수신과 응답 변환만 한다. 판단은 `ChatGateway`에 맡긴다. 결과에 따라 200, 403을 돌려준다. | FR-4, FR-5 |
+| 신규 | `gateway.ChatGateway` | 입력 검증, 패턴 필터, 판정, 응답 모델 호출 순서를 조율한다. 결과는 예외가 아니라 `GatewayResult`(통과, 차단, 단계, 점수) 값으로 돌려준다. | 3장 처리 흐름 |
+| 신규 | `gateway.InputValidator` | 빈 문자열, 공백뿐인 문자열, 1,000자 초과를 거부한다. | FR-1 |
+| 신규 | `filter.PatternFilter` | 설정의 패턴 목록과 비교한다. 목록이 비면 통과한다. 일치하면 패턴 ID를 돌려준다. | FR-2 |
+| 신규 | `judge.Judge` (인터페이스) | `JudgeResult judge(String prompt)`. 실패는 `JudgeException`으로 알린다. | FR-3, R3 |
+| 신규 | `judge.JevJudge` | `Judge`의 Jev 구현. `RestClient`로 호출한다. | FR-3, FR-6 |
+| 신규 | `judge.BlockDecider` | 점수와 임계값으로 차단 여부를 정하는 순수 함수. 하나라도 임계값 이상이면 차단한다. | FR-3 |
+| 신규 | `judge.QuestionSet` | 판정 질문 10개를 설정 파일에서 읽는다. 질문이 바뀌어도 코드는 그대로이다. | FR-3, D4 |
+| 신규 | `log.GatewayLogger` | 요청마다 한 줄의 구조화 로그를 남긴다. 키와 원문을 기본으로 숨긴다. | FR-7 |
+| 기존 | `service.GeminiService` | 응답 모델 호출. 스텝 7의 특성화 테스트로 현재 동작을 고정하기 전에는 바꾸지 않는다. | FR-4 |
+| 기존 | `exception.GlobalExceptionHandler` | 입력 검증 실패와 응답 모델 호출 실패를 기존 형식으로 변환한다. | AC-4.3 |
+
+### 5.2 요청 흐름
+
+```
+POST /api/chat
+  └ ChatController
+      └ ChatGateway.handle(prompt)
+          1. InputValidator ─ 실패 → 400 (판정, 응답 모델 호출 없음)
+          2. PatternFilter ─ 일치 → BLOCKED(단계=PATTERN)
+          3. Judge.judge() ─ JudgeException → BLOCKED(단계=JUDGE_FAILURE)
+             BlockDecider ─ 임계값 이상 → BLOCKED(단계=JUDGE)
+          4. 측정 모드가 꺼져 있으면 GeminiService.generateAnswer() → PASSED(답변)
+             측정 모드가 켜져 있으면 응답 모델 호출 없이 PASSED(답변 없음)
+      GatewayLogger.log(결과)   ← 모든 경로에서 한 번
+  컨트롤러 응답:
+      PASSED  → 200 {"answer": ...}
+      BLOCKED → 403 {"blocked": true, "message": "정책에 따라 요청이 차단되었습니다"}   (단계와 무관하게 같은 본문)
+      측정 모드 → 항상 200 {decision, stage, scores, modelVersion}
+```
+
+### 5.3 설계 결정
+
+| 번호 | 결정 | 이유 |
+|---|---|---|
+| S1 | 차단은 예외가 아니라 반환값이다. 판정 호출 실패만 `JudgeException`으로 오고, `ChatGateway`가 잡아서 차단으로 바꾼다. | 차단은 정상 동작이다. 예외로 다루면 `GlobalExceptionHandler`의 500, 504 변환에 섞여 fail-closed가 깨질 수 있다. |
+| S2 | `Judge` 인터페이스에 질문 세트, 임계값, 모델 버전을 넣지 않는다. 구현체(`JevJudge`)가 설정에서 읽는다. | 다른 판정 모델이나 질문 조합(후속 개선 후보)으로 바꿀 때 `ChatGateway`가 바뀌지 않게 한다. |
+| S3 | 차단 여부를 정하는 `BlockDecider`는 외부와 무관한 순수 함수로 분리한다. | 임계값 경계(AC-3.6, 3.7)와 질문 누락(AC-3.5)을 빠르고 정확하게 테스트한다(TDD 대상). |
+| S4 | 로그는 `ChatGateway`의 끝에서 한 곳에서만 남긴다. | 경로마다 로그를 따로 쓰면 항목이 빠진다(AC-7.1). |
+
+## 6. 판정 호출 설계
+
+상태: 확정 (2026-10-27).
+
+### 6.1 인터페이스
+
+```java
+public interface Judge {
+    JudgeResult judge(String prompt);          // 실패하면 JudgeException
+}
+public record JudgeResult(Map<String, Double> scores, String modelVersion, long latencyMillis) {}
+public class JudgeException extends RuntimeException {
+    public enum Kind { TIMEOUT, RATE_LIMITED, SERVER_ERROR, CONFIG_ERROR, INPUT_TOO_LONG, MALFORMED_RESPONSE }
+}
+```
+
+`BlockDecider.decide(scores, threshold)`는 점수가 하나라도 임계값 이상이면 차단이다(`>=`, AC-3.6). 설정된 질문 ID 중 하나라도 `scores`에 없으면 `MALFORMED_RESPONSE`로 보고 차단한다(AC-3.5).
+
+### 6.2 Jev 호출 (`JevJudge`)
+
+| 항목 | 값 |
+|---|---|
+| HTTP 클라이언트 | `RestClient` (사용자 승인 2026-10-27). 스프링이 `RestTemplate`을 후속 버전에서 사용 중단하기로 했고, `spring-boot-starter-restclient`가 이미 pom.xml에 있다. 기존 Gemini 호출은 바꾸지 않는다. |
+| 요청 | `POST {judge.base-url}/v1/systemone`, 헤더 `Authorization: Bearer {환경변수 TYPESAFE_API_KEY}` |
+| 본문 | `{"model": "jev-1.14.0", "state": 사용자 프롬프트, "questions": {ID: {"type": "noul", "instructions": ..., "criteria": {"true": ..., "false": ...}}}}` (PoC에서 검증한 형식) |
+| 직렬화 | 문자열을 직접 이어 붙이지 않고 Jackson으로 만든다. 프롬프트에 따옴표와 줄바꿈이 있어도 JSON이 깨지지 않게 한다. (PoC의 수동 이스케이프는 쓰지 않는다.) |
+| 응답 파싱 | `answers[ID].noul`(0~1)과 `model`을 읽는다. 값이 숫자가 아니거나 범위를 벗어나면 `MALFORMED_RESPONSE`이다. |
+
+### 6.3 실패 처리 (FR-6)
+
+| 실패 | `JudgeException.Kind` | 재시도 | 결과 |
+|---|---|---|---|
+| 연결 또는 읽기 타임아웃 | TIMEOUT | 없음 | 차단 |
+| 429, 529 | RATE_LIMITED | 최대 2회, 지수 백오프(200ms, 400ms) | 모두 실패하면 차단 |
+| 5xx | SERVER_ERROR | 없음 | 차단 |
+| 401, 422 | CONFIG_ERROR | 없음 | 차단, 오류 수준 로그(운영 경보) |
+| 400 `max_tokens_exceeded` | INPUT_TOO_LONG | 없음 | 차단 (FR-1에서 걸러져야 하는 경우) |
+| 응답 형식 오류 | MALFORMED_RESPONSE | 없음 | 차단 |
+
+- 값 제안: 연결 타임아웃 2초, 읽기 타임아웃 3초. 이유: PoC의 p95는 222ms이고 최대 관측값은 약 550ms였다. 3초는 p95의 10배 이상이어서 정상 지연은 넘기고 장애는 빠르게 감지한다.
+- 총 시간 상한은 약 10초이다(타임아웃 3초를 세 번 시도하는 최악의 경우에 백오프 대기를 더한 값). 429, 529가 계속될 때만 해당하며 기존 Gemini 읽기 타임아웃(30초)보다 짧다.
+- 타임아웃과 5xx를 재시도하지 않는 이유: 재시도하면 사용자 대기 시간이 늘고, 장애가 길면 요청이 쌓인다. 분류는 모두 fail-closed이다.
+
+### 6.4 질문 세트와 설정
+
+- 질문 문구의 사람이 읽는 원본은 이 문서 1.3절(v2)이다. 코드는 같은 내용을 `src/main/resources/judge/questions.tsv`(4열: ID, 질문, 참 기준, 거짓 기준)로 읽는다. 이 형식은 `tools/poc/make_questions.ps1`이 만드는 `questions_K2.tsv`와 같다.
+- 이 파일이 설계서 1.3절과 어긋나지 않게 하려고, 단위 테스트에서 질문 ID 10개와 비어 있지 않은 문구를 확인한다(AC-3.9). 문구 자체의 일치는 `make_questions.ps1`의 출력과 파일 내용을 비교하는 방법으로 구현 단계에서 확인한다.
+
+```yaml
+judge:
+  api-key: ${TYPESAFE_API_KEY}
+  base-url: https://api.typesafe.ai
+  model: jev-1.14.0              # 별칭(jev-latest) 금지 (R7)
+  threshold: 0.5                 # D1
+  connect-timeout: 2s
+  read-timeout: 3s
+  max-retries: 2
+  retry-backoff: 200ms           # 지수 증가
+  questions-file: classpath:judge/questions.tsv
+gateway:
+  max-prompt-length: 1000        # D2
+  measurement-mode: false        # FR-9, 기본 꺼짐
+  patterns: []                   # 패턴 필터 0개로 시작
+logging:
+  store-raw-prompt: false        # D3, 시험 환경에서만 true
+```
+
+## 7. 차단 응답, 로깅, 측정 모드
+
+상태: 확정 (2026-10-27).
+
+### 7.1 차단 응답
+
+- 본문 `{"blocked": true, "message": "정책에 따라 요청이 차단되었습니다"}`와 403이다. 패턴 차단, 판정 차단, 판정 실패 차단 모두 같은 객체를 돌려준다(AC-5.1~5.3). 이 객체를 만드는 곳을 하나로 두어 단계별로 달라질 수 없게 한다.
+
+### 7.2 로깅
+
+한 요청에 한 줄이며 `key=value` 형식의 구조화 로그이다.
+
+| 항목 | 내용 |
+|---|---|
+| `requestId` | 요청 식별자(UUID) |
+| `decision`, `stage` | PASS 또는 BLOCK, 단계는 NONE, PATTERN, JUDGE, JUDGE_FAILURE |
+| `patternId`, `failureKind` | 해당할 때만 |
+| `scores` | 질문별 확률 10개 |
+| `modelVersion` | 응답의 `model` 값 (AC-3.4) |
+| `filterMs`, `judgeMs`, `answerMs` | 단계별 지연 (NFR-3) |
+| `promptLength`, `promptHash` | 기본으로 남기는 값. 해시는 SHA-256 앞 16자리(16진수)이다. |
+| `prompt` | `logging.store-raw-prompt=true`일 때만 (AC-7.3, 7.4) |
+
+- 로그에 남기지 않는 것: API 키, `Authorization` 헤더, 요청 URL 전체, 판정 요청 본문 전체.
+- 해시 방식 제안: 프롬프트 길이가 짧으면 해시로 원문을 추측할 수 있어 완전한 익명화는 아니다. 같은 입력의 반복을 찾는 용도이고, 원문이 필요하면 시험 환경에서 원문 저장을 켠다.
+- 키 노출 방지 확인 항목(스텝 7에서 테스트로 확인): 기존 Gemini 호출은 키를 URL 쿼리에 넣는다(`?key=`). 예외 메시지에 URL이 들어갈 수 있고, `GlobalExceptionHandler`의 일반 처리기는 `ex.getMessage()`를 응답 본문에 그대로 싣는다. 키가 응답이나 로그에 나오는지 특성화 테스트로 먼저 확인하고, 나오면 AC-7.2의 위반이므로 수정한다.
+
+### 7.3 측정 모드
+
+- 설정 `gateway.measurement-mode=true`일 때만 동작하고 기본은 꺼짐이다(AC-9.1). 켜진 상태로 시작하면 시작 로그에 경고를 남긴다.
+- 켜면 통과와 차단 모두 응답 모델을 호출하지 않고 200으로 `{"decision": "PASS|BLOCK", "stage": ..., "scores": {...}, "modelVersion": ...}`를 돌려준다(spec 7장). 측정 도구가 모든 문장에서 같은 형식으로 읽을 수 있게 하기 위해서이다.
+- `backend/scripts/run_batch.py`는 403을 `blocked`로 분류하도록 고치고, 측정 모드 응답의 `decision`을 읽는 모드를 추가한다(구현 단계).
+
+## 8. 테스트 전략
+
+상태: 확정 (2026-10-27). 원칙은 [constitution.md](constitution.md)와 NFR-2를 따른다. 자동 테스트는 실제 Jev나 Gemini를 호출하지 않으며, 환경변수에 키가 없어도 통과해야 한다.
+
+### 8.1 계층별 도구
+
+| 계층 | 대상 | 도구 | 방식 |
+|---|---|---|---|
+| 단위 (TDD) | `BlockDecider`, `PatternFilter`, `InputValidator`, 해시 함수 | JUnit 5 | 입력과 출력만 비교. 외부 의존 없음 |
+| 연동 | `JevJudge`의 요청 구성과 오류 분류 | `MockRestServiceServer` | 가짜 서버로 200, 401, 422, 429, 5xx, 타임아웃, 깨진 응답을 재현 |
+| 조율 | `ChatGateway` | JUnit 5와 가짜 `Judge`, 가짜 응답 모델 | 호출 순서와 호출 횟수(차단되면 0회) 확인 |
+| 웹 | `ChatController` | MockMvc | 상태 코드와 본문 확인 |
+| 로그 | `GatewayLogger` | 로그 캡처 | 항목 존재, 키와 원문 부재 확인 |
+| 특성화 (스텝 7) | 현재 `/api/chat` 동작 | MockMvc와 가짜 응답 모델 | 정상 응답, 오류 매핑, 키 노출 여부를 현재 상태로 고정 |
+
+Spring Boot 4에서 테스트 모듈이 나뉘어 있을 수 있으므로 MockMvc 관련 의존성은 컴파일로 확인한다(스텝 7).
+
+### 8.2 수용 기준과 테스트의 대응
+
+| 수용 기준 | 테스트 | 계층 |
+|---|---|---|
+| AC-1.1~1.4 | `InputValidatorTest`, `ChatControllerTest` | 단위, 웹 |
+| AC-2.1~2.4 | `PatternFilterTest`, 설정 검증 테스트 | 단위 |
+| AC-3.1, 3.2, 3.10 | `ChatGatewayTest` | 조율 |
+| AC-3.3, 3.4, 3.9 | `JevJudgeTest` | 연동 |
+| AC-3.5~3.7 | `BlockDeciderTest` | 단위 (첫 TDD 대상) |
+| AC-3.8 | 설정 바인딩 테스트 | 단위 |
+| AC-4.1~4.3 | `ChatGatewayTest`, `ChatControllerTest` | 조율, 웹 |
+| AC-5.1~5.3 | `ChatControllerTest` | 웹 |
+| AC-6.1~6.4 | `JevJudgeTest`, `ChatGatewayTest` | 연동, 조율 |
+| AC-6.5 | 측정 집계 테스트 | 단위 |
+| AC-7.1~7.4 | `GatewayLoggerTest` | 로그 |
+| AC-8.1, 8.2 | `ChatGatewayTest`, 측정 도구 | 조율 |
+| AC-9.1, 9.2 | `ChatControllerTest` | 웹 |
+
+### 8.3 테스트로 다루지 않는 것
+
+- 판정의 정확도(탐지율, 오탐율)는 단위 테스트의 대상이 아니다. PoC 도구와 6단계 측정이 담당한다. 판정 모델이 확률적이어서 테스트가 불안정해지기 때문이다.
+- 질문 문구의 품질은 점검 문장 시험(`docs/poc/`)으로 확인한다.
+
+## 9. 설계서 열린 항목
+
+| 번호 | 항목 | 확인 시점 |
+|---|---|---|
+| O1 | 응답 본문에 Gemini 키가 노출되는지 (7.2) | 스텝 7 |
+| O2 | 기존 코드에 입력 검증이 없다. `ChatRequest`는 문자열 필드만 있다. FR-1은 신규 구현이다. | 스텝 8 |
+| O3 | 질문 파일과 이 문서 1.3절의 문구 일치를 자동으로 확인하는 방법 | 스텝 8 |
+| O4 | 타임아웃 3초와 재시도 2회가 실제 Jev 운영 지연에 맞는지 | 6단계 |
