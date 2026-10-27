@@ -18,7 +18,7 @@
 | 1~3 | API 테스트, 데이터셋, 프록시 골격 | 완료 |
 | 2.4~2.9 | 주제 방향(도메인 정책 추가), 정책서, 룰 후보 검증, 정상 풀 보강 | 완료 |
 | 3 | 명세서 (`spec.md`) | 완료, 확정 |
-| 2.5 | Jev 한국어 PoC | 완료, 합격. 채택은 사용자 승인 대기 |
+| 2.5 | Jev 한국어 PoC | 완료, 합격. Jev 채택 승인됨 |
 | 4.5 | PoC 약점 개선 (라벨 기준, 점검 문장 확장, 질문 v2) | 대기. `design.md` 4절 |
 | 5 | 설계서 (`design.md`) | 1절(판정 질문)만 작성됨 |
 | 7 | 3단계 코드의 특성화 테스트 | 대기 |
@@ -29,10 +29,10 @@
 
 | 번호 | 항목 | 권장 | 근거 |
 |---|---|---|---|
-| 1 | Jev를 판정 모델로 채택 | 승인 | [DECISIONS.md](../DECISIONS.md) "Jev 한국어 PoC 결과" |
-| 2 | 라벨 기준 A1("챗봇에게 처리를 요구하는가"와 "규정·가능 여부를 묻는가")과 A-15, A-18, B-13, B-02 처리 | 기준 승인 후 문장별 판단 | [design.md](design.md) 4.1, 4.2 |
-| 3 | 점검 문장 확장(65문장, 사용자 직접 작성 40%)의 진행 시점과 합격 기준 N1~N6 | 설계서와 병행 | design.md 4.3 |
-| 4 | 개발사 문의 메일 발송(약관 R8) | 발송, PoC는 이미 완료 | 이 문서 9절 초안 |
+| 1 | Jev를 판정 모델로 채택 | 승인함(2026-10-27) | [DECISIONS.md](../DECISIONS.md) "Jev 채택, 라벨 기준 A1" |
+| 2 | 라벨 기준 A1("챗봇에게 처리를 요구하는가"와 "규정·가능 여부를 묻는가")과 A-15, A-18, B-13, B-02 처리 | 기준은 승인함. 4문장은 제안과 근거를 보고 문장별로 확정 | [design.md](design.md) 4.1, 4.2 |
+| 3 | 점검 문장 확장(65문장, 사용자 직접 작성 40%)의 진행 시점과 합격 기준 N1~N6 | 설계서와 병행으로 승인함. N1~N6은 시험 전에 확정 | design.md 4.3 |
+| 4 | 개발사 문의 메일(약관 R8) | 발송함(2026-10-27). 답변이 오면 R8 갱신 | 이 문서 9절 |
 | 5 | 저장소를 공개로 바꾸기 전 점검(R12) | 공개 전에 수행 | [open-risks.md](open-risks.md) R12 |
 | 6 | 도메인 문장의 최종 데이터 파일화(컬럼 구성, 출처·검수 기록) | 설계서 이후 | [archive/review-sheet.md](archive/review-sheet.md), `docs/poc/data.tsv` |
 | 7 | 사용자 작성 문장의 IT 편중과 어휘 반복 보정 | 선택 | DECISIONS.md "F-2 사용자 작성 문장 확정" |
@@ -106,14 +106,13 @@ mvn -B -q test
 - 정규식 시험 하네스: `tools/rulecheck/`
 - 이전 세션의 임시 작업 폴더(컴퓨터의 임시 폴더)는 이 컴퓨터에만 있으므로 의존하지 않는다.
 
-## 9. 부록: 개발사 문의 메일 초안 (발송은 사용자)
+## 9. 부록: 개발사 문의 메일 (발송 완료, 2026-10-27)
 
-> Subject: Using Jev to classify adversarial prompts for a guardrail evaluation
+받는 주소는 계정·API 문의용 support@typesafe.ai이다(privacy, security, sales 주소는 용도가 다르다). 질문은 약관 허용 여부 하나로 줄였다.
+
+> Subject: Question about acceptable use: classifying adversarial prompts with Jev
 >
-> Hello, I am building a portfolio project that screens user prompts for an in-company HR/IT helpdesk chatbot (prompt-injection attempts and policy violations such as asking for other people's data). I plan to send adversarial and benign text samples to Jev only as classification input (Noul questions), never to generate content. My dataset is small (about 200 sentences, mostly Korean).
->
-> 1. Is this kind of evaluation acceptable under the Acceptable Use Policy (section 3.4 mentions driving the model to contravene policies)?
-> 2. Do you have guidance for writing Noul questions and criteria for prompt-injection and policy-violation detection, especially for Korean text?
-> 3. Are there known weaknesses with adversarial input that I should test first?
->
+> Hello,
+> I am an aspiring developer building a non-commercial portfolio project for learning: a guardrail gateway for an in-company HR helpdesk chatbot. It uses Jev (Noul questions) only to classify incoming user text as an attack attempt or not. I send a small set of adversarial and benign sample sentences (about 200, mostly Korean) as classification input. I never use Jev to generate content, and I do not try to make Jev break its own policies.
+> Is this use consistent with your Acceptable Use Policy (section 3.4)?
 > Thank you.
