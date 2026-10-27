@@ -119,7 +119,7 @@
 - 배경: 저장소 `HTH-0/Deskguard`는 비공개이다. 다른 컴퓨터에서 이어서 작업하려면 데이터가 필요하므로 `dataset.csv`를 포함해 올렸다. 공개로 바꾸면 아래 문제가 생긴다.
   - `dataset.csv`에는 외부 공개 데이터(deepset/prompt-injections, JailbreakBench의 JBB-Behaviors)가 섞여 있다. 재배포 조건과 출처 표기 의무를 확인하지 않았다.
   - 유해 요청 문장(`disallowed_content` 135건)과 공격 문장이 들어 있다.
-  - `docs/review-sheet.md`, `docs/rule-selection.md`는 임시 문서이고 시험 문장 원문이 들어 있다.
+  - `docs/archive/review-sheet.md`, `docs/archive/rule-selection.md`는 보관 문서이고 시험 문장 원문이 들어 있다.
   - 커밋 이력에 남은 정보는 지우기 어렵다. 커밋 이메일은 GitHub noreply 주소를 쓰고 있다.
 - 공개 전 점검표(제안): (1) 외부 데이터 라이선스와 출처 표기 확인, (2) 유해 문장 유형을 저장소에서 제외할지 판단, (3) 임시 문서 정리, (4) 비밀 값 재검색, (5) README에 데이터 출처 표 추가
 - 확인 시점: 저장소를 공개로 바꾸기 전

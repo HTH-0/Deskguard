@@ -34,7 +34,7 @@
 | 3 | 점검 문장 확장(65문장, 사용자 직접 작성 40%)의 진행 시점과 합격 기준 N1~N6 | 설계서와 병행 | design.md 4.3 |
 | 4 | 개발사 문의 메일 발송(약관 R8) | 발송, PoC는 이미 완료 | 이 문서 9절 초안 |
 | 5 | 저장소를 공개로 바꾸기 전 점검(R12) | 공개 전에 수행 | [open-risks.md](open-risks.md) R12 |
-| 6 | 도메인 문장의 최종 데이터 파일화(컬럼 구성, 출처·검수 기록) | 설계서 이후 | [review-sheet.md](review-sheet.md), `docs/poc/data.tsv` |
+| 6 | 도메인 문장의 최종 데이터 파일화(컬럼 구성, 출처·검수 기록) | 설계서 이후 | [archive/review-sheet.md](archive/review-sheet.md), `docs/poc/data.tsv` |
 | 7 | 사용자 작성 문장의 IT 편중과 어휘 반복 보정 | 선택 | DECISIONS.md "F-2 사용자 작성 문장 확정" |
 
 ## 4. 다음 작업 (제안 순서)
@@ -92,11 +92,13 @@ mvn -B -q test
 | [rule-criteria.md](rule-criteria.md) | 패턴 필터에 패턴을 넣는 기준 | 영구 |
 | [open-risks.md](open-risks.md) | 무엇이 불확실한가 (R1~R12) | 누적 |
 | [../DECISIONS.md](../DECISIONS.md) | 왜 그렇게 정했는가 | 누적 |
-| [review-sheet.md](review-sheet.md) | 시험 문장 판정 기록 (도메인 문장 원본 포함) | 임시, 데이터 파일화 후 정리 |
-| [rule-selection.md](rule-selection.md) | 룰 선정표 (종료, 근거 문장 보존) | 임시 |
 | [poc/](poc/) | PoC 데이터와 결과 | 보존 |
-| [archive/](archive/) | 불채택된 외부 LLM 룰 후보 | 보관 |
-| [../프로젝트_정리.md](../프로젝트_정리.md), [../AI보안_프로젝트_주제_후보.md](../AI보안_프로젝트_주제_후보.md) | 변경 전 로드맵과 주제 후보 | 참고용, 갱신 안 함 |
+| [학습노트/](학습노트/) | 1단계, 3단계 학습 기록 | 참고 |
+| [archive/프로젝트_정리.md](archive/프로젝트_정리.md) | 변경 전 로드맵. 6~9단계(측정, 실패 분석, 로그·레이트리밋, 화면)의 정의는 여기를 본다. 4~5단계는 패턴 필터 0개와 Jev로 대체됨 | 보관, 갱신 안 함 |
+| [archive/AI보안_프로젝트_주제_후보.md](archive/AI보안_프로젝트_주제_후보.md) | 주제 후보 12개 비교 (선정 완료) | 보관 |
+| [archive/rule-selection.md](archive/rule-selection.md) | 룰 선정표 (종료, 근거 문장 보존) | 보관 |
+| [archive/review-sheet.md](archive/review-sheet.md) | 시험 문장 판정 기록 (도메인 문장 원본 포함) | 보관, 데이터 파일화 때 참고 |
+| [archive/llm_guardrail_rule_filters.md](archive/llm_guardrail_rule_filters.md) | 불채택된 외부 LLM 룰 후보 | 보관 |
 
 ## 8. 작업용 파일이 있는 곳
 
