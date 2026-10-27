@@ -18,7 +18,7 @@ import java.nio.charset.StandardCharsets;
  *    나중에 4단계에서 필터 로직이 추가돼도 컨트롤러 코드는 거의 안 바뀌게 된다.
  */
 @Service
-public class GeminiService {
+public class GeminiService implements AnswerGenerator {
 
     private final RestTemplate restTemplate;
 
@@ -36,6 +36,7 @@ public class GeminiService {
         this.restTemplate = restTemplate;
     }
 
+    @Override
     public String generateAnswer(String prompt) {
         String url = baseUrl + "/" + model + ":generateContent?key=" + apiKey;
 
