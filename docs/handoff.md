@@ -37,7 +37,7 @@
 | 6 | 도메인 문장의 최종 데이터 파일화(컬럼 구성, 출처·검수 기록) | 설계서 이후 | [archive/review-sheet.md](archive/review-sheet.md), `docs/poc/data.tsv` |
 | 7 | 사용자 작성 문장의 IT 편중과 어휘 반복 보정 | 선택 | DECISIONS.md "F-2 사용자 작성 문장 확정" |
 | 8 | 확인용 채팅 화면을 T11 직후에 만들지(안 B) 원칙대로 마지막(9단계)에 만들지(안 A) | 안 B 권장(단일 HTML, 반나절 제한, 점수 막대 표시). 선택하면 constitution 5번의 "마지막에"는 예외로 기록 | 대화에서 제안함. 사용자 선택 대기 |
-| 9 | 정상 질문 응답이 약 10초 걸린 원인 | T10 로그의 `filterMs`, `judgeMs`, `answerMs`로 확인. 사용자 컴퓨터에서 서버를 다시 띄워 한 번 호출한다. 측정 모드(5절)로 띄우면 Gemini를 부르지 않으므로 `Measure-Command`의 시간이 판정만의 지연이다. 첫 측정(일반 모드)은 총 약 17.6초였다 | DECISIONS.md "T10 GatewayLogger" |
+| 9 | 정상 질문 응답이 약 10초 걸린 원인 | 확인함(2026-10-28): 측정 모드(Gemini 없이)에서 총 0.19~0.20초(첫 호출 0.71초), 실제 Jev 응답은 PASS와 점수 10개였다. 지연은 응답 모델 구간이 대부분이다. 방법: T10 로그의 `filterMs`, `judgeMs`, `answerMs`로 확인. 사용자 컴퓨터에서 서버를 다시 띄워 한 번 호출한다. 측정 모드(5절)로 띄우면 Gemini를 부르지 않으므로 `Measure-Command`의 시간이 판정만의 지연이다. 첫 측정(일반 모드)은 총 약 17.6초였다 | DECISIONS.md "T10 GatewayLogger" |
 
 ## 4. 다음 작업 (제안 순서)
 
