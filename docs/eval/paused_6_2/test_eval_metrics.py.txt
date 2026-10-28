@@ -1,0 +1,258 @@
+# -*- coding: utf-8 -*-
+"""
+eval_metrics.py 시험 (6-2, AC-10.3, 10.4). 실행: cd backend/scripts && python3 -m unittest -v test_eval_metrics
+서버와 키가 필요 없다. 계산 함수는 입력과 출력만 비교한다.
+"""
+import contextlib
+import csv
+import io
+import json
+import os
+import tempfile
+import unittest
+
+import eval_metrics as em
+
+
+def rec(label, max_=None, status="passed", stage="NONE", type_="", lang="ko", group="", key=None):
+    scores = None if max_ is None else {"I1": max_, "F1": 0.01}
+    return {"label": label, "type": type_, "lang": lang, "group": group, "key": key,
+            "status": status, "stage": stage, "scores": scores}
+
+
+class WilsonTest(unittest.TestCase):
+    def test_알려진_값과_일치한다(self):
+        low, high = em.wilson_interval(8, 10)
+
+        self.assertAlmostEqual(low, 0.4902, places=3)
+        self.assertAlmostEqual(high, 0.9433, places=3)
+
+    def test_전부_성공이면_상한이_1이다(self):
+        low, high = em.wilson_interval(10, 10)
+
+        self.assertAlmostEqual(high, 1.0, places=6)
+        self.assertLess(low, 1.0)
+
+    def test_0건이면_하한이_0이다(self):
+        low, high = em.wilson_interval(0, 10)
+
+        self.assertAlmostEqual(low, 0.0, places=6)
+        self.assertAlmostEqual(high, 0.2775, places=3)
+
+    def test_표본이_0이면_구간이_없다(self):
+        self.assertEqual(em.wilson_interval(0, 0), (None, None))
+
+
+class DecideTest(unittest.TestCase):
+    def test_질문_점수의_최댓값이_임계값_이상이면_차단한다(self):
+        self.assertEqual(em.decide(rec("attack", 0.9), 0.5), "block")
+        self.assertEqual(em.decide(rec("attack", 0.2), 0.5), "pass")
+
+    def test_임계값과_같으면_차단한다(self):
+        self.assertEqual(em.decide(rec("attack", 0.5), 0.5), "block")
+
+    def test_패턴_차단은_점수와_무관하게_차단이다(self):
+        self.assertEqual(em.decide(rec("attack", None, status="blocked", stage="PATTERN"), 0.99), "block")
+
+    def test_판정_실패와_오류와_단계_미상은_제외한다(self):
+        self.assertEqual(em.decide(rec("attack", None, status="blocked", stage="JUDGE_FAILURE"), 0.5), "excluded")
+        self.assertEqual(em.decide(rec("attack", None, status="error", stage=""), 0.5), "excluded")
+        self.assertEqual(em.decide(rec("attack", None, status="blocked", stage="UNKNOWN"), 0.5), "excluded")
+
+
+def sample_records():
+    return [
+        rec("attack", 0.9), rec("attack", 0.2), rec("attack", None, status="blocked", stage="PATTERN"),
+        rec("attack", None, status="blocked", stage="JUDGE_FAILURE"), rec("attack", None, status="error", stage=""),
+        rec("normal", 0.1), rec("normal", 0.6), rec("normal", 0.3),
+        rec("normal", None, status="blocked", stage="JUDGE_FAILURE"),
+    ]
+
+
+class ConfusionMetricsTest(unittest.TestCase):
+    def test_혼동_행렬을_센다(self):
+        c = em.confusion(sample_records(), 0.5)
+
+        self.assertEqual((c["tp"], c["fn"], c["fp"], c["tn"]), (2, 1, 1, 2))
+        self.assertEqual((c["excluded_attack"], c["excluded_normal"]), (2, 1))
+
+    def test_임계값을_올리면_결과가_바뀐다(self):
+        c = em.confusion(sample_records(), 0.95)
+
+        self.assertEqual((c["tp"], c["fn"], c["fp"], c["tn"]), (1, 2, 0, 3))
+
+    def test_임계값과_같은_점수는_차단이다(self):
+        c = em.confusion(sample_records(), 0.9)
+
+        self.assertEqual(c["tp"], 2)
+
+    def test_지표와_신뢰구간을_계산한다(self):
+        m = em.metrics(em.confusion(sample_records(), 0.5))
+
+        self.assertAlmostEqual(m["detection"]["rate"], 2 / 3)
+        self.assertAlmostEqual(m["false_positive"]["rate"], 1 / 3)
+        self.assertAlmostEqual(m["precision"]["rate"], 2 / 3)
+        self.assertAlmostEqual(m["f1"], 2 / 3)
+        low, high = m["detection"]["ci"]
+        self.assertLess(low, m["detection"]["rate"])
+        self.assertGreater(high, m["detection"]["rate"])
+        self.assertEqual((m["detection"]["k"], m["detection"]["n"]), (2, 3))
+
+    def test_분모가_0이면_비율과_F1은_None이다(self):
+        m = em.metrics(em.confusion([rec("attack", None, status="error", stage="")], 0.5))
+
+        self.assertIsNone(m["detection"]["rate"])
+        self.assertIsNone(m["precision"]["rate"])
+        self.assertIsNone(m["f1"])
+
+
+class ThresholdCurveTest(unittest.TestCase):
+    def test_임계값마다_탐지율과_오탐율을_계산한다(self):
+        curve = em.threshold_curve(sample_records(), [0.5, 0.9, 0.95])
+
+        self.assertEqual([p["threshold"] for p in curve], [0.5, 0.9, 0.95])
+        self.assertAlmostEqual(curve[0]["detection"], 2 / 3)
+        self.assertAlmostEqual(curve[1]["detection"], 2 / 3)
+        self.assertAlmostEqual(curve[2]["detection"], 1 / 3)
+        self.assertAlmostEqual(curve[0]["false_positive"], 1 / 3)
+        self.assertAlmostEqual(curve[2]["false_positive"], 0.0)
+
+    def test_임계값을_올리면_탐지율은_줄기만_한다(self):
+        detections = [p["detection"] for p in em.threshold_curve(sample_records(), em.THRESHOLD_GRID)]
+
+        self.assertEqual(detections, sorted(detections, reverse=True))
+        self.assertEqual(len(detections), 19)
+
+    def test_기본_격자는_0_05부터_0_95까지이다(self):
+        self.assertEqual((em.THRESHOLD_GRID[0], em.THRESHOLD_GRID[-1]), (0.05, 0.95))
+
+
+class PairedTest(unittest.TestCase):
+    def test_같은_문장에서_한쪽만_맞힌_건수를_센다(self):
+        a = [rec("attack", 0.9, key="k1"), rec("attack", 0.2, key="k2"), rec("normal", 0.1, key="k3"),
+             rec("normal", 0.8, key="k4"), rec("normal", 0.1, key="k5")]
+        b = [rec("attack", 0.3, key="k1"), rec("attack", 0.7, key="k2"), rec("normal", 0.1, key="k3"),
+             rec("normal", 0.2, key="k4")]
+
+        p = em.paired_comparison(a, b)
+
+        self.assertEqual((p["both_correct"], p["only_a"], p["only_b"], p["both_wrong"]), (1, 1, 2, 0))
+        self.assertEqual(p["unpaired"], 1)
+
+    def test_한쪽이_제외된_문장은_짝에서_뺀다(self):
+        a = [rec("attack", 0.9, key="k1")]
+        b = [rec("attack", None, status="error", stage="", key="k1")]
+
+        p = em.paired_comparison(a, b)
+
+        self.assertEqual((p["both_correct"], p["only_a"], p["only_b"], p["both_wrong"]), (0, 0, 0, 0))
+        self.assertEqual(p["unpaired"], 1)
+
+
+class BreakdownTest(unittest.TestCase):
+    def test_레이블과_언어별로_나누고_30건_미만은_표시한다(self):
+        records = [rec("attack", 0.9, lang="ko"), rec("attack", 0.2, lang="ko"), rec("attack", 0.9, lang="en"),
+                   rec("normal", 0.1, lang="ko")]
+
+        b = em.breakdown_by(records, "lang", 0.5)
+
+        self.assertEqual(b[("attack", "ko")]["n"], 2)
+        self.assertEqual((b[("attack", "ko")]["blocked"], b[("attack", "ko")]["passed"]), (1, 1))
+        self.assertTrue(b[("attack", "ko")]["small_sample"])
+        self.assertEqual(b[("attack", "en")]["blocked"], 1)
+
+    def test_30건_이상이면_표본이_작다고_표시하지_않는다(self):
+        records = [rec("attack", 0.9, lang="ko") for _ in range(30)]
+
+        self.assertFalse(em.breakdown_by(records, "lang", 0.5)[("attack", "ko")]["small_sample"])
+
+
+RUN_BATCH_FIELDS = ["prompt", "label", "type", "split", "lang", "source_category", "group",
+                    "result_status", "result_stage", "result_scores"]
+
+
+class LoaderTest(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+
+    def path(self, name):
+        return os.path.join(self.tmp.name, name)
+
+    def test_run_batch_결과를_읽는다(self):
+        with open(self.path("r.csv"), "w", newline="", encoding="utf-8-sig") as f:
+            w = csv.DictWriter(f, fieldnames=RUN_BATCH_FIELDS)
+            w.writeheader()
+            w.writerow({"prompt": "문장1", "label": "attack", "type": "jailbreak", "split": "eval", "lang": "ko",
+                        "source_category": "", "group": "", "result_status": "blocked", "result_stage": "JUDGE",
+                        "result_scores": json.dumps({"I1": 0.9, "F1": 0.1})})
+            w.writerow({"prompt": "문장2", "label": "normal", "type": "", "split": "eval", "lang": "en",
+                        "source_category": "", "group": "out_of_scope", "result_status": "blocked",
+                        "result_stage": "JUDGE_FAILURE", "result_scores": ""})
+
+        records = em.load_run_batch_csv(self.path("r.csv"))
+
+        self.assertEqual(len(records), 2)
+        self.assertEqual((records[0]["key"], records[0]["label"], records[0]["lang"]), ("문장1", "attack", "ko"))
+        self.assertEqual(records[0]["scores"], {"I1": 0.9, "F1": 0.1})
+        self.assertIsNone(records[1]["scores"])
+        self.assertEqual((records[1]["group"], records[1]["stage"]), ("out_of_scope", "JUDGE_FAILURE"))
+
+    def test_PoC_결과는_반복의_평균을_질문별로_낸다(self):
+        fields = ["id", "group", "label", "tag", "variant", "rep", "status", "I1", "F1", "error"]
+        with open(self.path("poc.csv"), "w", newline="", encoding="utf-8-sig") as f:
+            w = csv.DictWriter(f, fieldnames=fields)
+            w.writeheader()
+            w.writerow({"id": "A-01", "group": "ATK_DOM", "label": "attack", "tag": "", "variant": "K2",
+                        "rep": "1", "status": "200", "I1": "0.9", "F1": "0.2", "error": ""})
+            w.writerow({"id": "A-01", "group": "ATK_DOM", "label": "attack", "tag": "", "variant": "K2",
+                        "rep": "2", "status": "200", "I1": "0.5", "F1": "0.4", "error": ""})
+            w.writerow({"id": "N-01", "group": "NOR_GEN", "label": "normal", "tag": "OOS", "variant": "K2",
+                        "rep": "1", "status": "200", "I1": "0.1", "F1": "0.1", "error": ""})
+
+        records = em.load_poc_csv(self.path("poc.csv"))
+
+        by_key = {r["key"]: r for r in records}
+        self.assertEqual(len(records), 2)
+        self.assertAlmostEqual(by_key["A-01"]["scores"]["I1"], 0.7)
+        self.assertAlmostEqual(by_key["A-01"]["scores"]["F1"], 0.3)
+        self.assertEqual((by_key["A-01"]["type"], by_key["A-01"]["label"]), ("ATK_DOM", "attack"))
+        self.assertEqual(by_key["N-01"]["group"], "out_of_scope")
+
+
+class ReportTest(unittest.TestCase):
+    def test_보고에_지표와_구간과_제외_건수가_나온다(self):
+        text = em.format_report(sample_records(), 0.5, "시험")
+
+        for word in ("시험", "탐지율", "오탐율", "정밀도", "F1", "95%", "제외"):
+            self.assertIn(word, text)
+        self.assertIn("66.7%", text)
+
+    def test_group_행은_별도_집합으로_분리해서_보고한다(self):
+        records = sample_records() + [rec("normal", 0.8, group="out_of_scope"), rec("normal", 0.1, group="out_of_scope")]
+
+        text = em.format_report(records, 0.5, "시험")
+
+        self.assertIn("별도 집합", text)
+        self.assertIn("out_of_scope", text)
+        self.assertEqual(em.confusion([r for r in records if not r["group"]], 0.5)["fp"], 1)
+
+    def test_main은_결과_파일을_읽어_보고를_출력한다(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "r.csv")
+            with open(path, "w", newline="", encoding="utf-8-sig") as f:
+                w = csv.DictWriter(f, fieldnames=RUN_BATCH_FIELDS)
+                w.writeheader()
+                w.writerow({"prompt": "문장1", "label": "attack", "type": "jailbreak", "split": "eval", "lang": "ko",
+                            "source_category": "", "group": "", "result_status": "blocked", "result_stage": "JUDGE",
+                            "result_scores": json.dumps({"I1": 0.9})})
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                code = em.main(["--run-batch", path, "--threshold", "0.5"])
+
+        self.assertEqual(code, 0)
+        self.assertIn("탐지율", out.getvalue())
+
+
+if __name__ == "__main__":
+    unittest.main()

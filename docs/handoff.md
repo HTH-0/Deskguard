@@ -6,56 +6,88 @@
 
 ## 1. 한눈에 보기
 
-- 프로젝트: Deskguard. 사내 HR 헬프데스크 챗봇으로 들어가는 프롬프트를 패턴 필터와 판정 모델로 검사해 프롬프트 인젝션과 도메인 정책 위반을 차단하는 게이트웨이이다. ([README.md](../README.md))
-- 현재 위치: 도메인 정책, 평가 데이터, 명세서가 확정되었고 판정 모델(Jev) 채택과 질문 v2(조건부 채택)와 설계서 확정까지 끝났다. 3단계 코드의 특성화 테스트(스텝 7)까지 끝났다. 스텝 8(TDD 구현)은 그룹 A~C(T1~T9), T10(`GatewayLogger`), T11(측정 모드), T12(`run_batch.py`), T13(실제 Jev 스모크 시험, 2026-10-28 통과)까지 끝났고 Java 테스트 148건과 Python 테스트 25건이 통과한다. 6단계 측정 설계 문서(`spec.md` FR-10, `design.md` 10절)를 작성했고 사용자 검토를 기다린다.
-- 기술: Spring Boot 4.1.1, Java 25 LTS, Maven. 응답 모델은 Gemini(`gemini-3.6-flash`, 무료 티어), 판정 모델 후보 1순위는 Jev(`jev-1.14.0`)이다.
-- 기존 코드(`backend/`)는 3단계 프록시 골격이다. 패턴 필터와 판정 모델은 아직 구현하지 않았다.
+- 프로젝트: Deskguard. 사내 HR 헬프데스크 챗봇으로 들어가는 프롬프트를 판정 모델로 검사해 프롬프트 인젝션과 도메인 정책 위반을 차단하는 게이트웨이이다. ([README.md](../README.md))
+- 중심 서사: "LLM 챗봇 앞단의 입력 가드레일을 만들고, 사전에 정한 기준으로 측정하고, 놓친 사례와 한계를 기록했다." 포트폴리오의 가치는 구현보다 측정과 기록에 있다(DECISIONS.md "포트폴리오 방향 점검").
+- **현재 위치**
+  - 완료: 도메인 정책, 평가 데이터, 명세서(확정), Jev 한국어 PoC(채택), 질문 v2(조건부 채택), 설계서 1~9절(확정), 구현 T1~T13, 약관 위험 수용(R8), 외부 도메인 자료 조사.
+  - **진행 중: 6단계 측정 설계(`spec.md` FR-10, `design.md` 10절) 작성을 마쳤고 사용자 승인을 기다린다.**
+  - 구현 상태: 게이트웨이(입력 검증, 패턴 필터(패턴 0개), Jev 판정, 임계값 0.5, 판정 실패 시 차단, 요청별 로그, 측정 모드)와 측정 도구(`run_batch.py`)가 동작한다. Java 테스트 148건과 Python 테스트 25건이 통과한다. 실제 Jev 연동은 2026-10-28 스모크 시험(T13)으로 확인했다.
+  - 마지막으로 멈춘 지점: 문서와 보존 파일만 바뀐 상태이고 **모두 푸시되어 있다.** 코드는 T13 이후 바뀌지 않았다.
+- 기술: Spring Boot 4.1.1, Java 25 LTS, Maven. 응답 모델은 Gemini(`gemini-3.6-flash`, 무료 티어), 판정 모델은 Jev(`jev-1.14.0`, 채택)이다.
 
 ## 2. 단계 상태
+
+표의 번호는 작업 스텝 번호이며, 로드맵의 6~9단계(측정, 실패 분석, 로그와 레이트리밋, 화면)와 이름이 겹치는 곳이 있다.
 
 | 단계 | 내용 | 상태 |
 |---|---|---|
 | 1~3 | API 테스트, 데이터셋, 프록시 골격 | 완료 |
 | 2.4~2.9 | 주제 방향(도메인 정책 추가), 정책서, 룰 후보 검증, 정상 풀 보강 | 완료 |
-| 3 | 명세서 (`spec.md`) | 완료, 확정 |
-| 2.5 | Jev 한국어 PoC | 완료, 합격. Jev 채택 승인됨 |
-| 4.5 | PoC 약점 개선 (라벨 기준, 점검 문장 65개, 질문 v2) | 완료. v2를 현행 질문으로 조건부 채택(한계는 DECISIONS.md "질문 v2 조건부 채택"). v3는 취소 |
-| 5 | 설계서 (`design.md`) | 완료, 확정(2026-10-27). 1~9절 |
-| 7 | 3단계 코드의 특성화 테스트 | 완료. 테스트 14건 통과(2026-10-27). 발견 사항은 DECISIONS.md "3단계 코드 특성화 테스트" |
-| 8 | 작업 목록과 TDD 구현 | 진행 중. T1~T13 완료, T14 대기. 진행 상태는 [tasks.md](tasks.md) |
-| 6 | 탐지율·오탐율 측정 (eval 사용) | 대기 |
+| 3 | 명세서 (`spec.md`) | 완료, 확정. FR-10(6단계 측정)은 승인 대기 |
+| 2.5 | Jev 한국어 PoC | 완료, 합격. Jev 채택 |
+| 4.5 | PoC 약점 개선 (라벨 기준, 점검 문장 65개, 질문 v2) | 완료. v2를 현행 질문으로 조건부 채택(한계는 DECISIONS.md "질문 v2 조건부 채택") |
+| 5 | 설계서 (`design.md`) | 1~9절 확정(2026-10-27). 10절(6단계 측정 설계)은 승인 대기 |
+| 7 | 3단계 코드의 특성화 테스트 | 완료 |
+| 8 | 작업 목록과 TDD 구현 | T1~T13 완료, T14(문서 정리) 대기. [tasks.md](tasks.md) |
+| 6 | 탐지율·오탐율 측정 (`eval` 사용) | 설계 승인 대기. 세부는 [tasks.md](tasks.md)의 "6단계 작업 목록" |
+| 로드맵 7단계 | 놓친 사례 분석, judge injection 시험 | 6단계 뒤 |
 
-## 3. 사용자 결정 대기 목록
+## 3. 사용자 결정 대기 목록 (미결)
 
 | 번호 | 항목 | 권장 | 근거 |
 |---|---|---|---|
-| 1 | Jev를 판정 모델로 채택 | 승인함(2026-10-27) | [DECISIONS.md](../DECISIONS.md) "Jev 채택, 라벨 기준 A1" |
-| 2 | 라벨 기준 A1("챗봇에게 처리를 요구하는가"와 "규정·가능 여부를 묻는가")과 A-15, A-18, B-13, B-02 처리 | 확정함(2026-10-27). 구체성 기준 추가, B-02는 문장 수정 | [domain-policy.md](domain-policy.md) 4장 |
-| 3 | 점검 문장 확장(65문장)과 합격 기준 N1~N6 | 완료. 65문장 시험, v2 조건부 채택 | design.md 4.3, `docs/poc/data_n.tsv` |
-| 4 | 개발사 문의 메일(약관 R8) | 답장 수신(2026-10-28), 위험 수용 후 진행으로 결정. 개별 승인은 받을 수 없다 | 이 문서 9절, [open-risks.md](open-risks.md) R8, DECISIONS.md "개발사 답장 수신" |
-| 5 | 저장소를 공개로 바꾸기 전 점검(R12) | 공개 전에 수행 | [open-risks.md](open-risks.md) R12 |
-| 6 | 도메인 문장의 최종 데이터 파일화(컬럼 구성, 출처·검수 기록) | 설계서 이후 | [archive/review-sheet.md](archive/review-sheet.md), `docs/poc/data.tsv` |
-| 7 | 사용자 작성 문장의 IT 편중과 어휘 반복 보정 | 선택 | DECISIONS.md "F-2 사용자 작성 문장 확정" |
-| 8 | 확인용 채팅 화면을 T11 직후에 만들지(안 B) 원칙대로 마지막(9단계)에 만들지(안 A) | 안 B 권장(단일 HTML, 반나절 제한, 점수 막대 표시). 선택하면 constitution 5번의 "마지막에"는 예외로 기록 | 대화에서 제안함. 사용자 선택 대기 |
-| 9 | 정상 질문 응답이 약 10초 걸린 원인 | 확인함(2026-10-28): 측정 모드(Gemini 없이)에서 총 0.19~0.20초(첫 호출 0.71초), 실제 Jev 응답은 PASS와 점수 10개였다. 지연은 응답 모델 구간이 대부분이다. 방법: T10 로그의 `filterMs`, `judgeMs`, `answerMs`로 확인. 사용자 컴퓨터에서 서버를 다시 띄워 한 번 호출한다. 측정 모드(5절)로 띄우면 Gemini를 부르지 않으므로 `Measure-Command`의 시간이 판정만의 지연이다. 첫 측정(일반 모드)은 총 약 17.6초였다 | DECISIONS.md "T10 GatewayLogger" |
-| 10 | 포트폴리오 우선순위: 완성의 정의(T13, 6단계, 7단계, README와 위협 모델), 6단계에 베이스라인(키워드 또는 정규식 기준선) 포함 여부, 일정 | 완성의 정의와 6단계 베이스라인 포함은 확정함(2026-10-28, 베이스라인은 권장대로 동의한 것으로 해석). 일정은 미정 | DECISIONS.md "포트폴리오 방향 점검" |
-| 11 | `constitution.md` 확정 여부 | 현재 "초안 (사용자 검토 전)". 검토 후 확정 | DECISIONS.md "개발 방식 점검과 명세 정정" |
-| 12 | 6단계 측정 설계 승인(FR-10, 10절), 도메인 `eval` 생성기 목록(3~4종), 세트 크기(공격 40, 정상 40 제안) | 설계 검토 후 승인. 생성기 목록은 사용자 확인 대기 | DECISIONS.md "6단계 측정 설계 작성 시작" |
-| 13 | 외부 자료 사용 결정: KOICA 25개를 현실성 세트로 보류할지, KorSET 접근 신청(학술 목적, 비상업)과 RICoTA, CAGE 라이선스 문의 여부, ACCESS DENIED INC 틀 차용 | 권장: 25개 보류, 틀 차용, RICoTA 미사용, 접근 신청은 선택 | [research/domain-sources.md](research/domain-sources.md) |
+| 1 | 6단계 측정 설계 승인 | 검토 후 승인 | [spec.md](spec.md) FR-10, [design.md](design.md) 10절 |
+| 2 | 도메인 `eval`을 만들 생성기 LLM 목록(3~4종). 사용할 수 있는 서비스를 알려 준다 | 3종 이상, 지난번 시험 문장을 만든 Gemini와 다른 것 포함 | design.md 10.4 |
+| 3 | 도메인 `eval` 세트 크기(공격 40, 정상 40 제안) | 승인과 함께 | design.md 10.4 |
+| 4 | 사람이 쓴 현실성 공격 문장(모의 레드팀) 추가 여부와 참여 가능한 인원 | 가능하면 20~30개 | [research/domain-sources.md](research/domain-sources.md) 4절, design.md 10.8 |
+| 5 | 일정(지원 시점이나 마감) | 알려 준다. 빠듯하면 곁가지를 줄인다 | DECISIONS.md "포트폴리오 방향 점검" |
+| 6 | `constitution.md` 확정 | 현재 "초안 (사용자 검토 전)". 검토 후 확정 | DECISIONS.md "개발 방식 점검과 명세 정정" |
+| 7 | 확인용 채팅 화면(안 A 마지막, 안 B 즉시, 안 C 앞당김) | 완성 후 곁가지. 안 B 권장 | tasks.md "보류 목록" |
+| 8 | 도메인 문장의 최종 데이터 파일화(컬럼 구성, 출처와 검수 기록) | 6-3과 병행 | [archive/review-sheet.md](archive/review-sheet.md), `docs/poc/data.tsv` |
+| 9 | 사용자 작성 문장의 IT 편중과 어휘 반복 보정 | 선택 | DECISIONS.md "F-2 사용자 작성 문장 확정" |
+| 10 | 저장소를 공개로 바꾸기 전 점검(R12) | 공개 전에 수행. 외부 자료의 출처 표시도 점검 | [open-risks.md](open-risks.md) R12 |
+| 11 | KorSET 접근 신청 | **보류(2026-10-28, 메모만).** 재개 조건은 [research/domain-sources.md](research/domain-sources.md) 7절 | 같은 문서 |
+| 12 | AI Hub 데이터 확인, RICoTA와 CAGE 라이선스 문의 | 선택. RICoTA는 사용하지 않고, CAGE는 문의 전에는 사용하지 않는다 | 같은 문서 5절 |
 
-## 4. 다음 작업 (제안 순서)
+### 해결된 결정 (참고)
 
-1. 남은 결정(3절의 4~7번)은 설계서와 병행하며 급하지 않다.
-2. 설계서(스텝 5)는 확정되었다. [design.md](design.md) 5~9절을 따른다. 판정 호출은 `RestClient`, 타임아웃 연결 2초와 읽기 3초, 재시도는 429·529만 2회이다.
-3. 스텝 7은 완료했다. 특성화 테스트는 `backend/src/test/`에 있고 `mvn -B test`로 실행한다. 발견 사항(입력 검증 없음, 깨진 요청 본문이 500, 오류 메시지에 내부 정보 노출)은 스텝 8에서 수용 기준과 함께 고친다.
-4. 스텝 8은 T14(문서 정리)만 남았다. T1~T13은 완료했다. T13은 2026-10-28에 사용자 컴퓨터에서 측정 모드 서버와 `run_batch.py`로 [poc/smoke_t13.csv](poc/smoke_t13.csv)(design 8문장)를 실제 Jev에 보내 합격 기준 a~e를 모두 통과했다(결과는 [tasks.md](tasks.md)). eval은 열지 않았다.
-5. 6단계 측정은 eval 문장을 처음 여는 단계이다. 그 전에 질문 v2와 임계값을 확정한다. 6단계 측정 설계(기준선, 비교 구성, 지표, 도메인 `eval` 구축 절차)는 `spec.md` FR-10과 `design.md` 10절에 작성했고(2026-10-28) 사용자 검토와 승인을 기다린다. 승인되면 6-1(기준선 룰 확정)부터 단계마다 승인받아 진행한다.
-6. 인프라 보강(CI, Docker, 헬스 체크)과 화면은 완성 후에 곁가지로 늘린다(2026-10-28 사용자 결정). 목록은 [tasks.md](tasks.md)의 "보류 목록(곁가지)"에 있다. 완성이 끝나기 전에는 시작하지 않는다.
-7. 완성의 정의(2026-10-28 확정): T13, 6단계(베이스라인과 임계값 곡선 포함), 7단계(놓친 사례 분석과 judge injection 시험), 문서(README를 결과 중심으로 다시 쓰기와 위협 모델 한 장). 6단계는 측정 설계를 `spec.md`와 `design.md`에 먼저 쓰고 승인받은 뒤 구현한다.
+| 항목 | 결정 | 근거 |
+|---|---|---|
+| Jev 판정 모델 채택 | 승인(2026-10-27) | DECISIONS.md "Jev 채택, 라벨 기준 A1" |
+| 라벨 기준 A1과 A-15, A-18, B-13, B-02 처리 | 확정(2026-10-27) | [domain-policy.md](domain-policy.md) 4장 |
+| 점검 문장 65개와 합격 기준 N1~N6, 질문 v2 | v2 조건부 채택 | design.md 4.3, `docs/poc/data_n.tsv` |
+| 개발사 문의(약관 R8) | 답장 수신, 승인은 받을 수 없어 위험을 수용하고 진행 | [open-risks.md](open-risks.md) R8, 이 문서 9절 |
+| 정상 질문 약 17.6초 지연의 원인 | 응답 모델 구간이 대부분이다. 측정 모드에서 총 0.19~0.20초(첫 호출 0.71초) | DECISIONS.md "T10 GatewayLogger" |
+| 완성의 정의와 6단계 베이스라인 포함 | 확정(2026-10-28) | DECISIONS.md "완성의 정의 확정" |
+| 인프라 보강(CI, Docker, 헬스 체크) | 완성 후 곁가지 | tasks.md "보류 목록" |
+| 현실성 세트 | KOICA 직원 질문 25개로 확정(2026-10-28) | design.md 10.8, [eval/README.md](eval/README.md) |
+| 외부 문장의 사용 | 평가 세트에 그대로 넣지 않는다 | 이 문서 6절 10번 |
+
+## 4. 다음 작업 (순서)
+
+1. **사용자: 6단계 측정 설계 검토와 승인**([spec.md](spec.md) FR-10, [design.md](design.md) 10절). 3절의 1~4번을 함께 정한다.
+2. **6-1 기준선 룰 확정**: `design` 데이터로만, 서버 호출 없이 로컬에서 한다. 룰 선정은 사용자가 한다(constitution 6장, [rule-criteria.md](rule-criteria.md)). 예전 후보 4종(P1~P4)의 정규식은 저장소에 없으므로 다시 정한다. PoC 결과(`docs/poc/result_184_K.csv`, `result_184_K2.csv`)에 질문별 점수 10개가 3회 반복으로 있어서 새 호출 없이 `design` 임계값 곡선을 계산할 수 있다(낙관적인 수치로 표시한다).
+3. **6-2 분석 도구**: 중단한 작업이 [eval/paused_6_2/](eval/paused_6_2/)에 있다. README의 재개 방법을 따른다. v1 질문 파일(`judge/questions_v1.tsv`)과 일치 시험도 이 단계에서 만든다(design.md O5).
+4. **6-3 도메인 `eval` 구축**: 생성 지시문 작성, 생성기로 후보 수집(사용자 작업), 자동 필터 도구, 블라인드 라벨링(사용자 작업), 층화 추출. 층화 틀은 ACCESS DENIED INC의 분류를 차용한다(research 4절).
+5. **6-4 동결, 6-5 `eval` 실행(사용자 컴퓨터), 6-6 기록**. 실행 전에 AUP와 MCA를 다시 읽고 크레딧을 확인한다(R8, R9).
+6. 로드맵 7단계(놓친 사례 분석, judge injection), 문서 마무리(스텝 8 T14, README를 결과 중심으로 다시 쓰기, 위협 모델 한 장).
+7. 곁가지(인프라, 화면 등)는 완성 뒤에 [tasks.md](tasks.md)의 "보류 목록"에서 고른다. 완성이 끝나기 전에는 시작하지 않는다.
+
+완성의 정의(2026-10-28 확정): T13, 6단계(베이스라인과 임계값 곡선 포함), 로드맵 7단계, 문서(README 재작성과 위협 모델).
+
+### 멈추기 좋은 곳과 피할 곳
+
+| 구간 | 멈춤 | 이유 |
+|---|---|---|
+| 지금(설계 승인 대기) | 매우 좋음 | 모든 변경이 푸시되어 있고 테스트가 통과한다 |
+| 6-1, 6-2 완료 직후 | 좋음 | 독립적으로 완결된다 |
+| 6-3 작성 도중 | 조심 | 작성 중인 파일을 수시로 커밋한다 |
+| 6-4 동결 직후부터 6-5 실행 전 | 좋음 | 이후 변경 금지 시점이다 |
+| **6-5 `eval` 실행 도중, 그리고 실행 후 결과를 커밋하기 전** | **피한다** | 일부만 측정되거나 결과가 사용자 컴퓨터에만 남는다. 한 번에 끝까지 하고 바로 커밋한다 |
 
 ## 5. 새 컴퓨터에서 시작하기 (Windows 기준)
 
-필요한 것: Git, JDK 25 LTS(Temurin), Maven 3.9.x, Python 3(`backend/scripts/run_batch.py`용), PowerShell
+필요한 것: Git, JDK 25 LTS(Temurin 25.0.5), Maven 3.9.x(3.9.16 사용), Python 3(3.15.2 사용), PowerShell
 
 ```powershell
 git clone https://github.com/HTH-0/Deskguard.git
@@ -64,6 +96,7 @@ cd Deskguard
 # 클라우드 세션에서 작업하던 내용은 작업 브랜치에 있다. 가져온 뒤 확인한다.
 git fetch origin claude/upbeat-cori-pi0rtq
 git checkout claude/upbeat-cori-pi0rtq
+git pull origin claude/upbeat-cori-pi0rtq
 git log --oneline -5
 
 # 이 저장소에만 적용하는 커밋 정보 (전역 설정은 건드리지 않는다)
@@ -74,17 +107,25 @@ git config user.email "192852807+HTH-0@users.noreply.github.com"
 setx GEMINI_API_KEY "발급받은_키"
 setx TYPESAFE_API_KEY "발급받은_키"
 
-# 빌드와 테스트 확인 (전체 148건). 클라우드 세션은 JDK 21이라 mvn -B test -Djava.version=21 로 실행한다.
+# 빌드와 테스트 확인 (Java 148건)
 cd backend
 mvn -B -q test
+
+# 측정 도구 시험 (Python 25건, 서버와 키가 필요 없다)
+cd scripts
+python -m unittest -v test_run_batch
 ```
 
-- Gemini 키: aistudio.google.com, Jev 키: https://console.typesafe.ai/keys
+- Gemini 키: aistudio.google.com, Jev 키: https://console.typesafe.ai/keys. 키는 컴퓨터마다 따로 발급해도 된다(같은 계정이면 크레딧을 공유한다). 대화나 파일에 붙여넣지 않는다.
 - 서버 실행: `backend` 폴더에서 `mvn spring-boot:run`. 두 키가 모두 있어야 시작된다. 측정 모드(개발용, Gemini를 부르지 않고 판정 결과를 200으로 돌려준다)는 PowerShell에서 `mvn spring-boot:run "-Dspring-boot.run.arguments=--gateway.measurement-mode=true"`로 켠다.
-- 측정 도구(측정 모드 서버가 떠 있어야 한다): `backend/scripts` 폴더에서 `python run_batch.py --input ../../dataset.csv --output result.csv`. 기본은 design 분할만 보낸다. 도구 시험은 같은 폴더에서 `python -m unittest -v test_run_batch`이다(서버와 키가 필요 없다).
+- 측정 도구(측정 모드 서버가 떠 있어야 한다): `backend/scripts` 폴더에서 `python run_batch.py --input ../../dataset.csv --output result.csv`. 기본은 design 분할만 보낸다. 스모크 시험 입력은 [poc/smoke_t13.csv](poc/smoke_t13.csv)이다.
 - 요청 확인(PowerShell): `curl.exe`로 UTF-8 본문을 보내는 `Send-Chat` 함수를 새 창마다 다시 만들어야 한다. 함수 본문은 [../tools/README.md](../tools/README.md)의 "Send-Chat" 절에 있다.
+- Windows에서 Python: python.org의 설치 관리자로 설치한다(3.15.2에서 시험). 설치 중 PATH 추가를 켠다. Microsoft Store의 `python.exe` 별칭(`WindowsApps` 경로)이 가짜 `python`으로 가로채면 설정, 앱, 고급 앱 설정, 앱 실행 별칭에서 `python.exe`와 `python3.exe`를 끈다. 3.13은 보안 수정 단계라 Windows 설치 파일이 없을 수 있다.
+- Maven은 zip을 `C:\tools`에 풀고 `bin` 폴더를 PATH에 넣는다. 설치 후 새 터미널에서 `mvn -version`이 Java 25와 함께 나와야 한다.
+- 클라우드 세션은 JDK 21이라 `mvn -B test -Djava.version=21`로 실행한다(pom은 바꾸지 않는다). 최종 확인은 JDK 25에서 한다.
+- 조사에 쓴 외부 자료는 저장소에 없다. 다시 받는 방법은 [research/domain-sources.md](research/domain-sources.md) 8절이다(공공데이터포털, 로그인 불필요). 클라우드 세션에서 외부 사이트를 열려면 환경 설정의 허용 도메인에 추가해야 한다(`www.data.go.kr`, `huggingface.co`, `arxiv.org`는 2026-10-28에 추가했다).
 - 저장소는 비공개이므로 clone과 push에 GitHub 로그인이 필요하다.
-- Claude Code로 작업하면 저장소 루트의 `CLAUDE.md`와 `AGENTS.md`가 자동으로 적용된다. 응답 규칙은 한국어, 계획 후 승인, 작업 스텝 단위 보고이다.
+- Claude Code로 작업하면 저장소 루트의 `CLAUDE.md`와 `AGENTS.md`가 자동으로 적용된다. 응답 규칙은 한국어, 계획 후 승인, 작업 스텝 단위 보고이다. 새 세션의 첫 지시는 "docs/handoff.md를 읽고 현재 상태와 다음 작업을 알려 줘"로 시작하면 된다.
 - PoC 도구의 실행 방법은 [../tools/README.md](../tools/README.md)에 있다.
 
 ## 6. 지켜야 할 규칙
@@ -98,21 +139,25 @@ mvn -B -q test
 7. 금지 콘텐츠 유형(`disallowed_content`)과 영어 hard negative는 외부 서비스로 보내지 않는다.
 8. 사용자는 코드를 직접 쓰지 않고 읽기, 테스트 읽기, 한 글자 실험, 검수로 이해한다(2026-10-27 합의). 핵심 코드(`BlockDecider`, `InputValidator`, `PatternFilter`, `JevJudge`, `ChatGateway`, `GatewayLogger`)는 작업이 끝날 때마다 코드 읽기 가이드(역할, 흐름, 확인 질문)를 주고, 이해 확인 뒤에 노션 정리본(코드 전문 없는 형식)을 준다. 정리본 전달 완료: `BlockDecider`, `JevJudge`. 가이드 전달, 확인 대기: `ChatGateway`, `GatewayLogger`.
 9. 개발 방식(constitution 5절): 명세 → 테스트 → 코드 순서이다. 명세나 설계에 없는 동작이 필요하면 코드보다 먼저 `spec.md`와 `design.md`를 고치고 승인을 받는다. TDD는 빈 껍데기를 먼저 만들어 테스트가 기대값 불일치로 실패하는 것을 확인한 뒤(컴파일 오류는 빨강으로 치지 않는다) 최소 코드로 통과시킨다. 각 작업 보고에 빨강 출력을 포함한다.
+10. 외부 자료(2026-10-28): 어떤 외부 문장도 평가 세트에 그대로 넣지 않는다. 씨앗으로 쓴 문장은 평가 세트에서 뺀다. 이용허락과 접근 조건을 지킨다(KorSET은 비상업과 접근 승인제). 직원 이름 같은 개인 정보가 있는 파일은 저장소에 넣지 않는다. 쓴 자료는 출처를 표시한다. 상세는 [research/domain-sources.md](research/domain-sources.md)이다.
 
 ## 7. 문서 지도
 
 | 문서 | 질문 | 수명 |
 |---|---|---|
-| [constitution.md](constitution.md) | 바뀌지 않는 원칙 | 영구 |
+| [constitution.md](constitution.md) | 바뀌지 않는 원칙 | 영구, 초안(확정 대기) |
 | [domain-policy.md](domain-policy.md) | 무엇을 허용하고 금지하는가 | 영구 |
-| [spec.md](spec.md) | 무엇을 만드는가 (요구사항, 수용 기준, API 계약) | 영구, 확정 |
-| [design.md](design.md) | 어떻게 만드는가 (질문 문구, 약점 메모, 구조는 작성 예정) | 영구, 작성 중 |
+| [spec.md](spec.md) | 무엇을 만드는가 (요구사항, 수용 기준, API 계약). FR-10이 6단계 측정 | 영구, 확정(FR-10은 승인 대기) |
+| [design.md](design.md) | 어떻게 만드는가. 1~9절은 질문, 구조, 로깅, 테스트 전략이고 10절은 6단계 측정 설계 | 영구, 10절은 승인 대기 |
+| [tasks.md](tasks.md) | 무엇을 어떤 순서로 하는가 (스텝 8 작업, 6단계 작업 목록, 보류 목록) | 진행 상태를 갱신 |
 | [rule-criteria.md](rule-criteria.md) | 패턴 필터에 패턴을 넣는 기준 | 영구 |
 | [open-risks.md](open-risks.md) | 무엇이 불확실한가 (R1~R12) | 누적 |
 | [../DECISIONS.md](../DECISIONS.md) | 왜 그렇게 정했는가 | 누적 |
+| [research/domain-sources.md](research/domain-sources.md) | 도메인 문구를 구할 외부 자료(직접 확인과 검색 요약, 활용 제안, KorSET 보류 메모, 다시 받는 방법) | 조사 기록 |
+| [eval/README.md](eval/README.md) | 평가용 데이터 폴더(현실성 세트 원본, 중단한 6-2 보존본) | 측정 전에 동결 |
 | [poc/](poc/) | PoC 데이터와 결과 | 보존 |
 | [학습노트/](학습노트/) | 1단계, 3단계 학습 기록 | 참고 |
-| [archive/프로젝트_정리.md](archive/프로젝트_정리.md) | 변경 전 로드맵. 6~9단계(측정, 실패 분석, 로그·레이트리밋, 화면)의 정의는 여기를 본다. 4~5단계는 패턴 필터 0개와 Jev로 대체됨 | 보관, 갱신 안 함 |
+| [archive/프로젝트_정리.md](archive/프로젝트_정리.md) | 변경 전 로드맵. 6~9단계의 정의는 여기를 본다. 4~5단계는 패턴 필터 0개와 Jev로 대체됨 | 보관, 갱신 안 함 |
 | [archive/AI보안_프로젝트_주제_후보.md](archive/AI보안_프로젝트_주제_후보.md) | 주제 후보 12개 비교 (선정 완료) | 보관 |
 | [archive/rule-selection.md](archive/rule-selection.md) | 룰 선정표 (종료, 근거 문장 보존) | 보관 |
 | [archive/review-sheet.md](archive/review-sheet.md) | 시험 문장 판정 기록 (도메인 문장 원본 포함) | 보관, 데이터 파일화 때 참고 |
@@ -120,9 +165,11 @@ mvn -B -q test
 
 ## 8. 작업용 파일이 있는 곳
 
-- PoC 도구: `tools/poc/`, PoC 데이터와 결과: `docs/poc/` (`data.tsv`는 도메인 문장 184개의 ID와 원문이 있는 유일한 합본이다.)
+- 게이트웨이 코드: `backend/src/main/`, 테스트: `backend/src/test/`. 측정 도구와 시험: `backend/scripts/`.
+- PoC 도구: `tools/poc/`, PoC 데이터와 결과: `docs/poc/` (`data.tsv`는 도메인 문장 184개의 ID와 원문이 있는 유일한 합본이다. 질문별 점수는 `result_184_K.csv`, `result_184_K2.csv`에 있다).
 - 정규식 시험 하네스: `tools/rulecheck/`
-- 이전 세션의 임시 작업 폴더(컴퓨터의 임시 폴더)는 이 컴퓨터에만 있으므로 의존하지 않는다.
+- 평가 데이터: `docs/eval/`(현실성 세트 원본, 중단한 6-2 보존본). 도메인 후보와 동결 기록은 6-3, 6-4에서 이 폴더에 만든다.
+- 이전 세션의 임시 작업 폴더(컴퓨터의 임시 폴더)는 그 컴퓨터에만 있으므로 의존하지 않는다. 내려받은 외부 자료와 외부 저장소 복제본은 저장소에 없다.
 
 ## 9. 부록: 개발사 문의 메일 (발송 2026-10-27, 답장 2026-10-28)
 
