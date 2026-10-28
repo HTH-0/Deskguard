@@ -7,7 +7,7 @@
 ## 1. 한눈에 보기
 
 - 프로젝트: Deskguard. 사내 HR 헬프데스크 챗봇으로 들어가는 프롬프트를 패턴 필터와 판정 모델로 검사해 프롬프트 인젝션과 도메인 정책 위반을 차단하는 게이트웨이이다. ([README.md](../README.md))
-- 현재 위치: 도메인 정책, 평가 데이터, 명세서가 확정되었고 판정 모델(Jev) 채택과 질문 v2(조건부 채택)와 설계서 확정까지 끝났다. 3단계 코드의 특성화 테스트(스텝 7)까지 끝났다. 스텝 8(TDD 구현)은 그룹 A~C(T1~T9)와 T10(`GatewayLogger`)까지 끝났고 테스트 138건이 통과한다. 다음은 T11(측정 모드)이다.
+- 현재 위치: 도메인 정책, 평가 데이터, 명세서가 확정되었고 판정 모델(Jev) 채택과 질문 v2(조건부 채택)와 설계서 확정까지 끝났다. 3단계 코드의 특성화 테스트(스텝 7)까지 끝났다. 스텝 8(TDD 구현)은 그룹 A~C(T1~T9), T10(`GatewayLogger`), T11(측정 모드)까지 끝났고 테스트 148건이 통과한다. 다음은 T12(`run_batch.py`)이다.
 - 기술: Spring Boot 4.1.1, Java 25 LTS, Maven. 응답 모델은 Gemini(`gemini-3.6-flash`, 무료 티어), 판정 모델 후보 1순위는 Jev(`jev-1.14.0`)이다.
 - 기존 코드(`backend/`)는 3단계 프록시 골격이다. 패턴 필터와 판정 모델은 아직 구현하지 않았다.
 
@@ -22,7 +22,7 @@
 | 4.5 | PoC 약점 개선 (라벨 기준, 점검 문장 65개, 질문 v2) | 완료. v2를 현행 질문으로 조건부 채택(한계는 DECISIONS.md "질문 v2 조건부 채택"). v3는 취소 |
 | 5 | 설계서 (`design.md`) | 완료, 확정(2026-10-27). 1~9절 |
 | 7 | 3단계 코드의 특성화 테스트 | 완료. 테스트 14건 통과(2026-10-27). 발견 사항은 DECISIONS.md "3단계 코드 특성화 테스트" |
-| 8 | 작업 목록과 TDD 구현 | 진행 중. 그룹 A~C(T1~T9)와 T10 완료, T11, T12와 E(T13, T14) 대기. 진행 상태는 [tasks.md](tasks.md) |
+| 8 | 작업 목록과 TDD 구현 | 진행 중. T1~T11 완료, T12와 E(T13, T14) 대기. 진행 상태는 [tasks.md](tasks.md) |
 | 6 | 탐지율·오탐율 측정 (eval 사용) | 대기 |
 
 ## 3. 사용자 결정 대기 목록
@@ -37,14 +37,14 @@
 | 6 | 도메인 문장의 최종 데이터 파일화(컬럼 구성, 출처·검수 기록) | 설계서 이후 | [archive/review-sheet.md](archive/review-sheet.md), `docs/poc/data.tsv` |
 | 7 | 사용자 작성 문장의 IT 편중과 어휘 반복 보정 | 선택 | DECISIONS.md "F-2 사용자 작성 문장 확정" |
 | 8 | 확인용 채팅 화면을 T11 직후에 만들지(안 B) 원칙대로 마지막(9단계)에 만들지(안 A) | 안 B 권장(단일 HTML, 반나절 제한, 점수 막대 표시). 선택하면 constitution 5번의 "마지막에"는 예외로 기록 | 대화에서 제안함. 사용자 선택 대기 |
-| 9 | 정상 질문 응답이 약 10초 걸린 원인 | T10 로그의 `filterMs`, `judgeMs`, `answerMs`로 확인. 사용자 컴퓨터에서 서버를 다시 띄워 한 번 호출한다 | DECISIONS.md "T10 GatewayLogger" |
+| 9 | 정상 질문 응답이 약 10초 걸린 원인 | T10 로그의 `filterMs`, `judgeMs`, `answerMs`로 확인. 사용자 컴퓨터에서 서버를 다시 띄워 한 번 호출한다. 측정 모드(5절)로 띄우면 Gemini를 부르지 않으므로 `Measure-Command`의 시간이 판정만의 지연이다. 첫 측정(일반 모드)은 총 약 17.6초였다 | DECISIONS.md "T10 GatewayLogger" |
 
 ## 4. 다음 작업 (제안 순서)
 
 1. 남은 결정(3절의 4~7번)은 설계서와 병행하며 급하지 않다.
 2. 설계서(스텝 5)는 확정되었다. [design.md](design.md) 5~9절을 따른다. 판정 호출은 `RestClient`, 타임아웃 연결 2초와 읽기 3초, 재시도는 429·529만 2회이다.
 3. 스텝 7은 완료했다. 특성화 테스트는 `backend/src/test/`에 있고 `mvn -B test`로 실행한다. 발견 사항(입력 검증 없음, 깨진 요청 본문이 500, 오류 메시지에 내부 정보 노출)은 스텝 8에서 수용 기준과 함께 고친다.
-4. 스텝 8을 이어서 한다. [tasks.md](tasks.md)의 T11(측정 모드), T12(`run_batch.py`), T13(실제 Jev 스모크 시험), T14(문서 정리) 순서이다. T10(`GatewayLogger`)은 완료했다. 각 작업은 테스트를 먼저 쓰고(빨강) 최소 코드로 통과시키고(초록) 전체 테스트를 실행한 뒤 커밋한다. 단위 테스트는 `cd backend`, `mvn -B test`로 실행한다.
+4. 스텝 8을 이어서 한다. [tasks.md](tasks.md)의 T12(`run_batch.py`), T13(실제 Jev 스모크 시험), T14(문서 정리) 순서이다. T10(`GatewayLogger`)과 T11(측정 모드)은 완료했다. 각 작업은 테스트를 먼저 쓰고(빨강) 최소 코드로 통과시키고(초록) 전체 테스트를 실행한 뒤 커밋한다. 단위 테스트는 `cd backend`, `mvn -B test`로 실행한다.
 5. 6단계 측정은 eval 문장을 처음 여는 단계이다. 그 전에 질문 v2와 임계값을 확정한다.
 
 ## 5. 새 컴퓨터에서 시작하기 (Windows 기준)
@@ -68,12 +68,14 @@ git config user.email "192852807+HTH-0@users.noreply.github.com"
 setx GEMINI_API_KEY "발급받은_키"
 setx TYPESAFE_API_KEY "발급받은_키"
 
-# 빌드와 테스트 확인 (전체 138건). 클라우드 세션은 JDK 21이라 mvn -B test -Djava.version=21 로 실행한다.
+# 빌드와 테스트 확인 (전체 148건). 클라우드 세션은 JDK 21이라 mvn -B test -Djava.version=21 로 실행한다.
 cd backend
 mvn -B -q test
 ```
 
 - Gemini 키: aistudio.google.com, Jev 키: https://console.typesafe.ai/keys
+- 서버 실행: `backend` 폴더에서 `mvn spring-boot:run`. 두 키가 모두 있어야 시작된다. 측정 모드(개발용, Gemini를 부르지 않고 판정 결과를 200으로 돌려준다)는 PowerShell에서 `mvn spring-boot:run "-Dspring-boot.run.arguments=--gateway.measurement-mode=true"`로 켠다.
+- 요청 확인(PowerShell): `curl.exe`로 UTF-8 본문을 보내는 `Send-Chat` 함수를 새 창마다 다시 만들어야 한다. 함수 본문은 [../tools/README.md](../tools/README.md)의 "Send-Chat" 절에 있다.
 - 저장소는 비공개이므로 clone과 push에 GitHub 로그인이 필요하다.
 - Claude Code로 작업하면 저장소 루트의 `CLAUDE.md`와 `AGENTS.md`가 자동으로 적용된다. 응답 규칙은 한국어, 계획 후 승인, 작업 스텝 단위 보고이다.
 - PoC 도구의 실행 방법은 [../tools/README.md](../tools/README.md)에 있다.
@@ -88,6 +90,7 @@ mvn -B -q test
 6. 결정이 생기면 그 자리에서 [DECISIONS.md](../DECISIONS.md)에 후보, 선택, 이유를 기록한다.
 7. 금지 콘텐츠 유형(`disallowed_content`)과 영어 hard negative는 외부 서비스로 보내지 않는다.
 8. 사용자는 코드를 직접 쓰지 않고 읽기, 테스트 읽기, 한 글자 실험, 검수로 이해한다(2026-10-27 합의). 핵심 코드(`BlockDecider`, `InputValidator`, `PatternFilter`, `JevJudge`, `ChatGateway`, `GatewayLogger`)는 작업이 끝날 때마다 코드 읽기 가이드(역할, 흐름, 확인 질문)를 주고, 이해 확인 뒤에 노션 정리본(코드 전문 없는 형식)을 준다. 정리본 전달 완료: `BlockDecider`, `JevJudge`. 가이드 전달, 확인 대기: `ChatGateway`, `GatewayLogger`.
+9. 개발 방식(constitution 5절): 명세 → 테스트 → 코드 순서이다. 명세나 설계에 없는 동작이 필요하면 코드보다 먼저 `spec.md`와 `design.md`를 고치고 승인을 받는다. TDD는 빈 껍데기를 먼저 만들어 테스트가 기대값 불일치로 실패하는 것을 확인한 뒤(컴파일 오류는 빨강으로 치지 않는다) 최소 코드로 통과시킨다. 각 작업 보고에 빨강 출력을 포함한다.
 
 ## 7. 문서 지도
 

@@ -111,7 +111,7 @@ class GatewayLoggerTest {
     }
 
     @Test
-    @DisplayName("D15 입력 검증 실패는 decision=ERROR, stage=VALIDATION으로 한 줄 남긴다")
+    @DisplayName("AC-7.5 입력 검증 실패는 decision=ERROR, stage=VALIDATION으로 한 줄 남긴다")
     void validationErrorLine() {
         logger.logError(" ", "VALIDATION", new InvalidPromptException("prompt는 비어 있을 수 없습니다."),
                 GatewayLogger.Timings.NONE);

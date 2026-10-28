@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * ChatGateway가 모든 경로에서 로그를 정확히 한 줄 남기는지 시험한다(T10, 설계 결정 S4, AC-7.1~7.3, D15).
+ * ChatGateway가 모든 경로에서 로그를 정확히 한 줄 남기는지 시험한다(T10, 설계 결정 S4, AC-7.1~7.3, AC-7.5).
  * 로그가 나가는 곳은 목록으로 바꿔 끼우고, 판정자와 응답 모델은 가짜를 쓴다.
  */
 class ChatGatewayLoggingTest {
@@ -106,7 +106,7 @@ class ChatGatewayLoggingTest {
     }
 
     @Test
-    @DisplayName("D15 입력 검증에 실패하면 예외는 그대로 던지고, 로그는 한 줄 남긴다")
+    @DisplayName("AC-7.5 입력 검증에 실패하면 예외는 그대로 던지고, 로그는 한 줄 남긴다")
     void validationFailureLogsAndRethrows() {
         assertThatThrownBy(() -> gateway().handle("  ")).isInstanceOf(InvalidPromptException.class);
 
@@ -116,7 +116,7 @@ class ChatGatewayLoggingTest {
     }
 
     @Test
-    @DisplayName("D15, AC-7.2 응답 모델이 실패하면 예외는 그대로 던지고, 로그에는 예외 메시지(키 포함)가 없다")
+    @DisplayName("AC-7.5, AC-7.2 응답 모델이 실패하면 예외는 그대로 던지고, 로그에는 예외 메시지(키 포함)가 없다")
     void answerFailureLogsWithoutMessage() {
         answerer = prompt -> {
             throw new IllegalStateException("호출 주소 https://example.test/v1?key=SECRET-KEY-123");
@@ -130,7 +130,7 @@ class ChatGatewayLoggingTest {
     }
 
     @Test
-    @DisplayName("D15 판정자가 예상하지 못한 예외를 던지면 그대로 던지고, 로그는 한 줄 남긴다")
+    @DisplayName("AC-7.5 판정자가 예상하지 못한 예외를 던지면 그대로 던지고, 로그는 한 줄 남긴다")
     void unexpectedJudgeErrorLogsAndRethrows() {
         judge = prompt -> {
             throw new IllegalStateException("버그");

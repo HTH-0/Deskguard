@@ -34,15 +34,27 @@ public class ChatGateway {
     private final BlockDecider blockDecider;
     private final AnswerGenerator answerGenerator;
     private final GatewayLogger logger;
+    private final boolean measurementMode;
 
     public ChatGateway(InputValidator validator, PatternFilter patternFilter, Judge judge,
                        BlockDecider blockDecider, AnswerGenerator answerGenerator, GatewayLogger logger) {
+        this(validator, patternFilter, judge, blockDecider, answerGenerator, logger, false);
+    }
+
+    public ChatGateway(InputValidator validator, PatternFilter patternFilter, Judge judge,
+                       BlockDecider blockDecider, AnswerGenerator answerGenerator, GatewayLogger logger,
+                       boolean measurementMode) {
         this.validator = validator;
         this.patternFilter = patternFilter;
         this.judge = judge;
         this.blockDecider = blockDecider;
         this.answerGenerator = answerGenerator;
         this.logger = logger;
+        this.measurementMode = measurementMode;
+    }
+
+    public boolean isMeasurementMode() {
+        return measurementMode;
     }
 
     public GatewayResult handle(String prompt) {
@@ -76,6 +88,10 @@ public class ChatGateway {
         long judgeMs = elapsedMs(judgeStart);
         if (block) {
             return logged(prompt, GatewayResult.blockedByJudge(judgeResult), new Timings(filterMs, judgeMs, null));
+        }
+
+        if (measurementMode) {
+            return logged(prompt, GatewayResult.passed(judgeResult, null), new Timings(filterMs, judgeMs, null));
         }
 
         long answerStart = System.nanoTime();

@@ -13,7 +13,8 @@ import java.util.List;
 @ConfigurationProperties(prefix = "gateway")
 public record GatewayProperties(
         @DefaultValue("1000") int maxPromptLength,
-        @DefaultValue List<PatternRule> patterns) {
+        @DefaultValue List<PatternRule> patterns,
+        @DefaultValue("false") boolean measurementMode) {
 
     public GatewayProperties {
         if (maxPromptLength <= 0) {

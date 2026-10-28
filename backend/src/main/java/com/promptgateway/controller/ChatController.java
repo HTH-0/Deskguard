@@ -3,6 +3,7 @@ package com.promptgateway.controller;
 import com.promptgateway.dto.BlockedResponse;
 import com.promptgateway.dto.ChatRequest;
 import com.promptgateway.dto.ChatResponse;
+import com.promptgateway.dto.MeasurementResponse;
 import com.promptgateway.gateway.ChatGateway;
 import com.promptgateway.gateway.GatewayResult;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,11 @@ public class ChatController {
     @PostMapping("/chat")
     public ResponseEntity<?> chat(@RequestBody ChatRequest request) {
         GatewayResult result = gateway.handle(request.prompt());
+
+        // 측정 모드(개발용): 통과와 차단 모두 200과 같은 형식으로 판정 결과를 돌려준다.
+        if (gateway.isMeasurementMode()) {
+            return ResponseEntity.ok(MeasurementResponse.from(result));
+        }
 
         if (result.decision() == GatewayResult.Decision.BLOCKED) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(BlockedResponse.INSTANCE);

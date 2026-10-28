@@ -9,6 +9,8 @@ import com.promptgateway.judge.QuestionSet;
 import com.promptgateway.judge.jev.JevJudge;
 import com.promptgateway.log.GatewayLogger;
 import com.promptgateway.service.AnswerGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +27,8 @@ import java.net.http.HttpClient;
 @Configuration
 @EnableConfigurationProperties({GatewayProperties.class, JudgeProperties.class})
 public class GatewayConfig {
+
+    private static final Logger log = LoggerFactory.getLogger(GatewayConfig.class);
 
     @Bean
     public InputValidator inputValidator(GatewayProperties gateway) {
@@ -70,7 +74,11 @@ public class GatewayConfig {
     @Bean
     public ChatGateway chatGateway(InputValidator validator, PatternFilter patternFilter, Judge judge,
                                    BlockDecider blockDecider, AnswerGenerator answerGenerator,
-                                   GatewayLogger gatewayLogger) {
-        return new ChatGateway(validator, patternFilter, judge, blockDecider, answerGenerator, gatewayLogger);
+                                   GatewayLogger gatewayLogger, GatewayProperties gateway) {
+        if (gateway.measurementMode()) {
+            log.warn("측정 모드가 켜져 있습니다. 응답 모델을 호출하지 않고 판정 결과를 응답에 포함합니다. 사용자에게 노출하는 환경에서는 꺼야 합니다.");
+        }
+        return new ChatGateway(validator, patternFilter, judge, blockDecider, answerGenerator, gatewayLogger,
+                gateway.measurementMode());
     }
 }

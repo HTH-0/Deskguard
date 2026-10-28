@@ -12,7 +12,10 @@ import com.promptgateway.service.AnswerGenerator;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.web.client.RestClient;
 
 import java.net.InetSocketAddress;
@@ -27,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * 설정 값이 코드에 제대로 연결되는지, 잘못된 설정이면 서버가 시작될 때 실패하는지 시험한다(T8).
  * 실제 서버를 띄우지 않고 설정 연결만 확인하는 ApplicationContextRunner를 쓴다. 키는 가짜 값이다.
  */
+@ExtendWith(OutputCaptureExtension.class)
 class GatewayConfigTest {
 
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
@@ -83,6 +87,26 @@ class GatewayConfigTest {
             assertThat(validator).isNotNull();
             assertThatThrownBy(() -> validator.validate("가나다라마바")).isInstanceOf(InvalidPromptException.class);
         });
+    }
+
+    @Test
+    @DisplayName("AC-9.1 설정이 없으면 측정 모드는 꺼져 있고, 시작 로그에 경고도 없다")
+    void measurementModeIsOffByDefault(CapturedOutput output) {
+        runner.run(context -> {
+            assertThat(context.getBean(GatewayProperties.class).measurementMode()).isFalse();
+            assertThat(context.getBean(ChatGateway.class).isMeasurementMode()).isFalse();
+        });
+        assertThat(output.getAll()).doesNotContain("측정 모드가 켜져 있습니다");
+    }
+
+    @Test
+    @DisplayName("gateway.measurement-mode=true로 측정 모드를 켜면 게이트웨이에 적용되고, 시작 로그에 경고를 남긴다")
+    void measurementModeCanBeEnabledAndWarns(CapturedOutput output) {
+        runner.withPropertyValues("gateway.measurement-mode=true").run(context -> {
+            assertThat(context.getBean(GatewayProperties.class).measurementMode()).isTrue();
+            assertThat(context.getBean(ChatGateway.class).isMeasurementMode()).isTrue();
+        });
+        assertThat(output.getAll()).contains("측정 모드가 켜져 있습니다");
     }
 
     @Test

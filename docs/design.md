@@ -337,7 +337,9 @@ logging:
 ### 7.3 측정 모드
 
 - 설정 `gateway.measurement-mode=true`일 때만 동작하고 기본은 꺼짐이다(AC-9.1). 켜진 상태로 시작하면 시작 로그에 경고를 남긴다.
-- 켜면 통과와 차단 모두 응답 모델을 호출하지 않고 200으로 `{"decision": "PASS|BLOCK", "stage": ..., "scores": {...}, "modelVersion": ...}`를 돌려준다(spec 7장). 측정 도구가 모든 문장에서 같은 형식으로 읽을 수 있게 하기 위해서이다.
+- 켜면 통과와 차단 모두 응답 모델을 호출하지 않고 200으로 `{"decision": "PASS|BLOCK", "stage": ..., "scores": {...}, "modelVersion": ..., "failureKind": ..., "patternId": ...}`를 돌려준다(spec 7장, AC-9.2~9.4). 측정 도구가 모든 문장에서 같은 형식으로 읽을 수 있게 하기 위해서이다.
+- 키는 항상 모두 싣고, 해당하지 않는 값은 `null`이다(예: 패턴 차단이면 `scores`와 `modelVersion`이 null). `failureKind`는 판정 호출 실패 차단일 때만 값이 있어서 정책 차단과 구분된다(R9). `patternId`는 패턴 차단일 때만 값이 있다. (2026-10-28 보강)
+- 일반 모드(꺼짐)의 응답에는 이 필드가 없다(AC-9.1). 입력 검증 실패는 측정 모드에서도 400이다.
 - `backend/scripts/run_batch.py`는 403을 `blocked`로 분류하도록 고치고, 측정 모드 응답의 `decision`을 읽는 모드를 추가한다(구현 단계).
 
 ## 8. 테스트 전략
@@ -371,9 +373,9 @@ Spring Boot 4에서 테스트 모듈이 나뉘어 있을 수 있으므로 MockMv
 | AC-5.1~5.3 | `ChatControllerTest` | 웹 |
 | AC-6.1~6.4 | `JevJudgeTest`, `ChatGatewayTest` | 연동, 조율 |
 | AC-6.5 | 측정 집계 테스트 | 단위 |
-| AC-7.1~7.4 | `GatewayLoggerTest`, `ChatGatewayLoggingTest`, `GatewayConfigTest` | 로그 |
+| AC-7.1~7.5 | `GatewayLoggerTest`, `ChatGatewayLoggingTest`, `GatewayConfigTest` | 로그 |
 | AC-8.1, 8.2 | `ChatGatewayTest`, 측정 도구 | 조율 |
-| AC-9.1, 9.2 | `ChatControllerTest` | 웹 |
+| AC-9.1~9.4 | `MeasurementModeTest`, `GatewayConfigTest` | 웹, 조율, 설정 |
 
 ### 8.3 테스트로 다루지 않는 것
 

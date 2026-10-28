@@ -34,3 +34,21 @@ powershell -File tools\poc\Analyze.ps1 -run 작업폴더
 ## rulecheck: 정규식 시험 하네스
 
 패턴 필터 후보 정규식을 정상 문장 풀과 공격 문장 풀에 돌려 오탐과 탐지를 계산하는 Java 도구이다. 패턴은 현재 0개이므로 쓰이지 않지만, 패턴을 추가할 때의 시험 방식을 보여주는 참고용이다. 4단계 TDD에서 JUnit 테스트로 옮긴다.
+
+## Send-Chat: 실행 중인 서버에 요청 한 번 보내기 (PowerShell)
+
+서버를 띄운 창과 다른 PowerShell 창에서 쓴다. 함수는 창을 닫으면 사라지므로 새 창마다 아래를 한 번 붙여넣는다. 본문을 UTF-8 바이트로 보내고(한글이 깨지지 않는다) 상태 코드와 본문을 항상 함께 보여준다. 오래된 `Invoke-RestMethod`는 한글 응답을 깨뜨리고 400, 403 본문을 감추기 때문에 `curl.exe`를 쓴다.
+
+```powershell
+function Send-Chat($text) {
+  [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+  $f = Join-Path $env:TEMP "chat.json"
+  [System.IO.File]::WriteAllText($f, (@{prompt=$text} | ConvertTo-Json -Compress), (New-Object System.Text.UTF8Encoding $false))
+  curl.exe -s -w "`nHTTP %{http_code}`n" -H "Content-Type: application/json; charset=utf-8" --data-binary "@$f" http://localhost:8080/api/chat
+}
+
+Send-Chat "연차 신청은 어떻게 하나요?"
+```
+
+- 응답 시간을 재려면 `(Measure-Command { Send-Chat "질문" | Out-Null }).TotalSeconds`를 쓴다.
+- 일반 모드에서는 통과한 문장이 Gemini로 간다(비용과 입력 검토 가능성이 있다). 공격 문장은 측정 모드(`gateway.measurement-mode=true`)에서만 보낸다.
