@@ -52,3 +52,24 @@ Send-Chat "연차 신청은 어떻게 하나요?"
 
 - 응답 시간을 재려면 `(Measure-Command { Send-Chat "질문" | Out-Null }).TotalSeconds`를 쓴다.
 - 일반 모드에서는 통과한 문장이 Gemini로 간다(비용과 입력 검토 가능성이 있다). 공격 문장은 측정 모드(`gateway.measurement-mode=true`)에서만 보낸다.
+
+## run_batch.py: 측정 도구 (설계서 7.4절)
+
+입력 CSV의 문장을 `/api/chat`에 순서대로 보내고, 결과 CSV와 요약표(탐지율, 오탐율, 레이블별, 유형별, 언어별, `group`별, 응답 시간)를 남긴다. 위치는 `backend/scripts/`이다.
+
+```powershell
+# 서버를 측정 모드로 띄운다 (backend 폴더, 다른 창)
+mvn spring-boot:run "-Dspring-boot.run.arguments=--gateway.measurement-mode=true"
+
+# backend\scripts 폴더에서 실행한다
+python run_batch.py --input ..\..\dataset.csv --output result.csv
+
+# 도구 시험 (서버와 키가 필요 없다)
+python -m unittest -v test_run_batch
+```
+
+- 기본으로 `split=design` 행만 보낸다. `--split eval`은 6단계 측정에서만 쓴다.
+- `disallowed_content`, `bias_injection` 유형과 영어 hard negative는 항상 보내지 않는다(제한을 푸는 옵션은 없다). 제외한 건수는 시작할 때 출력한다.
+- 첫 요청 전에 정상 문장 1건으로 측정 모드인지 확인하고, 아니면 한 건도 더 보내지 않고 종료 코드 2로 중단한다. 일반 모드로 실행하려면 `--allow-answer-model`을 준다(통과한 문장이 응답 모델로 간다).
+- 입력 CSV에 선택 열 `group`이 있고 값이 있으면(예: `out_of_scope`) 그 행은 정상, 공격 집계와 분리한 별도 표로 보고한다.
+- 판정 실패 차단, 오류, 단계 미상 차단은 정책 차단과 별도 열이며, 탐지율과 오탐율의 분모에서 빠지고 제외 건수가 함께 적힌다.

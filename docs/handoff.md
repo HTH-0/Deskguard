@@ -7,7 +7,7 @@
 ## 1. 한눈에 보기
 
 - 프로젝트: Deskguard. 사내 HR 헬프데스크 챗봇으로 들어가는 프롬프트를 패턴 필터와 판정 모델로 검사해 프롬프트 인젝션과 도메인 정책 위반을 차단하는 게이트웨이이다. ([README.md](../README.md))
-- 현재 위치: 도메인 정책, 평가 데이터, 명세서가 확정되었고 판정 모델(Jev) 채택과 질문 v2(조건부 채택)와 설계서 확정까지 끝났다. 3단계 코드의 특성화 테스트(스텝 7)까지 끝났다. 스텝 8(TDD 구현)은 그룹 A~C(T1~T9), T10(`GatewayLogger`), T11(측정 모드)까지 끝났고 테스트 148건이 통과한다. 다음은 T12(`run_batch.py`)이다.
+- 현재 위치: 도메인 정책, 평가 데이터, 명세서가 확정되었고 판정 모델(Jev) 채택과 질문 v2(조건부 채택)와 설계서 확정까지 끝났다. 3단계 코드의 특성화 테스트(스텝 7)까지 끝났다. 스텝 8(TDD 구현)은 그룹 A~C(T1~T9), T10(`GatewayLogger`), T11(측정 모드), T12(`run_batch.py`)까지 끝났고 Java 테스트 148건과 Python 테스트 25건이 통과한다. 다음은 T13(실제 Jev 스모크 시험)이다.
 - 기술: Spring Boot 4.1.1, Java 25 LTS, Maven. 응답 모델은 Gemini(`gemini-3.6-flash`, 무료 티어), 판정 모델 후보 1순위는 Jev(`jev-1.14.0`)이다.
 - 기존 코드(`backend/`)는 3단계 프록시 골격이다. 패턴 필터와 판정 모델은 아직 구현하지 않았다.
 
@@ -22,7 +22,7 @@
 | 4.5 | PoC 약점 개선 (라벨 기준, 점검 문장 65개, 질문 v2) | 완료. v2를 현행 질문으로 조건부 채택(한계는 DECISIONS.md "질문 v2 조건부 채택"). v3는 취소 |
 | 5 | 설계서 (`design.md`) | 완료, 확정(2026-10-27). 1~9절 |
 | 7 | 3단계 코드의 특성화 테스트 | 완료. 테스트 14건 통과(2026-10-27). 발견 사항은 DECISIONS.md "3단계 코드 특성화 테스트" |
-| 8 | 작업 목록과 TDD 구현 | 진행 중. T1~T11 완료, T12와 E(T13, T14) 대기. 진행 상태는 [tasks.md](tasks.md) |
+| 8 | 작업 목록과 TDD 구현 | 진행 중. T1~T12 완료, E(T13, T14) 대기. 진행 상태는 [tasks.md](tasks.md) |
 | 6 | 탐지율·오탐율 측정 (eval 사용) | 대기 |
 
 ## 3. 사용자 결정 대기 목록
@@ -44,7 +44,7 @@
 1. 남은 결정(3절의 4~7번)은 설계서와 병행하며 급하지 않다.
 2. 설계서(스텝 5)는 확정되었다. [design.md](design.md) 5~9절을 따른다. 판정 호출은 `RestClient`, 타임아웃 연결 2초와 읽기 3초, 재시도는 429·529만 2회이다.
 3. 스텝 7은 완료했다. 특성화 테스트는 `backend/src/test/`에 있고 `mvn -B test`로 실행한다. 발견 사항(입력 검증 없음, 깨진 요청 본문이 500, 오류 메시지에 내부 정보 노출)은 스텝 8에서 수용 기준과 함께 고친다.
-4. 스텝 8을 이어서 한다. [tasks.md](tasks.md)의 T12(`run_batch.py`), T13(실제 Jev 스모크 시험), T14(문서 정리) 순서이다. T10(`GatewayLogger`)과 T11(측정 모드)은 완료했다. 각 작업은 테스트를 먼저 쓰고(빨강) 최소 코드로 통과시키고(초록) 전체 테스트를 실행한 뒤 커밋한다. 단위 테스트는 `cd backend`, `mvn -B test`로 실행한다.
+4. 스텝 8을 이어서 한다. [tasks.md](tasks.md)의 T13(실제 Jev 스모크 시험), T14(문서 정리) 순서이다. T10~T12는 완료했다. T13은 서버를 측정 모드로 띄우고 `run_batch.py`로 design 분할 문장 5~10개를 보내 실제 Jev 응답과 요약표를 확인한다(eval은 열지 않는다). 각 작업은 테스트를 먼저 쓰고(빨강) 최소 코드로 통과시키고(초록) 전체 테스트를 실행한 뒤 커밋한다. 단위 테스트는 `cd backend`, `mvn -B test`로 실행한다.
 5. 6단계 측정은 eval 문장을 처음 여는 단계이다. 그 전에 질문 v2와 임계값을 확정한다.
 
 ## 5. 새 컴퓨터에서 시작하기 (Windows 기준)
@@ -75,6 +75,7 @@ mvn -B -q test
 
 - Gemini 키: aistudio.google.com, Jev 키: https://console.typesafe.ai/keys
 - 서버 실행: `backend` 폴더에서 `mvn spring-boot:run`. 두 키가 모두 있어야 시작된다. 측정 모드(개발용, Gemini를 부르지 않고 판정 결과를 200으로 돌려준다)는 PowerShell에서 `mvn spring-boot:run "-Dspring-boot.run.arguments=--gateway.measurement-mode=true"`로 켠다.
+- 측정 도구(측정 모드 서버가 떠 있어야 한다): `backend/scripts` 폴더에서 `python run_batch.py --input ../../dataset.csv --output result.csv`. 기본은 design 분할만 보낸다. 도구 시험은 같은 폴더에서 `python -m unittest -v test_run_batch`이다(서버와 키가 필요 없다).
 - 요청 확인(PowerShell): `curl.exe`로 UTF-8 본문을 보내는 `Send-Chat` 함수를 새 창마다 다시 만들어야 한다. 함수 본문은 [../tools/README.md](../tools/README.md)의 "Send-Chat" 절에 있다.
 - 저장소는 비공개이므로 clone과 push에 GitHub 로그인이 필요하다.
 - Claude Code로 작업하면 저장소 루트의 `CLAUDE.md`와 `AGENTS.md`가 자동으로 적용된다. 응답 규칙은 한국어, 계획 후 승인, 작업 스텝 단위 보고이다.
@@ -84,7 +85,7 @@ mvn -B -q test
 
 1. `dataset.csv`의 `split=eval` 행은 6단계 측정 전까지 열지 않는다. 룰, 질문, 임계값은 design 데이터와 사전 정의로 정한다.
 2. API 키를 파일, 로그, 대화에 붙여넣지 않는다.
-3. 패턴 필터와 판정을 붙이기 전에는 `run_batch.py`로 공격 문장을 Gemini에 보내지 않는다. 무료 티어는 입력을 제품 개선에 쓰고 사람이 검토할 수 있다(R8, R11).
+3. 패턴 필터와 판정을 붙이기 전에는 `run_batch.py`로 공격 문장을 Gemini에 보내지 않는다. 무료 티어는 입력을 제품 개선에 쓰고 사람이 검토할 수 있다(R8, R11). 지금의 `run_batch.py`는 서버가 측정 모드가 아니면 시작 전에 중단하고, 제한 유형(`disallowed_content`, `bias_injection`)과 영어 hard negative와 `split=eval`은 기본으로 보내지 않는다(제한을 푸는 옵션 없음, eval은 `--split eval`로만).
 4. 확정한 합격 기준은 낮추지 않는다. 부족하면 점검 문장을 늘린다.
 5. 외부 LLM이 낸 결과는 코드나 실험으로 검증한 뒤 채택한다. 지금까지 두 번 모두 검증 후 결론이 달라졌다.
 6. 결정이 생기면 그 자리에서 [DECISIONS.md](../DECISIONS.md)에 후보, 선택, 이유를 기록한다.

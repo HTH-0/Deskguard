@@ -340,7 +340,15 @@ logging:
 - 켜면 통과와 차단 모두 응답 모델을 호출하지 않고 200으로 `{"decision": "PASS|BLOCK", "stage": ..., "scores": {...}, "modelVersion": ..., "failureKind": ..., "patternId": ...}`를 돌려준다(spec 7장, AC-9.2~9.4). 측정 도구가 모든 문장에서 같은 형식으로 읽을 수 있게 하기 위해서이다.
 - 키는 항상 모두 싣고, 해당하지 않는 값은 `null`이다(예: 패턴 차단이면 `scores`와 `modelVersion`이 null). `failureKind`는 판정 호출 실패 차단일 때만 값이 있어서 정책 차단과 구분된다(R9). `patternId`는 패턴 차단일 때만 값이 있다. (2026-10-28 보강)
 - 일반 모드(꺼짐)의 응답에는 이 필드가 없다(AC-9.1). 입력 검증 실패는 측정 모드에서도 400이다.
-- `backend/scripts/run_batch.py`는 403을 `blocked`로 분류하도록 고치고, 측정 모드 응답의 `decision`을 읽는 모드를 추가한다(구현 단계).
+### 7.4 측정 도구 `run_batch.py` (T12, 2026-10-28 확정)
+
+`backend/scripts/run_batch.py`는 입력 CSV의 문장을 서버로 보내고 결과를 CSV와 요약표로 남긴다. 순수 함수(분류, 행 선택, 집계)와 네트워크 호출을 나누어 순수 함수는 서버 없이 시험한다(Python `unittest`, `backend/scripts/test_run_batch.py`).
+
+- **행 선택(AC-9.5)**: `--split`의 기본값은 `design`이고 `eval`은 `--split eval`로 명시해야 한다(`all`은 없다). 선택한 분할 안에서도 `disallowed_content`와 `bias_injection` 유형, 영어(`lang=en`) `hard_negative`는 보내지 않는다. 제외 건수는 사유별로 출력한다. 제한을 푸는 옵션은 두지 않는다.
+- **모드 확인(AC-9.6)**: 첫 요청 전에 고정된 정상 문장(`연차 신청은 어떻게 하나요?`) 1건을 보낸다. 응답에 `decision`이 있으면 측정 모드이다. 없고 `answer`가 있으면 일반 모드이므로 `--allow-answer-model`이 없는 한 한 건도 더 보내지 않고 종료 코드 2로 중단한다(확인용 정상 문장은 일반 모드에서 응답 모델로 갈 수 있다). 서버에 연결할 수 없어도 중단한다.
+- **분류**: 일반 모드의 200 답변은 `passed`, 403은 `blocked`(단계 `UNKNOWN`: 일반 모드의 차단 응답은 이유를 숨기므로 판정 실패와 정책 차단을 구분할 수 없다), 400과 5xx와 연결 오류는 `error`이다. 측정 모드의 200 응답은 `decision`이 `PASS`면 `passed`, `BLOCK`이면 `blocked`이고 단계와 실패 종류와 패턴 ID와 점수와 모델 버전을 읽는다.
+- **출력 CSV**: 입력 열을 그대로 두고 `result_status`, `result_decision`, `result_stage`, `result_failure_kind`, `result_pattern_id`, `result_model_version`, `result_scores`(JSON 문자열), `result_latency_ms`(도구가 잰 응답 시간), `result_answer`, `result_error`를 덧붙인다.
+- **요약(AC-6.5, 8.2, constitution 2장 4항)**: 정책 차단(`PATTERN`, `JUDGE`), 통과, 판정 실패 차단(`JUDGE_FAILURE`), 단계 미상 차단(`UNKNOWN`), 오류를 **별도 열**로 센다. 탐지율은 공격 문장 중 정책 차단 건수를, 오탐율은 정상 문장 중 정책 차단 건수를 **판정을 마친 건**(판정 실패와 오류와 단계 미상을 뺀 건)으로 나눈 값이며, 제외한 건수를 함께 적는다. 레이블별, 유형별, 언어별 표를 낸다. 입력 CSV에 선택 열 `group`이 있고 값이 있으면 그 집합(예: `out_of_scope`)은 정상 문장 집계와 **분리한 별도 표**로 보고한다. 응답 시간은 중앙값과 95백분위를 낸다.
 
 ## 8. 테스트 전략
 
@@ -372,10 +380,12 @@ Spring Boot 4에서 테스트 모듈이 나뉘어 있을 수 있으므로 MockMv
 | AC-4.1~4.3 | `ChatGatewayTest`, `ChatControllerTest` | 조율, 웹 |
 | AC-5.1~5.3 | `ChatControllerTest` | 웹 |
 | AC-6.1~6.4 | `JevJudgeTest`, `ChatGatewayTest` | 연동, 조율 |
-| AC-6.5 | 측정 집계 테스트 | 단위 |
+| AC-6.5 | `test_run_batch.py`(집계) | 단위 |
 | AC-7.1~7.5 | `GatewayLoggerTest`, `ChatGatewayLoggingTest`, `GatewayConfigTest` | 로그 |
-| AC-8.1, 8.2 | `ChatGatewayTest`, 측정 도구 | 조율 |
+| AC-8.1 | `ChatGatewayTest` | 조율 |
+| AC-8.2 | `test_run_batch.py`(`group` 집계) | 단위 |
 | AC-9.1~9.4 | `MeasurementModeTest`, `GatewayConfigTest` | 웹, 조율, 설정 |
+| AC-9.5, 9.6 | `test_run_batch.py`(행 선택, 모드 확인, 가짜 로컬 서버) | 단위, 연동 |
 
 ### 8.3 테스트로 다루지 않는 것
 

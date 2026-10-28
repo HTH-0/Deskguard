@@ -12,6 +12,10 @@ target/
 *.env.local
 application-local.yml
 
+# 파이썬 캐시
+__pycache__/
+*.pyc
+
 # 로그와 임시 파일
 *.log
 *.tmp
