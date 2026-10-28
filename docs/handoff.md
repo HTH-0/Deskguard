@@ -8,7 +8,7 @@
 
 - 프로젝트: Deskguard. 사내 HR 헬프데스크 챗봇으로 들어가는 프롬프트를 패턴 필터와 판정 모델로 검사해 프롬프트 인젝션과 도메인 정책 위반을 차단하는 게이트웨이이다. ([README.md](../README.md))
 - 현재 위치: 도메인 정책, 평가 데이터, 명세서가 확정되었고 판정 모델(Jev) 채택과 질문 v2(조건부 채택)와 설계서 확정까지 끝났다. 3단계 코드의 특성화 테스트(스텝 7)까지 끝났다. 스텝 8(TDD 구현)은 그룹 A~C(T1~T9)까지 끝났고 테스트 117건이 통과한다. 다음은 그룹 D(로깅, 측정 모드, `run_batch.py`)이다.
-- 기술: Spring Boot 4.1.1, Java 17, Maven. 응답 모델은 Gemini(`gemini-3.6-flash`, 무료 티어), 판정 모델 후보 1순위는 Jev(`jev-1.14.0`)이다.
+- 기술: Spring Boot 4.1.1, Java 25 LTS, Maven. 응답 모델은 Gemini(`gemini-3.6-flash`, 무료 티어), 판정 모델 후보 1순위는 Jev(`jev-1.14.0`)이다.
 - 기존 코드(`backend/`)는 3단계 프록시 골격이다. 패턴 필터와 판정 모델은 아직 구현하지 않았다.
 
 ## 2. 단계 상태
@@ -47,7 +47,7 @@
 
 ## 5. 새 컴퓨터에서 시작하기 (Windows 기준)
 
-필요한 것: Git, JDK 17(Temurin), Maven 3.9.x, Python 3(`backend/scripts/run_batch.py`용), PowerShell
+필요한 것: Git, JDK 25 LTS(Temurin), Maven 3.9.x, Python 3(`backend/scripts/run_batch.py`용), PowerShell
 
 ```powershell
 git clone https://github.com/HTH-0/Deskguard.git

@@ -7,7 +7,7 @@
 | 파일 | 역할 |
 |---|---|
 | `make_questions.ps1` | `docs/design.md` 1절의 질문 표에서 `questions_K.tsv`, `questions_E.tsv`, `questions_K2.tsv`(v2)를 만든다. 질문 문구의 단일 출처는 design.md이다. |
-| `Poc.java` | 문장 목록을 판정 모델(Jev)에 보내 질문별 확률을 CSV로 저장한다. JDK 17 단일 파일 실행이다. |
+| `Poc.java` | 문장 목록을 판정 모델(Jev)에 보내 질문별 확률을 CSV로 저장한다. JDK 25 단일 파일 실행이다. |
 | `Analyze.ps1` | 합격 기준 C1~C6을 사전 정의대로 계산해 `report.txt`를 만든다. |
 | `Analyze2.ps1` | 같은 결과로 질문별 확률, 질문별 임계값 시나리오, 회색 구간을 다시 계산한다. 새 호출은 없다. |
 

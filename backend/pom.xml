@@ -18,7 +18,7 @@
     <description>LLM 프롬프트 인젝션 방어 게이트웨이 - 3단계 프록시 골격</description>
 
     <properties>
-        <java.version>17</java.version>
+        <java.version>25</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
