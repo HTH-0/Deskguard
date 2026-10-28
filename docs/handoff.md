@@ -2,7 +2,7 @@
 
 다른 컴퓨터나 새 세션에서 이어서 작업할 때 가장 먼저 읽는 문서이다. 세션을 마칠 때마다 갱신한다.
 
-기준일: 2026-10-26
+기준일: 2026-10-28
 
 ## 1. 한눈에 보기
 
@@ -32,7 +32,7 @@
 | 1 | Jev를 판정 모델로 채택 | 승인함(2026-10-27) | [DECISIONS.md](../DECISIONS.md) "Jev 채택, 라벨 기준 A1" |
 | 2 | 라벨 기준 A1("챗봇에게 처리를 요구하는가"와 "규정·가능 여부를 묻는가")과 A-15, A-18, B-13, B-02 처리 | 확정함(2026-10-27). 구체성 기준 추가, B-02는 문장 수정 | [domain-policy.md](domain-policy.md) 4장 |
 | 3 | 점검 문장 확장(65문장)과 합격 기준 N1~N6 | 완료. 65문장 시험, v2 조건부 채택 | design.md 4.3, `docs/poc/data_n.tsv` |
-| 4 | 개발사 문의 메일(약관 R8) | 발송함(2026-10-27). 답변이 오면 R8 갱신 | 이 문서 9절 |
+| 4 | 개발사 문의 메일(약관 R8) | 답장 수신(2026-10-28), 위험 수용 후 진행으로 결정. 개별 승인은 받을 수 없다 | 이 문서 9절, [open-risks.md](open-risks.md) R8, DECISIONS.md "개발사 답장 수신" |
 | 5 | 저장소를 공개로 바꾸기 전 점검(R12) | 공개 전에 수행 | [open-risks.md](open-risks.md) R12 |
 | 6 | 도메인 문장의 최종 데이터 파일화(컬럼 구성, 출처·검수 기록) | 설계서 이후 | [archive/review-sheet.md](archive/review-sheet.md), `docs/poc/data.tsv` |
 | 7 | 사용자 작성 문장의 IT 편중과 어휘 반복 보정 | 선택 | DECISIONS.md "F-2 사용자 작성 문장 확정" |
@@ -52,6 +52,11 @@
 ```powershell
 git clone https://github.com/HTH-0/Deskguard.git
 cd Deskguard
+
+# 클라우드 세션에서 작업하던 내용은 작업 브랜치에 있다. 가져온 뒤 확인한다.
+git fetch origin claude/upbeat-cori-pi0rtq
+git checkout claude/upbeat-cori-pi0rtq
+git log --oneline -5
 
 # 이 저장소에만 적용하는 커밋 정보 (전역 설정은 건드리지 않는다)
 git config user.name "HTH-0"
@@ -107,7 +112,11 @@ mvn -B -q test
 - 정규식 시험 하네스: `tools/rulecheck/`
 - 이전 세션의 임시 작업 폴더(컴퓨터의 임시 폴더)는 이 컴퓨터에만 있으므로 의존하지 않는다.
 
-## 9. 부록: 개발사 문의 메일 (발송 완료, 2026-10-27)
+## 9. 부록: 개발사 문의 메일 (발송 2026-10-27, 답장 2026-10-28)
+
+답장 요지: 개별 사용 사례를 검토하거나 승인할 법적 여력이 없으니 AUP와 MCA를 참조하라는 내용이다. 승인도 거절도 아니다. AUP와 MCA 원문을 직접 읽어 대조한 결과와 결정은 [open-risks.md](open-risks.md) R8과 DECISIONS.md에 있다. 6단계 측정 전에 두 약관(수정일 2026-09-23)을 다시 읽는다.
+
+아래는 발송한 메일이다.
 
 받는 주소는 계정·API 문의용 support@typesafe.ai이다(privacy, security, sales 주소는 용도가 다르다). 질문은 약관 허용 여부 하나로 줄였다.
 
