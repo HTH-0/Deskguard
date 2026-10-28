@@ -11,6 +11,7 @@ import com.promptgateway.judge.JudgeException;
 import com.promptgateway.judge.JudgeException.Kind;
 import com.promptgateway.judge.JudgeResult;
 import com.promptgateway.judge.QuestionSet;
+import com.promptgateway.log.GatewayLogger;
 import com.promptgateway.service.AnswerGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -74,7 +75,8 @@ class ChatControllerTest {
     /** 필드(judge, answerer, rules)를 바꾼 뒤 다시 조립한다. */
     private void build() {
         ChatGateway gateway = new ChatGateway(new InputValidator(1000), new PatternFilter(rules),
-                p -> judge.judge(p), new BlockDecider(QuestionSet.EXPECTED_IDS, 0.5), p -> answerer.generateAnswer(p));
+                p -> judge.judge(p), new BlockDecider(QuestionSet.EXPECTED_IDS, 0.5), p -> answerer.generateAnswer(p),
+                new GatewayLogger(false, line -> { }));
         mockMvc = MockMvcBuilders.standaloneSetup(new ChatController(gateway))
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .build();

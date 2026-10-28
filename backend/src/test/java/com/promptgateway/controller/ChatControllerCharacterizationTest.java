@@ -8,6 +8,7 @@ import com.promptgateway.judge.BlockDecider;
 import com.promptgateway.judge.Judge;
 import com.promptgateway.judge.JudgeResult;
 import com.promptgateway.judge.QuestionSet;
+import com.promptgateway.log.GatewayLogger;
 import com.promptgateway.service.GeminiService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -71,7 +72,7 @@ class ChatControllerCharacterizationTest {
             return new JudgeResult(low, "jev-1.14.0", 1);
         };
         ChatGateway gateway = new ChatGateway(new InputValidator(1000), new PatternFilter(List.of()), alwaysPass,
-                new BlockDecider(QuestionSet.EXPECTED_IDS, 0.5), service);
+                new BlockDecider(QuestionSet.EXPECTED_IDS, 0.5), service, new GatewayLogger(false, line -> { }));
         mockMvc = MockMvcBuilders.standaloneSetup(new ChatController(gateway))
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .build();

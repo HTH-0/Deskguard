@@ -30,3 +30,7 @@ judge:
 gateway:
   max-prompt-length: 1000
   patterns: []                 # 패턴 필터의 패턴. 비어 있으면 모든 요청을 판정 단계로 보낸다.
+
+# 요청마다 남기는 한 줄 로그(docs/design.md 7.2절). 원문 저장은 시험 환경에서만 true로 바꾼다.
+logging:
+  store-raw-prompt: false

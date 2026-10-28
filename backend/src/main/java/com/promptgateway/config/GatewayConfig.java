@@ -7,7 +7,9 @@ import com.promptgateway.judge.BlockDecider;
 import com.promptgateway.judge.Judge;
 import com.promptgateway.judge.QuestionSet;
 import com.promptgateway.judge.jev.JevJudge;
+import com.promptgateway.log.GatewayLogger;
 import com.promptgateway.service.AnswerGenerator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,9 +61,16 @@ public class GatewayConfig {
         return new BlockDecider(questionSet.ids(), judge.threshold());
     }
 
+    /** 요청별 한 줄 로그. 프롬프트 원문 저장은 기본이 꺼짐이고, 시험 환경에서만 켠다(AC-7.3, 7.4). */
+    @Bean
+    public GatewayLogger gatewayLogger(@Value("${logging.store-raw-prompt:false}") boolean storeRawPrompt) {
+        return new GatewayLogger(storeRawPrompt);
+    }
+
     @Bean
     public ChatGateway chatGateway(InputValidator validator, PatternFilter patternFilter, Judge judge,
-                                   BlockDecider blockDecider, AnswerGenerator answerGenerator) {
-        return new ChatGateway(validator, patternFilter, judge, blockDecider, answerGenerator);
+                                   BlockDecider blockDecider, AnswerGenerator answerGenerator,
+                                   GatewayLogger gatewayLogger) {
+        return new ChatGateway(validator, patternFilter, judge, blockDecider, answerGenerator, gatewayLogger);
     }
 }

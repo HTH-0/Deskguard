@@ -8,6 +8,7 @@ import com.promptgateway.judge.JudgeException;
 import com.promptgateway.judge.JudgeException.Kind;
 import com.promptgateway.judge.JudgeResult;
 import com.promptgateway.judge.QuestionSet;
+import com.promptgateway.log.GatewayLogger;
 import com.promptgateway.service.AnswerGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -63,7 +64,7 @@ class ChatGatewayTest {
 
     private ChatGateway gateway(List<PatternRule> rules) {
         return new ChatGateway(new InputValidator(1000), new PatternFilter(rules), judge,
-                new BlockDecider(IDS, 0.5), answerer);
+                new BlockDecider(IDS, 0.5), answerer, new GatewayLogger(false, line -> { }));
     }
 
     private ChatGateway gateway() {

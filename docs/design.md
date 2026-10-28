@@ -221,7 +221,7 @@ POST /api/chat
              BlockDecider ─ 임계값 이상 → BLOCKED(단계=JUDGE)
           4. 측정 모드가 꺼져 있으면 GeminiService.generateAnswer() → PASSED(답변)
              측정 모드가 켜져 있으면 응답 모델 호출 없이 PASSED(답변 없음)
-      GatewayLogger.log(결과)   ← 모든 경로에서 한 번
+      GatewayLogger.log(결과)   ← 모든 경로에서 한 번 (예외로 끝나는 경로는 decision=ERROR로 남기고 예외는 그대로 던진다. 7.2절 D15)
   컨트롤러 응답:
       PASSED  → 200 {"answer": ...}
       BLOCKED → 403 {"blocked": true, "message": "정책에 따라 요청이 차단되었습니다"}   (단계와 무관하게 같은 본문)
@@ -321,15 +321,16 @@ logging:
 | 항목 | 내용 |
 |---|---|
 | `requestId` | 요청 식별자(UUID) |
-| `decision`, `stage` | PASS 또는 BLOCK, 단계는 NONE, PATTERN, JUDGE, JUDGE_FAILURE |
+| `decision`, `stage` | PASS, BLOCK 또는 ERROR. 단계는 NONE, PATTERN, JUDGE, JUDGE_FAILURE이고, ERROR일 때는 VALIDATION(입력 검증 실패), JUDGE(판정자의 예상하지 못한 오류), ANSWER(응답 모델 오류)이다. (구현 중 추가, D15) |
 | `patternId`, `failureKind` | 해당할 때만 |
+| `errorKind` | decision=ERROR일 때만. 예외 클래스 이름이다. 예외 메시지는 싣지 않는다. (구현 중 추가, D15) |
 | `scores` | 질문별 확률 10개 |
 | `modelVersion` | 응답의 `model` 값 (AC-3.4) |
-| `filterMs`, `judgeMs`, `answerMs` | 단계별 지연 (NFR-3) |
+| `filterMs`, `judgeMs`, `answerMs` | 단계별 지연 (NFR-3). 실행하지 않은 단계는 키를 싣지 않는다. 판정 시간은 재시도 대기를 포함한 전체 시간이다. |
 | `promptLength`, `promptHash` | 기본으로 남기는 값. 해시는 SHA-256 앞 16자리(16진수)이다. |
 | `prompt` | `logging.store-raw-prompt=true`일 때만 (AC-7.3, 7.4) |
 
-- 로그에 남기지 않는 것: API 키, `Authorization` 헤더, 요청 URL 전체, 판정 요청 본문 전체.
+- 로그에 남기지 않는 것: API 키, `Authorization` 헤더, 요청 URL 전체, 판정 요청 본문 전체, 예외 메시지(주소나 키가 들어 있을 수 있다).
 - 해시 방식 제안: 프롬프트 길이가 짧으면 해시로 원문을 추측할 수 있어 완전한 익명화는 아니다. 같은 입력의 반복을 찾는 용도이고, 원문이 필요하면 시험 환경에서 원문 저장을 켠다.
 - 키 노출 방지 확인 항목(스텝 7에서 테스트로 확인): 기존 Gemini 호출은 키를 URL 쿼리에 넣는다(`?key=`). 예외 메시지에 URL이 들어갈 수 있고, `GlobalExceptionHandler`의 일반 처리기는 `ex.getMessage()`를 응답 본문에 그대로 싣는다. 키가 응답이나 로그에 나오는지 특성화 테스트로 먼저 확인하고, 나오면 AC-7.2의 위반이므로 수정한다.
 
@@ -370,7 +371,7 @@ Spring Boot 4에서 테스트 모듈이 나뉘어 있을 수 있으므로 MockMv
 | AC-5.1~5.3 | `ChatControllerTest` | 웹 |
 | AC-6.1~6.4 | `JevJudgeTest`, `ChatGatewayTest` | 연동, 조율 |
 | AC-6.5 | 측정 집계 테스트 | 단위 |
-| AC-7.1~7.4 | `GatewayLoggerTest` | 로그 |
+| AC-7.1~7.4 | `GatewayLoggerTest`, `ChatGatewayLoggingTest`, `GatewayConfigTest` | 로그 |
 | AC-8.1, 8.2 | `ChatGatewayTest`, 측정 도구 | 조율 |
 | AC-9.1, 9.2 | `ChatControllerTest` | 웹 |
 

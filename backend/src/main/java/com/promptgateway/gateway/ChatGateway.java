@@ -5,9 +5,12 @@ import com.promptgateway.judge.BlockDecider;
 import com.promptgateway.judge.Judge;
 import com.promptgateway.judge.JudgeException;
 import com.promptgateway.judge.JudgeResult;
+import com.promptgateway.log.GatewayLogger;
+import com.promptgateway.log.GatewayLogger.Timings;
 import com.promptgateway.service.AnswerGenerator;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 요청 하나가 거치는 단계를 순서대로 부르고 결과를 모으는 곳. 각 단계의 판단은 하지 않고 순서만 정한다.
@@ -19,6 +22,9 @@ import java.util.Optional;
  *   5. 응답 모델      통과한 요청만 답변을 만든다
  *
  * 응답 모델의 오류는 여기서 차단으로 바꾸지 않고 그대로 밖으로 알린다(기존 오류 응답 형식 유지).
+ *
+ * 어떤 경로로 끝나든 로그를 정확히 한 줄 남긴다(설계 결정 S4). 통과와 차단은 결과 값으로,
+ * 예외로 끝나는 경로(입력 검증 실패, 예상하지 못한 오류, 응답 모델 오류)는 decision=ERROR로 남기고 예외는 그대로 다시 던진다.
  */
 public class ChatGateway {
 
@@ -27,37 +33,69 @@ public class ChatGateway {
     private final Judge judge;
     private final BlockDecider blockDecider;
     private final AnswerGenerator answerGenerator;
+    private final GatewayLogger logger;
 
     public ChatGateway(InputValidator validator, PatternFilter patternFilter, Judge judge,
-                       BlockDecider blockDecider, AnswerGenerator answerGenerator) {
+                       BlockDecider blockDecider, AnswerGenerator answerGenerator, GatewayLogger logger) {
         this.validator = validator;
         this.patternFilter = patternFilter;
         this.judge = judge;
         this.blockDecider = blockDecider;
         this.answerGenerator = answerGenerator;
+        this.logger = logger;
     }
 
     public GatewayResult handle(String prompt) {
-        validator.validate(prompt);
-
-        Optional<String> patternId = patternFilter.firstMatch(prompt);
-        if (patternId.isPresent()) {
-            return GatewayResult.blockedByPattern(patternId.get());
+        try {
+            validator.validate(prompt);
+        } catch (InvalidPromptException e) {
+            logger.logError(prompt, "VALIDATION", e, Timings.NONE);
+            throw e;
         }
 
+        long filterStart = System.nanoTime();
+        Optional<String> patternId = patternFilter.firstMatch(prompt);
+        long filterMs = elapsedMs(filterStart);
+        if (patternId.isPresent()) {
+            return logged(prompt, GatewayResult.blockedByPattern(patternId.get()), new Timings(filterMs, null, null));
+        }
+
+        long judgeStart = System.nanoTime();
         JudgeResult judgeResult;
         boolean block;
         try {
             judgeResult = judge.judge(prompt);
             block = blockDecider.shouldBlock(judgeResult.scores());
         } catch (JudgeException e) {
-            return GatewayResult.blockedByJudgeFailure(e.kind());
+            return logged(prompt, GatewayResult.blockedByJudgeFailure(e.kind()),
+                    new Timings(filterMs, elapsedMs(judgeStart), null));
+        } catch (RuntimeException e) {
+            logger.logError(prompt, "JUDGE", e, new Timings(filterMs, elapsedMs(judgeStart), null));
+            throw e;
         }
+        long judgeMs = elapsedMs(judgeStart);
         if (block) {
-            return GatewayResult.blockedByJudge(judgeResult);
+            return logged(prompt, GatewayResult.blockedByJudge(judgeResult), new Timings(filterMs, judgeMs, null));
         }
 
-        String answer = answerGenerator.generateAnswer(prompt);
-        return GatewayResult.passed(judgeResult, answer);
+        long answerStart = System.nanoTime();
+        String answer;
+        try {
+            answer = answerGenerator.generateAnswer(prompt);
+        } catch (RuntimeException e) {
+            logger.logError(prompt, "ANSWER", e, new Timings(filterMs, judgeMs, elapsedMs(answerStart)));
+            throw e;
+        }
+        return logged(prompt, GatewayResult.passed(judgeResult, answer),
+                new Timings(filterMs, judgeMs, elapsedMs(answerStart)));
+    }
+
+    private GatewayResult logged(String prompt, GatewayResult result, Timings timings) {
+        logger.logResult(prompt, result, timings);
+        return result;
+    }
+
+    private static long elapsedMs(long startNanos) {
+        return TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNanos);
     }
 }

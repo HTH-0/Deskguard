@@ -7,6 +7,7 @@ import com.promptgateway.judge.BlockDecider;
 import com.promptgateway.judge.JudgeException;
 import com.promptgateway.judge.QuestionSet;
 import com.promptgateway.judge.jev.JevJudge;
+import com.promptgateway.log.GatewayLogger;
 import com.promptgateway.service.AnswerGenerator;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.DisplayName;
@@ -82,6 +83,19 @@ class GatewayConfigTest {
             assertThat(validator).isNotNull();
             assertThatThrownBy(() -> validator.validate("가나다라마바")).isInstanceOf(InvalidPromptException.class);
         });
+    }
+
+    @Test
+    @DisplayName("AC-7.3 설정이 없으면 원문 저장은 꺼져 있다")
+    void rawPromptStorageIsOffByDefault() {
+        runner.run(context -> assertThat(context.getBean(GatewayLogger.class).storesRawPrompt()).isFalse());
+    }
+
+    @Test
+    @DisplayName("AC-7.4 logging.store-raw-prompt=true로 원문 저장을 켠다")
+    void rawPromptStorageCanBeEnabled() {
+        runner.withPropertyValues("logging.store-raw-prompt=true")
+                .run(context -> assertThat(context.getBean(GatewayLogger.class).storesRawPrompt()).isTrue());
     }
 
     @Test
