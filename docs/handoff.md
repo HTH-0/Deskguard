@@ -20,20 +20,56 @@
 | 2 | 설계 v2, 더미 회사(HTH), D1·D2·D3 탐지기, 가짜 값 생성기 | 완료 |
 | 3 | 처리 결정, 가림과 복원, 게이트웨이 재조립, 감사 로그, 운영 경로에서 Jev 제거 | 완료 |
 | 4 | 포털 화면, 시연용 응답 모델, 가림 응답에 보낸 문장(AC-6.4) | 완료 |
-| 5 | 평가 세트 생성과 동결, X·Y·T 측정, Z 준비 | **진행 중** (평가 세트 동결과 X·Y·T 1차 측정 완료, 결과는 `docs/eval/results/report_xyt_v1.md`, 다음은 Z 준비) |
+| 5 | 평가 세트 생성과 동결, X·Y·T 측정, Z 준비 | **진행 중** (X·Y·T 1차 측정 완료, Z 도구와 시험 완료. 다음은 사용자 컴퓨터에서 Z 실행, 절차는 3절) |
 | 6 | Z 측정(Jev 검증 후), 우회 소량 시험, README와 결과 | 대기 |
 | 7 | 여유분, `main` 병합 검토 | 대기 |
 
 - **시험:** Java 109건이 통과한다(`cd backend`, `mvn -B test`). Python은 `cd backend/scripts`에서 `python -m unittest test_fake_values test_measure`로 실행한다. 옛 HR용 `run_batch.py`와 `domain_candidates.py`는 시험과 함께 `backend/scripts/archive_hr/`로 옮겼다(보관, 실행하지 않는다).
 - **멈춘 지점:** 4일차 완료 직후. 모든 변경이 커밋, 푸시되어 있다. 작업 중인 파일은 없다.
 
-## 3. 다음 작업: 5일차 (아직 승인 전)
+## 3. 다음 작업
 
-1. **측정 도구 v2(완료, `measure.py`):** 새 측정 응답(`action`, `findings`, `spans`, `maskedPrompt`, `timings`)에 맞게 바꾸고, 정답(넣은 값의 항목과 위치)과 비교해 X(범주별 탐지율), Y(정상 문장의 오탐율), T(지연)를 계산한다. 옛 HR용 `domain_candidates.py`와 그 시험은 보관한다.
-2. **업무 요청 틀 받기(사용자 작업, 약 15분):** 생성기 3종(ChatGPT, 프로젝트와 무관한 Claude 새 대화, Gemini)에 "자리 표시자가 있는 업무 요청 틀"을 받는 지시문을 새로 쓴다(예: `아래 명단 표로 정리해 줘: {명단}`). 기존 `docs/eval/generation_prompt.md`는 HR용이므로 보관한다.
-3. **평가 세트 생성기:** 틀과 가짜 값(`fake_values.py`)을 합쳐 문장을 만들고, 넣은 값의 항목과 위치를 정답으로 저장한다. 민감 정보가 없는 정상 업무 문장(KOICA 실제 질문 25개와 생성기의 일반 요청)도 넣는다. 대량 기준 20과 함께 해시로 동결한다.
-4. **X·Y·T 측정:** 측정 모드 서버(`--gateway.measurement-mode=true`)에 보낸다. 외부 호출이 없으므로 키가 필요 없다.
-5. **Z 준비:** 가림 문장마다 원문 답(A)과 가림 후 복원 답(B)을 Gemini로 받는 도구, Jev 채점 도구, 사람 판정 40~50쌍(라벨링 페이지 재사용)을 준비한다. Gemini와 Jev 키가 필요하다.
+5일차(측정 도구 v2, 업무 요청 틀 3종, 평가 세트 596문장 동결, X·Y·T 1차 측정)는 끝났다. 결과는 [eval/results/report_xyt_v1.md](eval/results/report_xyt_v1.md)이다. 6단계의 Z 도구(`backend/scripts/z_measure.py`, 시험 포함)도 만들어 두었고, **실제 호출은 키가 있는 사용자 컴퓨터에서 한다.**
+
+### Z 측정 실행 절차 (사용자 컴퓨터, Windows PowerShell)
+
+Z는 평가 세트에서 가림 처리되는 문장 263개에 대해 답 A(원문 직접)와 답 B(게이트웨이 경유, 복원)를 Gemini로 받고, Jev로 채점한다. 입력은 가짜 데이터뿐이다. 기준은 [spec.md](spec.md) AC-10.4a~g, AC-10.5a~b이다.
+
+```powershell
+# 0. 최신 작업을 받는다 (새 터미널에서, 키는 setx로 이미 설정되어 있어야 한다)
+git fetch origin
+git checkout claude/inspiring-shannon-xbhl20
+git pull origin claude/inspiring-shannon-xbhl20
+
+# 1. 게이트웨이를 일반 모드로 띄운다 (창 하나, 측정 모드와 시연 모드를 켜지 않는다. GEMINI_API_KEY가 필요하다)
+cd backend
+mvn spring-boot:run
+
+# 2. 다른 창에서 도구를 실행한다
+cd backend\scripts
+
+# 2-1. 먼저 5문장만 시험한다 (실제 호출 5회 가량)
+python z_measure.py collect --limit 5
+python z_measure.py score --limit 5
+python z_measure.py report --limit 5
+
+# 2-2. 전체 실행. 한도 오류가 나면 저장된 문장은 건너뛰고 이어서 하므로 같은 명령을 다시 실행하면 된다
+python z_measure.py collect
+python z_measure.py baseline --count 50
+python z_measure.py score
+python z_measure.py report
+
+# 3. 사람 판정 표본을 만들고 csv의 usable_1, usable_2 칸에 예 또는 아니오를 채운다
+python z_measure.py sample --count 45
+# 판정이 끝나기 전에는 human_key.json을 열지 않는다(어느 답이 가림 처리 답인지 알게 된다)
+python z_measure.py agree --human ..\..\docs\eval\results\z\human_sheet.csv
+```
+
+- 중간 결과와 보고서는 `docs/eval/results/z/`에 쌓인다(`collected.jsonl`, `a2.jsonl`, `scores.jsonl`, `report.json`, `human_sheet.csv`, `human_key.json`). 모두 가짜 데이터이므로 커밋해도 된다. 키는 어디에도 기록되지 않는다.
+- 일치율(`agree`의 `all`)이 85% 이상이면 Jev 채점을 채택한다. 미달이면 사람 판정 표본을 주 결과로 쓰고 Jev 수치는 참고로만 적는다(AC-10.5b, 기준은 낮추지 않는다).
+- 실행이 끝나면 `docs/eval/results/z/`를 커밋해 푸시하고 알려 주면, 보고서(`report_z_v1.md`)와 DECISIONS 기록은 클라우드에서 작성한다.
+- 이 세션에서 도구는 가짜 Gemini와 가짜 Jev 서버로 시험했다. 실제 Jev 응답 형식(`answers.<질문>.noul`)은 T13 스모크 시험과 같은 형식이다.
+
 
 ## 4. 사용자 결정 대기
 
