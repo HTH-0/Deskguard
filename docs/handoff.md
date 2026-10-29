@@ -2,17 +2,19 @@
 
 다른 컴퓨터나 새 세션에서 이어서 작업할 때 가장 먼저 읽는 문서이다. 세션을 마칠 때마다 갱신한다.
 
-기준일: 2026-10-28
+기준일: 2026-10-29
 
 ## 1. 한눈에 보기
 
 - 프로젝트: Deskguard. 사내 HR 헬프데스크 챗봇으로 들어가는 프롬프트를 판정 모델로 검사해 프롬프트 인젝션과 도메인 정책 위반을 차단하는 게이트웨이이다. ([README.md](../README.md))
+- 개발 방식: SDD와 TDD를 병행한다. 기획 단계는 SDD(명세서 → 설계서 → 작업 목록), 구현 단계는 TDD(수용 기준 → 테스트 → 코드)이다. ([DECISIONS.md](../DECISIONS.md) "개발 방법론: SDD와 TDD 병행", [constitution.md](constitution.md) 5절)
 - 중심 서사: "LLM 챗봇 앞단의 입력 가드레일을 만들고, 사전에 정한 기준으로 측정하고, 놓친 사례와 한계를 기록했다." 포트폴리오의 가치는 구현보다 측정과 기록에 있다(DECISIONS.md "포트폴리오 방향 점검").
 - **현재 위치**
   - 완료: 도메인 정책, 평가 데이터, 명세서(확정), Jev 한국어 PoC(채택), 질문 v2(조건부 채택), 설계서 1~9절(확정), 구현 T1~T13, 약관 위험 수용(R8), 외부 도메인 자료 조사.
   - **진행 중: 6단계 측정 설계(`spec.md` FR-10, `design.md` 10절) 작성을 마쳤고 사용자 승인을 기다린다.**
-  - 구현 상태: 게이트웨이(입력 검증, 패턴 필터(패턴 0개), Jev 판정, 임계값 0.5, 판정 실패 시 차단, 요청별 로그, 측정 모드)와 측정 도구(`run_batch.py`)가 동작한다. Java 테스트 148건과 Python 테스트 25건이 통과한다. 실제 Jev 연동은 2026-10-28 스모크 시험(T13)으로 확인했다.
-  - 마지막으로 멈춘 지점: 문서와 보존 파일만 바뀐 상태이고 **모두 푸시되어 있다.** 코드는 T13 이후 바뀌지 않았다.
+  - 구현 상태: 게이트웨이(입력 검증, 패턴 필터(패턴 0개), Jev 판정, 임계값 0.5, 판정 실패 시 차단, 요청별 로그, 측정 모드)와 측정 도구(`run_batch.py`)가 동작한다. Java 테스트 157건과 Python 테스트 25건이 통과한다. 실제 Jev 연동은 2026-10-28 스모크 시험(T13)으로 확인했다.
+  - 2026-10-29 브랜치 병합: 집 컴퓨터(10-28, `claude/upbeat-cori-pi0rtq`)와 클라우드 세션(10-29)이 같은 지점에서 따로 T10~T12를 만들었다. 집 컴퓨터 쪽을 기준으로 삼고, 클라우드 쪽에만 있던 개선 4가지(500 오류 로그의 키 노출 수정, 측정 응답의 같은 컴퓨터 제한과 헤더 불신, 로그 수준, 이스케이프 보강)를 옮겼다. **이제 작업 브랜치는 `claude/compassionate-pascal-nw40fb` 하나이다.** `claude/upbeat-cori-pi0rtq`는 여기에 모두 포함되었으므로 더 쓰지 않는다. `main` 병합은 작업이 어느 정도 진행된 뒤 사용자가 검토하고 한다.
+  - 마지막으로 멈춘 지점: 병합을 마치고 **모두 푸시되어 있다.**
 - 기술: Spring Boot 4.1.1, Java 25 LTS, Maven. 응답 모델은 Gemini(`gemini-3.6-flash`, 무료 티어), 판정 모델은 Jev(`jev-1.14.0`, 채택)이다.
 
 ## 2. 단계 상태
@@ -28,7 +30,7 @@
 | 4.5 | PoC 약점 개선 (라벨 기준, 점검 문장 65개, 질문 v2) | 완료. v2를 현행 질문으로 조건부 채택(한계는 DECISIONS.md "질문 v2 조건부 채택") |
 | 5 | 설계서 (`design.md`) | 1~9절 확정(2026-10-27). 10절(6단계 측정 설계)은 승인 대기 |
 | 7 | 3단계 코드의 특성화 테스트 | 완료 |
-| 8 | 작업 목록과 TDD 구현 | T1~T13 완료, T14(문서 정리) 대기. [tasks.md](tasks.md) |
+| 8 | 작업 목록과 TDD 구현 | T1~T13 완료(10-29 병합 보강 포함), T14(문서 정리) 대기. [tasks.md](tasks.md) |
 | 6 | 탐지율·오탐율 측정 (`eval` 사용) | 설계 승인 대기. 세부는 [tasks.md](tasks.md)의 "6단계 작업 목록" |
 | 로드맵 7단계 | 놓친 사례 분석, judge injection 시험 | 6단계 뒤 |
 
@@ -57,6 +59,7 @@
 | 라벨 기준 A1과 A-15, A-18, B-13, B-02 처리 | 확정(2026-10-27) | [domain-policy.md](domain-policy.md) 4장 |
 | 점검 문장 65개와 합격 기준 N1~N6, 질문 v2 | v2 조건부 채택 | design.md 4.3, `docs/poc/data_n.tsv` |
 | 개발사 문의(약관 R8) | 답장 수신, 승인은 받을 수 없어 위험을 수용하고 진행 | [open-risks.md](open-risks.md) R8, 이 문서 9절 |
+| 측정 모드를 정식 배포 후에도 유지 | 유지(2026-10-29). 같은 컴퓨터 제한과 기본 꺼짐으로 위험이 작다 | DECISIONS.md "측정 모드 안전장치와 유지" |
 | 정상 질문 약 17.6초 지연의 원인 | 응답 모델 구간이 대부분이다. 측정 모드에서 총 0.19~0.20초(첫 호출 0.71초) | DECISIONS.md "T10 GatewayLogger" |
 | 완성의 정의와 6단계 베이스라인 포함 | 확정(2026-10-28) | DECISIONS.md "완성의 정의 확정" |
 | 인프라 보강(CI, Docker, 헬스 체크) | 완성 후 곁가지 | tasks.md "보류 목록" |
@@ -93,10 +96,11 @@
 git clone https://github.com/HTH-0/Deskguard.git
 cd Deskguard
 
-# 클라우드 세션에서 작업하던 내용은 작업 브랜치에 있다. 가져온 뒤 확인한다.
-git fetch origin claude/upbeat-cori-pi0rtq
-git checkout claude/upbeat-cori-pi0rtq
-git pull origin claude/upbeat-cori-pi0rtq
+# 작업 내용은 작업 브랜치에 있다(main은 아직 오래된 상태). 시작할 때마다 모든 원격 브랜치를 확인한다.
+git fetch origin
+git branch -r --sort=-committerdate --format="%(committerdate:short) %(refname:short)"
+git checkout claude/compassionate-pascal-nw40fb
+git pull origin claude/compassionate-pascal-nw40fb
 git log --oneline -5
 
 # 이 저장소에만 적용하는 커밋 정보 (전역 설정은 건드리지 않는다)
@@ -107,7 +111,7 @@ git config user.email "192852807+HTH-0@users.noreply.github.com"
 setx GEMINI_API_KEY "발급받은_키"
 setx TYPESAFE_API_KEY "발급받은_키"
 
-# 빌드와 테스트 확인 (Java 148건)
+# 빌드와 테스트 확인 (Java 157건)
 cd backend
 mvn -B -q test
 
@@ -122,8 +126,8 @@ python -m unittest -v test_run_batch
 - 요청 확인(PowerShell): `curl.exe`로 UTF-8 본문을 보내는 `Send-Chat` 함수를 새 창마다 다시 만들어야 한다. 함수 본문은 [../tools/README.md](../tools/README.md)의 "Send-Chat" 절에 있다.
 - Windows에서 Python: python.org의 설치 관리자로 설치한다(3.15.2에서 시험). 설치 중 PATH 추가를 켠다. Microsoft Store의 `python.exe` 별칭(`WindowsApps` 경로)이 가짜 `python`으로 가로채면 설정, 앱, 고급 앱 설정, 앱 실행 별칭에서 `python.exe`와 `python3.exe`를 끈다. 3.13은 보안 수정 단계라 Windows 설치 파일이 없을 수 있다.
 - Maven은 zip을 `C:\tools`에 풀고 `bin` 폴더를 PATH에 넣는다. 설치 후 새 터미널에서 `mvn -version`이 Java 25와 함께 나와야 한다.
-- 클라우드 세션은 JDK 21이라 `mvn -B test -Djava.version=21`로 실행한다(pom은 바꾸지 않는다). 최종 확인은 JDK 25에서 한다.
-- 조사에 쓴 외부 자료는 저장소에 없다. 다시 받는 방법은 [research/domain-sources.md](research/domain-sources.md) 8절이다(공공데이터포털, 로그인 불필요). 클라우드 세션에서 외부 사이트를 열려면 환경 설정의 허용 도메인에 추가해야 한다(`www.data.go.kr`, `huggingface.co`, `arxiv.org`는 2026-10-28에 추가했다).
+- 클라우드 세션은 JDK 21이다. `mvn -B test -Djava.version=21`로 실행하거나(pom은 바꾸지 않는다), Temurin 25를 GitHub 릴리스(`github.com/adoptium/temurin25-binaries`)에서 세션 임시 폴더로 받아 `JAVA_HOME`으로 지정한다(2026-10-29에는 이 방법으로 JDK 25에서 확인했다). `api.adoptium.net`은 허용 도메인이 아니다.
+- 조사에 쓴 외부 자료는 저장소에 없다. 2026-10-28에 **집 컴퓨터에서 작업한 세션**이 내려받았으므로, 남아 있다면 그 컴퓨터에만 있다. 다른 컴퓨터에서는 다시 받는다. 다시 받는 방법은 [research/domain-sources.md](research/domain-sources.md) 8절이다(공공데이터포털, 로그인 불필요). 클라우드 세션에서 외부 사이트를 열려면 환경 설정의 허용 도메인에 추가해야 한다(`www.data.go.kr`, `huggingface.co`, `arxiv.org`는 2026-10-28에 추가했다).
 - 저장소는 비공개이므로 clone과 push에 GitHub 로그인이 필요하다.
 - Claude Code로 작업하면 저장소 루트의 `CLAUDE.md`와 `AGENTS.md`가 자동으로 적용된다. 응답 규칙은 한국어, 계획 후 승인, 작업 스텝 단위 보고이다. 새 세션의 첫 지시는 "docs/handoff.md를 읽고 현재 상태와 다음 작업을 알려 줘"로 시작하면 된다.
 - PoC 도구의 실행 방법은 [../tools/README.md](../tools/README.md)에 있다.
@@ -137,9 +141,11 @@ python -m unittest -v test_run_batch
 5. 외부 LLM이 낸 결과는 코드나 실험으로 검증한 뒤 채택한다. 지금까지 두 번 모두 검증 후 결론이 달라졌다.
 6. 결정이 생기면 그 자리에서 [DECISIONS.md](../DECISIONS.md)에 후보, 선택, 이유를 기록한다.
 7. 금지 콘텐츠 유형(`disallowed_content`)과 영어 hard negative는 외부 서비스로 보내지 않는다.
-8. 사용자는 코드를 직접 쓰지 않고 읽기, 테스트 읽기, 한 글자 실험, 검수로 이해한다(2026-10-27 합의). 핵심 코드(`BlockDecider`, `InputValidator`, `PatternFilter`, `JevJudge`, `ChatGateway`, `GatewayLogger`)는 작업이 끝날 때마다 코드 읽기 가이드(역할, 흐름, 확인 질문)를 주고, 이해 확인 뒤에 노션 정리본(코드 전문 없는 형식)을 준다. 정리본 전달 완료: `BlockDecider`, `JevJudge`. 가이드 전달, 확인 대기: `ChatGateway`, `GatewayLogger`.
-9. 개발 방식(constitution 5절): 명세 → 테스트 → 코드 순서이다. 명세나 설계에 없는 동작이 필요하면 코드보다 먼저 `spec.md`와 `design.md`를 고치고 승인을 받는다. TDD는 빈 껍데기를 먼저 만들어 테스트가 기대값 불일치로 실패하는 것을 확인한 뒤(컴파일 오류는 빨강으로 치지 않는다) 최소 코드로 통과시킨다. 각 작업 보고에 빨강 출력을 포함한다.
+8. 사용자는 코드를 직접 쓰지 않고 읽기, 테스트 읽기, 한 글자 실험, 검수로 이해한다(2026-10-27 합의). 핵심 코드(`BlockDecider`, `InputValidator`, `PatternFilter`, `JevJudge`, `ChatGateway`, `GatewayLogger`)는 작업이 끝날 때마다 코드 읽기 가이드(역할, 흐름, 확인 질문)를 주고, 이해 확인 뒤에 노션 정리본(코드 전문 없는 형식)을 준다. 정리본 전달 완료(노션 기준, 2026-10-29 사용자 확인): `BlockDecider`, `ChatGateway`, `GatewayResult`, `ChatController`, `Harness`. `JevJudge`는 예전에 읽은 것 같으나 노션에 기록이 없어 다시 진행한다.
+   - 코드 읽기 보류 목록(2026-10-29 사용자 결정: 구현을 먼저 진행하고 코드 읽기는 나중에 몰아서 한다). 작업이 끝날 때마다 추가한다: `GatewayLogger`(T10과 10-29 보강), `JevJudge`, `InputValidator`, `PatternFilter`, `ChatController`의 측정 모드 부분(같은 컴퓨터 판단 `isLocal`과 헤더를 믿지 않는 이유), `run_batch.py`(T12).
+9. 개발 방식(constitution 5절): SDD와 TDD를 병행한다. 명세 → 테스트 → 코드 순서이다. 각 작업의 첫 스텝은 명세 점검(해당 수용 기준만으로 테스트를 쓸 수 있는가)이다. 명세나 설계에 없는 동작이 필요하면 코드보다 먼저 `spec.md`와 `design.md`를 고치고 승인을 받는다. TDD는 빈 껍데기를 먼저 만들어 테스트가 기대값 불일치로 실패하는 것을 확인한 뒤(컴파일 오류는 빨강으로 치지 않는다) 최소 코드로 통과시킨다. 각 작업 보고에 빨강 출력을 포함한다.
 10. 외부 자료(2026-10-28): 어떤 외부 문장도 평가 세트에 그대로 넣지 않는다. 씨앗으로 쓴 문장은 평가 세트에서 뺀다. 이용허락과 접근 조건을 지킨다(KorSET은 비상업과 접근 승인제). 직원 이름 같은 개인 정보가 있는 파일은 저장소에 넣지 않는다. 쓴 자료는 출처를 표시한다. 상세는 [research/domain-sources.md](research/domain-sources.md)이다.
+11. 브랜치(2026-10-29): 세션을 시작하면 `handoff.md`를 읽기 전에 `git fetch origin`으로 모든 원격 브랜치의 최근 커밋을 확인한다. `main`이 최신이 아닐 수 있다. 여러 컴퓨터에서 작업하므로 작업 브랜치는 하나만 쓰고, 세션을 마칠 때 이 문서의 브랜치 이름을 갱신한다.
 
 ## 7. 문서 지도
 
