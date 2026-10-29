@@ -1,0 +1,746 @@
+{
+  "n": 596,
+  "x": {
+    "D1": {
+      "gold": 855,
+      "tp": 839,
+      "item_wrong": 0,
+      "fn": 16,
+      "rate": 0.9812865497076023,
+      "ci": [
+        0.9698185294661557,
+        0.9884489787681916
+      ]
+    },
+    "D2": {
+      "gold": 180,
+      "tp": 147,
+      "item_wrong": 0,
+      "fn": 33,
+      "rate": 0.8166666666666667,
+      "ci": [
+        0.7537252847530411,
+        0.8663737570307555
+      ]
+    },
+    "D3": {
+      "gold": 115,
+      "tp": 115,
+      "item_wrong": 0,
+      "fn": 0,
+      "rate": 1.0,
+      "ci": [
+        0.9676746189886368,
+        0.9999999999999999
+      ]
+    }
+  },
+  "x_by_item": {
+    "RRN": {
+      "category": "D1",
+      "gold": 40,
+      "tp": 40,
+      "item_wrong": 0,
+      "fn": 0
+    },
+    "FRN": {
+      "category": "D1",
+      "gold": 31,
+      "tp": 31,
+      "item_wrong": 0,
+      "fn": 0
+    },
+    "CARD": {
+      "category": "D1",
+      "gold": 36,
+      "tp": 36,
+      "item_wrong": 0,
+      "fn": 0
+    },
+    "PHONE": {
+      "category": "D1",
+      "gold": 368,
+      "tp": 368,
+      "item_wrong": 0,
+      "fn": 0
+    },
+    "ACCOUNT": {
+      "category": "D1",
+      "gold": 37,
+      "tp": 21,
+      "item_wrong": 0,
+      "fn": 16
+    },
+    "EMAIL": {
+      "category": "D1",
+      "gold": 343,
+      "tp": 343,
+      "item_wrong": 0,
+      "fn": 0
+    },
+    "PRIVATE_KEY": {
+      "category": "D2",
+      "gold": 34,
+      "tp": 34,
+      "item_wrong": 0,
+      "fn": 0
+    },
+    "CONN_STRING": {
+      "category": "D2",
+      "gold": 37,
+      "tp": 37,
+      "item_wrong": 0,
+      "fn": 0
+    },
+    "API_KEY": {
+      "category": "D2",
+      "gold": 38,
+      "tp": 38,
+      "item_wrong": 0,
+      "fn": 0
+    },
+    "JWT": {
+      "category": "D2",
+      "gold": 35,
+      "tp": 35,
+      "item_wrong": 0,
+      "fn": 0
+    },
+    "PASSWORD": {
+      "category": "D2",
+      "gold": 36,
+      "tp": 3,
+      "item_wrong": 0,
+      "fn": 33
+    },
+    "CODENAME": {
+      "category": "D3",
+      "gold": 40,
+      "tp": 40,
+      "item_wrong": 0,
+      "fn": 0
+    },
+    "CLIENT": {
+      "category": "D3",
+      "gold": 40,
+      "tp": 40,
+      "item_wrong": 0,
+      "fn": 0
+    },
+    "CLASSIFIED": {
+      "category": "D3",
+      "gold": 35,
+      "tp": 35,
+      "item_wrong": 0,
+      "fn": 0
+    }
+  },
+  "misses": [
+    {
+      "id": "chatgpt-042",
+      "type": "FN",
+      "item": "ACCOUNT",
+      "start": 8,
+      "end": 25
+    },
+    {
+      "id": "chatgpt-043",
+      "type": "FN",
+      "item": "ACCOUNT",
+      "start": 55,
+      "end": 72
+    },
+    {
+      "id": "chatgpt-044",
+      "type": "FN",
+      "item": "ACCOUNT",
+      "start": 24,
+      "end": 41
+    },
+    {
+      "id": "chatgpt-045",
+      "type": "FN",
+      "item": "ACCOUNT",
+      "start": 26,
+      "end": 43
+    },
+    {
+      "id": "chatgpt-046",
+      "type": "FN",
+      "item": "ACCOUNT",
+      "start": 29,
+      "end": 43
+    },
+    {
+      "id": "chatgpt-047",
+      "type": "FN",
+      "item": "ACCOUNT",
+      "start": 71,
+      "end": 84
+    },
+    {
+      "id": "chatgpt-048",
+      "type": "FN",
+      "item": "ACCOUNT",
+      "start": 25,
+      "end": 42
+    },
+    {
+      "id": "chatgpt-049",
+      "type": "FN",
+      "item": "ACCOUNT",
+      "start": 0,
+      "end": 17
+    },
+    {
+      "id": "chatgpt-050",
+      "type": "FN",
+      "item": "ACCOUNT",
+      "start": 24,
+      "end": 39
+    },
+    {
+      "id": "chatgpt-101",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 28,
+      "end": 38
+    },
+    {
+      "id": "chatgpt-102",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 40,
+      "end": 50
+    },
+    {
+      "id": "chatgpt-103",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 11,
+      "end": 21
+    },
+    {
+      "id": "chatgpt-104",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 27,
+      "end": 37
+    },
+    {
+      "id": "chatgpt-105",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 24,
+      "end": 34
+    },
+    {
+      "id": "chatgpt-106",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 87,
+      "end": 97
+    },
+    {
+      "id": "chatgpt-107",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 20,
+      "end": 30
+    },
+    {
+      "id": "chatgpt-108",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 8,
+      "end": 18
+    },
+    {
+      "id": "chatgpt-109",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 69,
+      "end": 79
+    },
+    {
+      "id": "chatgpt-110",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 28,
+      "end": 38
+    },
+    {
+      "id": "chatgpt-145",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 25,
+      "end": 35
+    },
+    {
+      "id": "chatgpt-147",
+      "type": "FN",
+      "item": "ACCOUNT",
+      "start": 49,
+      "end": 66
+    },
+    {
+      "id": "chatgpt-154",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 19,
+      "end": 29
+    },
+    {
+      "id": "claude-046",
+      "type": "FN",
+      "item": "ACCOUNT",
+      "start": 44,
+      "end": 61
+    },
+    {
+      "id": "claude-047",
+      "type": "FN",
+      "item": "ACCOUNT",
+      "start": 18,
+      "end": 35
+    },
+    {
+      "id": "claude-049",
+      "type": "FN",
+      "item": "ACCOUNT",
+      "start": 21,
+      "end": 35
+    },
+    {
+      "id": "claude-101",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 39,
+      "end": 49
+    },
+    {
+      "id": "claude-102",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 28,
+      "end": 38
+    },
+    {
+      "id": "claude-103",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 29,
+      "end": 39
+    },
+    {
+      "id": "claude-104",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 38,
+      "end": 48
+    },
+    {
+      "id": "claude-107",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 10,
+      "end": 20
+    },
+    {
+      "id": "claude-108",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 37,
+      "end": 47
+    },
+    {
+      "id": "claude-110",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 55,
+      "end": 65
+    },
+    {
+      "id": "claude-144",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 49,
+      "end": 59
+    },
+    {
+      "id": "claude-153",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 87,
+      "end": 97
+    },
+    {
+      "id": "claude-155",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 28,
+      "end": 38
+    },
+    {
+      "id": "gemini-042",
+      "type": "FN",
+      "item": "ACCOUNT",
+      "start": 30,
+      "end": 45
+    },
+    {
+      "id": "gemini-048",
+      "type": "FN",
+      "item": "ACCOUNT",
+      "start": 15,
+      "end": 28
+    },
+    {
+      "id": "gemini-050",
+      "type": "FN",
+      "item": "ACCOUNT",
+      "start": 11,
+      "end": 24
+    },
+    {
+      "id": "gemini-101",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 10,
+      "end": 20
+    },
+    {
+      "id": "gemini-102",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 9,
+      "end": 19
+    },
+    {
+      "id": "gemini-103",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 16,
+      "end": 26
+    },
+    {
+      "id": "gemini-104",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 16,
+      "end": 26
+    },
+    {
+      "id": "gemini-105",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 17,
+      "end": 27
+    },
+    {
+      "id": "gemini-106",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 25,
+      "end": 35
+    },
+    {
+      "id": "gemini-107",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 20,
+      "end": 30
+    },
+    {
+      "id": "gemini-108",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 9,
+      "end": 19
+    },
+    {
+      "id": "gemini-109",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 20,
+      "end": 30
+    },
+    {
+      "id": "gemini-110",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 23,
+      "end": 33
+    },
+    {
+      "id": "gemini-146",
+      "type": "FN",
+      "item": "PASSWORD",
+      "start": 39,
+      "end": 49
+    }
+  ],
+  "action_mismatches": [
+    {
+      "id": "chatgpt-042",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "chatgpt-043",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "chatgpt-044",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "chatgpt-045",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "chatgpt-046",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "chatgpt-047",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "chatgpt-048",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "chatgpt-049",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "chatgpt-050",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "chatgpt-101",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "chatgpt-102",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "chatgpt-103",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "chatgpt-104",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "chatgpt-105",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "chatgpt-106",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "chatgpt-107",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "chatgpt-108",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "chatgpt-109",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "chatgpt-110",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "claude-046",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "claude-047",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "claude-049",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "claude-101",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "claude-102",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "claude-103",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "claude-104",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "claude-107",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "claude-108",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "claude-110",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "claude-144",
+      "expected": "BLOCK",
+      "actual": "MASK"
+    },
+    {
+      "id": "gemini-042",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "gemini-048",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "gemini-050",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "gemini-101",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "gemini-102",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "gemini-103",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "gemini-104",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "gemini-105",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "gemini-106",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "gemini-107",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "gemini-108",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "gemini-109",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "gemini-110",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "gemini-146",
+      "expected": "BLOCK",
+      "actual": "MASK"
+    }
+  ],
+  "x_extra_false_positives": 0,
+  "y": {
+    "n": 106,
+    "false_positives": 0,
+    "rate": 0.0,
+    "ci": [
+      0.0,
+      0.034973998922084165
+    ]
+  },
+  "action_accuracy": {
+    "correct": 552,
+    "n": 596,
+    "ci": [
+      0.9023418214252439,
+      0.9445484242662854
+    ]
+  },
+  "t": {
+    "detectMs": {
+      "n": 596,
+      "median": 0.0,
+      "p95": 1
+    },
+    "maskMs": {
+      "n": 596,
+      "median": 0.0,
+      "p95": 0
+    },
+    "restoreMs": {
+      "n": 250,
+      "median": 0.0,
+      "p95": 0
+    },
+    "rttMs": {
+      "n": 596,
+      "median": 2.148923500044475,
+      "p95": 4.037912000057986
+    }
+  },
+  "dataset_sha256": "cd492ebcaa282d8b3419dd4808e9fbd3239590d8f9813157716788b69570bd06"
+}

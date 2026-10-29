@@ -36,9 +36,15 @@ class MatchResult:
     def __init__(self):
         self.tp = self.fp = self.fn = self.item_wrong = 0
         self.by_category = {}
+        self.by_item = {}
+        self.events = []  # (종류, 정답 또는 탐지 span): FN, item_wrong, FP
 
     def _cat(self, category):
         return self.by_category.setdefault(category, {"gold": 0, "tp": 0, "item_wrong": 0, "fn": 0})
+
+
+def _item(result, g):
+    return result.by_item.setdefault(g["item"], {"category": g["category"], "gold": 0, "tp": 0, "item_wrong": 0, "fn": 0})
 
 
 def match_spans(gold, predicted):
@@ -48,12 +54,15 @@ def match_spans(gold, predicted):
     for g in gold:
         cat = result._cat(g["category"])
         cat["gold"] += 1
+        it = _item(result, g)
+        it["gold"] += 1
         hit = next((i for i, p in enumerate(predicted)
                     if i not in used and p["item"] == g["item"] and _overlap(g, p)), None)
         if hit is not None:
             used.add(hit)
             result.tp += 1
             cat["tp"] += 1
+            it["tp"] += 1
             continue
         wrong = next((i for i, p in enumerate(predicted)
                       if i not in used and p["category"] == g["category"] and _overlap(g, p)), None)
@@ -61,9 +70,16 @@ def match_spans(gold, predicted):
             used.add(wrong)
             result.item_wrong += 1
             cat["item_wrong"] += 1
+            it["item_wrong"] += 1
+            result.events.append(("item_wrong", g))
             continue
         result.fn += 1
         cat["fn"] += 1
+        it["fn"] += 1
+        result.events.append(("FN", g))
+    for i, p in enumerate(predicted):
+        if i not in used:
+            result.events.append(("FP", p))
     result.fp += len(predicted) - len(used)
     return result
 
@@ -99,6 +115,7 @@ def evaluate(records, responses, rtts_ms):
     if not (len(records) == len(responses) == len(rtts_ms)):
         raise ValueError("평가 세트, 응답, 왕복 시간의 개수가 다르다")
     x = {c: {"gold": 0, "tp": 0, "item_wrong": 0, "fn": 0} for c in CATEGORIES}
+    x_by_item, misses, action_mismatches = {}, [], []
     extra_fp = 0
     y_fp = y_n = correct = 0
     timings = {"detectMs": [], "maskMs": [], "restoreMs": []}
@@ -108,14 +125,24 @@ def evaluate(records, responses, rtts_ms):
             y_n += 1
             if resp["action"] != "ALLOW" or predicted:
                 y_fp += 1
+                for p in predicted or [{"item": None}]:
+                    misses.append({"id": rec["id"], "type": "FP_normal", "item": p["item"], "action": resp["action"]})
         else:
             m = match_spans(rec["spans"], predicted)
             extra_fp += m.fp
+            for kind, sp in m.events:
+                misses.append({"id": rec["id"], "type": kind, "item": sp["item"], "start": sp["start"], "end": sp["end"]})
+            for item, v in m.by_item.items():
+                agg = x_by_item.setdefault(item, {"category": v["category"], "gold": 0, "tp": 0, "item_wrong": 0, "fn": 0})
+                for key in ("gold", "tp", "item_wrong", "fn"):
+                    agg[key] += v[key]
             for cat, v in m.by_category.items():
                 for key in v:
                     x.setdefault(cat, {"gold": 0, "tp": 0, "item_wrong": 0, "fn": 0})[key] += v[key]
         if resp["action"] == rec["expected_action"]:
             correct += 1
+        else:
+            action_mismatches.append({"id": rec["id"], "expected": rec["expected_action"], "actual": resp["action"]})
         for name in timings:
             timings[name].append((resp.get("timings") or {}).get(name))
     for cat, v in x.items():
@@ -124,6 +151,9 @@ def evaluate(records, responses, rtts_ms):
     return {
         "n": len(records),
         "x": x,
+        "x_by_item": x_by_item,
+        "misses": misses,
+        "action_mismatches": action_mismatches,
         "x_extra_false_positives": extra_fp,
         "y": {"n": y_n, "false_positives": y_fp, "rate": y_fp / y_n if y_n else None, "ci": wilson(y_fp, y_n)},
         "action_accuracy": {"correct": correct, "n": len(records), "ci": wilson(correct, len(records))},

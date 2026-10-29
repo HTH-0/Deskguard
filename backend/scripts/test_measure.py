@@ -48,6 +48,26 @@ class MatchTest(unittest.TestCase):
         self.assertEqual(m.by_category["D2"], {"gold": 1, "tp": 0, "item_wrong": 0, "fn": 1})
 
 
+class DetailTest(unittest.TestCase):
+    def test_항목별_집계와_놓친_사례_목록(self):
+        records = [
+            rec("a", spans=[span("D1", "PHONE", 0, 5), span("D2", "API_KEY", 10, 20)]),
+            rec("n", kind="normal", action="ALLOW"),
+        ]
+        responses = [
+            resp("MASK", spans=[span("D1", "PHONE", 0, 5)]),
+            resp("MASK", spans=[span("D3", "CLIENT", 0, 3)]),
+        ]
+        r = measure.evaluate(records, responses, rtts_ms=[1, 1])
+        self.assertEqual(r["x_by_item"]["PHONE"], {"category": "D1", "gold": 1, "tp": 1, "item_wrong": 0, "fn": 0})
+        self.assertEqual(r["x_by_item"]["API_KEY"]["fn"], 1)
+        kinds = {(m["id"], m["type"], m["item"]) for m in r["misses"]}
+        self.assertIn(("a", "FN", "API_KEY"), kinds)
+        self.assertIn(("n", "FP_normal", "CLIENT"), kinds)
+        self.assertEqual(r["action_mismatches"], [{"id": "a", "expected": "MASK", "actual": "MASK"}][:0]
+                         + [{"id": "n", "expected": "ALLOW", "actual": "MASK"}])
+
+
 class WilsonTest(unittest.TestCase):
     def test_알려진_값(self):
         lo, hi = measure.wilson(8, 10)
