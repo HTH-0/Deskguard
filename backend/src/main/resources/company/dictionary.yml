@@ -1,0 +1,5 @@
+# 가상 회사 "가온누리테크"의 사전 (docs/dummy-company.md). 실존 회사, 인물, 제품과 관계없다.
+codenames: [블루웨일, 오로라, 프로젝트 해솔, NIMBUS-7, 스톤브릿지]
+clients: [한결물산, 다온로지스, 새벽유통, 미르상사, 온빛푸드]
+classified: [대외비, 사내한, 극비, Confidential, Internal Only]
+allowlist: [02-555-0100, contact@gaonnuri.example, support@gaonnuri.example, https://gaonnuri.example]

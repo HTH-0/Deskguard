@@ -10,7 +10,7 @@
 |---|---|---|---|
 | 유지 | `gateway.InputValidator` | 빈 입력, 최대 길이(4,000자) | FR-1 |
 | 신규 | `detect.Finding` | 탐지 하나: 범주(D1~D3), 항목(예: `PHONE`), 시작과 끝 위치, 값. 값은 메모리에만 있다 | FR-2 |
-| 신규 | `detect.Detector` (인터페이스) | `List<Finding> detect(String text)`. 항목마다 구현체 하나 | FR-2 |
+| 신규 | `detect.Detector` (인터페이스) | `List<Finding> detect(String text)`. 범주별 구현체: `PersonalDataDetector`(D1), `SecretDetector`(D2), `DictionaryDetector`(D3) | FR-2 |
 | 신규 | `detect.DetectionEngine` | 모든 탐지기를 돌리고, 허용 목록을 빼고, 겹친 탐지를 정리한다 | FR-2 |
 | 신규 | `detect.ActionDecider` | 탐지 결과로 허용, 가림, 경고, 차단을 정한다(순수 함수) | FR-3 |
 | 신규 | `mask.Masker` | 가명으로 바꾸고 대응표를 만든다. 응답을 복원한다 | FR-4 |
