@@ -34,7 +34,7 @@ def _overlap(a, b):
 
 class MatchResult:
     def __init__(self):
-        self.tp = self.fp = self.fn = self.item_wrong = 0
+        self.tp = self.fp = self.fn = self.item_wrong = self.tp_full = 0
         self.by_category = {}
         self.by_item = {}
         self.events = []  # (종류, 정답 또는 탐지 span): FN, item_wrong, FP
@@ -44,7 +44,7 @@ class MatchResult:
 
 
 def _item(result, g):
-    return result.by_item.setdefault(g["item"], {"category": g["category"], "gold": 0, "tp": 0, "item_wrong": 0, "fn": 0})
+    return result.by_item.setdefault(g["item"], {"category": g["category"], "gold": 0, "tp": 0, "item_wrong": 0, "fn": 0, "full": 0})
 
 
 def match_spans(gold, predicted):
@@ -63,6 +63,9 @@ def match_spans(gold, predicted):
             result.tp += 1
             cat["tp"] += 1
             it["tp"] += 1
+            if any(q["item"] == g["item"] and q["start"] <= g["start"] and q["end"] >= g["end"] for q in predicted):
+                result.tp_full += 1   # 정답 구간을 완전히 덮은 탐지(일부만 가리면 나머지가 밖으로 나간다)
+                it["full"] += 1
             continue
         wrong = next((i for i, p in enumerate(predicted)
                       if i not in used and p["category"] == g["category"] and _overlap(g, p)), None)
@@ -115,7 +118,7 @@ def evaluate(records, responses, rtts_ms):
     if not (len(records) == len(responses) == len(rtts_ms)):
         raise ValueError("평가 세트, 응답, 왕복 시간의 개수가 다르다")
     x = {c: {"gold": 0, "tp": 0, "item_wrong": 0, "fn": 0} for c in CATEGORIES}
-    x_by_item, misses, action_mismatches = {}, [], []
+    x_by_item, misses, action_mismatches, by_transform = {}, [], [], {}
     extra_fp = 0
     y_fp = y_n = correct = 0
     timings = {"detectMs": [], "maskMs": [], "restoreMs": []}
@@ -133,9 +136,14 @@ def evaluate(records, responses, rtts_ms):
             for kind, sp in m.events:
                 misses.append({"id": rec["id"], "type": kind, "item": sp["item"], "start": sp["start"], "end": sp["end"]})
             for item, v in m.by_item.items():
-                agg = x_by_item.setdefault(item, {"category": v["category"], "gold": 0, "tp": 0, "item_wrong": 0, "fn": 0})
-                for key in ("gold", "tp", "item_wrong", "fn"):
+                agg = x_by_item.setdefault(item, {"category": v["category"], "gold": 0, "tp": 0, "item_wrong": 0, "fn": 0, "full": 0})
+                for key in ("gold", "tp", "item_wrong", "fn", "full"):
                     agg[key] += v[key]
+            if rec.get("transform"):
+                t = by_transform.setdefault(rec["transform"], {"gold": 0, "tp": 0, "full": 0})
+                t["gold"] += len(rec["spans"])
+                t["tp"] += m.tp
+                t["full"] += m.tp_full
             for cat, v in m.by_category.items():
                 for key in v:
                     x.setdefault(cat, {"gold": 0, "tp": 0, "item_wrong": 0, "fn": 0})[key] += v[key]
@@ -152,6 +160,7 @@ def evaluate(records, responses, rtts_ms):
         "n": len(records),
         "x": x,
         "x_by_item": x_by_item,
+        "by_transform": by_transform,
         "misses": misses,
         "action_mismatches": action_mismatches,
         "x_extra_false_positives": extra_fp,

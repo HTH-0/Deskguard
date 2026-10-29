@@ -59,13 +59,36 @@ class DetailTest(unittest.TestCase):
             resp("MASK", spans=[span("D3", "CLIENT", 0, 3)]),
         ]
         r = measure.evaluate(records, responses, rtts_ms=[1, 1])
-        self.assertEqual(r["x_by_item"]["PHONE"], {"category": "D1", "gold": 1, "tp": 1, "item_wrong": 0, "fn": 0})
+        self.assertEqual(r["x_by_item"]["PHONE"], {"category": "D1", "gold": 1, "tp": 1, "item_wrong": 0, "fn": 0, "full": 1})
         self.assertEqual(r["x_by_item"]["API_KEY"]["fn"], 1)
         kinds = {(m["id"], m["type"], m["item"]) for m in r["misses"]}
         self.assertIn(("a", "FN", "API_KEY"), kinds)
         self.assertIn(("n", "FP_normal", "CLIENT"), kinds)
         self.assertEqual(r["action_mismatches"], [{"id": "a", "expected": "MASK", "actual": "MASK"}][:0]
                          + [{"id": "n", "expected": "ALLOW", "actual": "MASK"}])
+
+
+class BypassMetricTest(unittest.TestCase):
+    def test_정답_구간을_완전히_덮은_탐지만_full로_센다(self):
+        full = measure.match_spans([span("D1", "PHONE", 0, 13)], [span("D1", "PHONE", 0, 13)])
+        partial = measure.match_spans([span("D1", "PHONE", 0, 13)], [span("D1", "PHONE", 0, 6)])
+        wider = measure.match_spans([span("D1", "PHONE", 2, 10)], [span("D1", "PHONE", 0, 13)])
+        self.assertEqual((full.tp_full, partial.tp, partial.tp_full, wider.tp_full), (1, 1, 0, 1))
+
+    def test_변형_유형별_집계(self):
+        records = [
+            dict(rec("a", spans=[span("D1", "PHONE", 0, 13)]), transform="control"),
+            dict(rec("b", spans=[span("D1", "PHONE", 0, 13)]), transform="fullwidth"),
+            dict(rec("c", spans=[span("D1", "PHONE", 0, 13)]), transform="fullwidth"),
+        ]
+        responses = [resp(spans=[span("D1", "PHONE", 0, 13)]), resp(spans=[span("D1", "PHONE", 0, 5)]), resp("ALLOW")]
+        r = measure.evaluate(records, responses, rtts_ms=[1, 1, 1])
+        self.assertEqual(r["by_transform"]["control"], {"gold": 1, "tp": 1, "full": 1})
+        self.assertEqual(r["by_transform"]["fullwidth"], {"gold": 2, "tp": 1, "full": 0})
+
+    def test_변형_표시가_없으면_by_transform은_비어_있다(self):
+        r = measure.evaluate([rec("a", spans=[span("D1", "PHONE", 0, 13)])], [resp(spans=[span("D1", "PHONE", 0, 13)])], rtts_ms=[1])
+        self.assertEqual(r["by_transform"], {})
 
 
 class WilsonTest(unittest.TestCase):

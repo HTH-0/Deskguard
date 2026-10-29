@@ -1,0 +1,13 @@
+{
+  "frozen_at_commit": "96280beef9507ecb7069ad39e1dbdb1c25788b1f",
+  "bypass_set": {
+    "path": "docs/eval/set/bypass_v1.jsonl",
+    "sha256": "d8a160a6abdd9b84f90220dd2b175f031da20057e7535caff7ed425a810fd8eb"
+  },
+  "same_detection_config_as": "docs/eval/set/freeze.json",
+  "detection_code_sha256": "ac600e58f83c0bd5a5c052aa43fe8613ff55105554a88f389c9bc785e18b4b73",
+  "company_dictionary_sha256": "774725a744b548650e5489859f48df1a5ba9a6901e6ad8e612cc53bfbf98a212",
+  "application_yml_sha256": "8f6f62e7be53615ea86b7f962bff89f55d3eb83a879e424c153e545a38ef3414",
+  "bulk_threshold": 20,
+  "note": "우회 측정 전에 동결(명세 AC-10.7b). 탐지 코드, 사전, 설정이 5일차 X·Y·T 측정과 같아야 한다."
+}
