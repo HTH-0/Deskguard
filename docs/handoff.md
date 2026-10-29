@@ -9,7 +9,7 @@
 - 프로젝트: Deskguard. 사내 HR 헬프데스크 챗봇으로 들어가는 프롬프트를 판정 모델로 검사해 프롬프트 인젝션과 도메인 정책 위반을 차단하는 게이트웨이이다. ([README.md](../README.md))
 - 개발 방식: SDD와 TDD를 병행한다. 기획 단계는 SDD(명세서 → 설계서 → 작업 목록), 구현 단계는 TDD(수용 기준 → 테스트 → 코드)이다. ([DECISIONS.md](../DECISIONS.md) "개발 방법론: SDD와 TDD 병행", [constitution.md](constitution.md) 5절)
 - 중심 서사: "LLM 챗봇 앞단의 입력 가드레일을 만들고, 사전에 정한 기준으로 측정하고, 놓친 사례와 한계를 기록했다." 포트폴리오의 가치는 구현보다 측정과 기록에 있다(DECISIONS.md "포트폴리오 방향 점검").
-- **2026-10-29 주제 재정의(B안): 사내 생성형 AI 사용의 정보 유출 방지 게이트웨이로 방향을 바꿨다.** HR 도메인 정책과 6단계 도메인 eval 구축(라벨링 포함)은 중단했다. 아래 "현재 위치"와 4절은 재정의 이전 기준이며, 새 계획이 승인되면 다시 쓴다. 근거는 DECISIONS.md "주제 재정의".
+- **2026-10-29 주제 재정의(B안): 사내 생성형 AI 사용의 정보 유출 방지 게이트웨이로 방향을 바꿨다.** HR 도메인 정책과 6단계 도메인 eval 구축(라벨링 포함)은 중단했다. 새 문서: [problem.md](problem.md)(문제 정의서, 확정), [policy.md](policy.md)(위협 모델과 데이터 정책, 초안), [spec.md](spec.md)(명세 v2, 초안). 일정은 10-29 ~ 11-04 일주일이고 작업 순서는 [tasks.md](tasks.md) 맨 위 표이다. HR 기준의 명세, 설계, 도메인 정책은 `archive/`로 옮겼다(`spec-v1-hr.md`, `design-v1-hr.md`, `domain-policy-hr.md`). 아래 "현재 위치", 2절, 4절은 재정의 이전 기준이다. 근거는 DECISIONS.md "주제 재정의", "문제 정의서 확정, 일주일 일정과 범위 축소".
 - **현재 위치**
   - 완료: 도메인 정책, 평가 데이터, 명세서(확정), Jev 한국어 PoC(채택), 질문 v2(조건부 채택), 설계서 1~9절(확정), 구현 T1~T13, 약관 위험 수용(R8), 외부 도메인 자료 조사.
   - **진행 중: 6단계 측정 설계 승인(2026-10-29). 6-3 도메인 후보 생성 완료(`docs/eval/raw/`, 302개). 다음은 6-3 필터와 블라인드 라벨링 시트 도구, 그리고 6-1 기준선 룰이다.**
@@ -53,7 +53,7 @@
 | 항목 | 결정 | 근거 |
 |---|---|---|
 | Jev 판정 모델 채택 | 승인(2026-10-27) | DECISIONS.md "Jev 채택, 라벨 기준 A1" |
-| 라벨 기준 A1과 A-15, A-18, B-13, B-02 처리 | 확정(2026-10-27) | [domain-policy.md](domain-policy.md) 4장 |
+| 라벨 기준 A1과 A-15, A-18, B-13, B-02 처리 | 확정(2026-10-27) | [archive/domain-policy-hr.md](archive/domain-policy-hr.md) 4장 |
 | 점검 문장 65개와 합격 기준 N1~N6, 질문 v2 | v2 조건부 채택 | design.md 4.3, `docs/poc/data_n.tsv` |
 | 개발사 문의(약관 R8) | 답장 수신, 승인은 받을 수 없어 위험을 수용하고 진행 | [open-risks.md](open-risks.md) R8, 이 문서 9절 |
 | 측정 모드를 정식 배포 후에도 유지 | 유지(2026-10-29). 같은 컴퓨터 제한과 기본 꺼짐으로 위험이 작다 | DECISIONS.md "측정 모드 안전장치와 유지" |
@@ -69,7 +69,7 @@
 
 ## 4. 다음 작업 (순서)
 
-1. **사용자: 6단계 측정 설계 검토와 승인**([spec.md](spec.md) FR-10, [design.md](design.md) 10절). 3절의 1~4번을 함께 정한다.
+1. **사용자: 6단계 측정 설계 검토와 승인**([archive/spec-v1-hr.md](archive/spec-v1-hr.md) FR-10, [archive/design-v1-hr.md](archive/design-v1-hr.md) 10절). 3절의 1~4번을 함께 정한다.
 2. **6-1 기준선 룰 확정**: `design` 데이터로만, 서버 호출 없이 로컬에서 한다. 룰 선정은 사용자가 한다(constitution 6장, [rule-criteria.md](rule-criteria.md)). 예전 후보 4종(P1~P4)의 정규식은 저장소에 없으므로 다시 정한다. PoC 결과(`docs/poc/result_184_K.csv`, `result_184_K2.csv`)에 질문별 점수 10개가 3회 반복으로 있어서 새 호출 없이 `design` 임계값 곡선을 계산할 수 있다(낙관적인 수치로 표시한다).
 3. **6-2 분석 도구**: 중단한 작업이 [eval/paused_6_2/](eval/paused_6_2/)에 있다. README의 재개 방법을 따른다. v1 질문 파일(`judge/questions_v1.tsv`)과 일치 시험도 이 단계에서 만든다(design.md O5).
 4. **6-3 도메인 `eval` 구축**: 생성 지시문 작성, 생성기로 후보 수집(사용자 작업), 자동 필터 도구, 블라인드 라벨링(사용자 작업), 층화 추출. 층화 틀은 ACCESS DENIED INC의 분류를 차용한다(research 4절).
@@ -152,10 +152,12 @@ python -m unittest -v test_run_batch
 
 | 문서 | 질문 | 수명 |
 |---|---|---|
+| [problem.md](problem.md) | 왜, 누구를 위해 만드는가 (최상위, 2026-10-29) | 영구, 확정 |
+| [policy.md](policy.md) | 무엇으로부터 무엇을 지키고 어떻게 처리하는가 (위협 모델과 데이터 정책) | 영구, 초안 |
 | [constitution.md](constitution.md) | 바뀌지 않는 원칙 | 영구, 초안(확정 대기) |
-| [domain-policy.md](domain-policy.md) | 무엇을 허용하고 금지하는가 | 영구 |
-| [spec.md](spec.md) | 무엇을 만드는가 (요구사항, 수용 기준, API 계약). FR-10이 6단계 측정 | 영구, 확정(FR-10은 승인 대기) |
-| [design.md](design.md) | 어떻게 만드는가. 1~9절은 질문, 구조, 로깅, 테스트 전략이고 10절은 6단계 측정 설계 | 영구, 10절은 승인 대기 |
+| [archive/domain-policy-hr.md](archive/domain-policy-hr.md) | 무엇을 허용하고 금지하는가 | 영구 |
+| [spec.md](spec.md) | 무엇을 만드는가 (명세 v2, 수용 기준). v1은 archive/spec-v1-hr.md | 영구, v2 초안 |
+| design.md | 어떻게 만드는가 (설계 v2, 2일차 작성). v1은 archive/design-v1-hr.md | 작성 예정 |
 | [tasks.md](tasks.md) | 무엇을 어떤 순서로 하는가 (스텝 8 작업, 6단계 작업 목록, 보류 목록) | 진행 상태를 갱신 |
 | [rule-criteria.md](rule-criteria.md) | 패턴 필터에 패턴을 넣는 기준 | 영구 |
 | [open-risks.md](open-risks.md) | 무엇이 불확실한가 (R1~R12) | 누적 |

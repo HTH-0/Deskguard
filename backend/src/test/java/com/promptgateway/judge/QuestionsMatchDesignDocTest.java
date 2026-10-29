@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  */
 class QuestionsMatchDesignDocTest {
 
-    private static final Path DESIGN = Path.of("..", "docs", "design.md");
+    private static final Path DESIGN = Path.of("..", "docs", "archive", "design-v1-hr.md");
     private static final Pattern ROW = Pattern.compile("^\\| (I1|I2a|I2b|I3|I4|F1|F2|F3|F4a|F4b) \\|.*");
 
     @Test
