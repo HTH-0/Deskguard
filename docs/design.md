@@ -69,13 +69,15 @@ D1 또는 D3(코드명, 고객사)이 있음          → MASK
 | 처리 | 상태 | 본문 |
 |---|---|---|
 | ALLOW | 200 | `{"action":"ALLOW","answer":"...","findings":[]}` |
-| MASK | 200 | `{"action":"MASK","answer":"(복원된 답)","findings":[{"category":"D1","item":"PHONE","count":2}]}` |
+| MASK | 200 | `{"action":"MASK","answer":"(복원된 답)","findings":[{"category":"D1","item":"PHONE","count":2}],"sentPrompt":"(외부 AI로 보낸 가린 문장)"}` |
 | WARN (미확인) | 200 | `{"action":"WARN","answer":null,"findings":[...],"confirmRequired":true}` |
 | BLOCK | 403 | `{"action":"BLOCK","answer":null,"findings":[...],"message":"자격증명이 들어 있어 보내지 않았습니다. 값을 지우고 다시 보내세요."}` |
 | 측정 모드 | 200 | 위 항목에 더해 `maskedPrompt`, 항목별 위치, 단계별 지연. 외부 AI는 부르지 않는다 |
 
 - 응답의 `findings`는 범주, 항목, 개수만 싣는다. 값과 위치는 싣지 않는다(측정 모드 제외).
 - 입력 검증 실패는 400, 외부 AI 오류는 기존 오류 형식(내부 정보 없음)이다.
+
+- 시연용 응답 모델: `gateway.demo-answer=true`이면 Gemini 대신 받은 문장을 그대로 되돌려 주는 가짜 응답 모델을 쓴다(키 없이 포털을 시연한다). 기본은 false이다.
 
 ## 6. 설정
 

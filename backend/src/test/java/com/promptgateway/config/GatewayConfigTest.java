@@ -46,4 +46,18 @@ class GatewayConfigTest {
     void invalidThresholdFails() {
         runner.withPropertyValues("detection.bulk-threshold=0").run(context -> assertThat(context).hasFailed());
     }
+
+    @Test
+    @DisplayName("시연 설정(gateway.demo-answer=true)이면 받은 문장을 되돌려 주는 가짜 응답 모델을 쓴다(키 없이 시연)")
+    void demoAnswer() {
+        new ApplicationContextRunner()
+                .withUserConfiguration(GatewayConfig.class, com.promptgateway.service.DemoAnswerGenerator.class)
+                .withPropertyValues("gateway.demo-answer=true", "company.codenames=블루웨일", "company.clients=한결물산",
+                        "company.classified=대외비")
+                .run(context -> {
+                    assertThat(context).hasNotFailed();
+                    assertThat(context.getBean(ChatGateway.class).handle("블루웨일 일정 정리", false, false).answer())
+                            .contains("시연용", "블루웨일 일정 정리");
+                });
+    }
 }

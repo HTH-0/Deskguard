@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -18,6 +19,7 @@ import java.nio.charset.StandardCharsets;
  *    나중에 4단계에서 필터 로직이 추가돼도 컨트롤러 코드는 거의 안 바뀌게 된다.
  */
 @Service
+@ConditionalOnProperty(name = "gateway.demo-answer", havingValue = "false", matchIfMissing = true)
 public class GeminiService implements AnswerGenerator {
 
     private final RestTemplate restTemplate;

@@ -94,7 +94,7 @@ public class ChatGateway {
         long answerMs = ms(t2);
         long t3 = System.nanoTime();
         RestoreResult restored = masker.restore(answer, mask);
-        return logged(prompt, new GatewayResult(action, counts, restored.text(), confirmedWarn, null, null,
+        return logged(prompt, new GatewayResult(action, counts, restored.text(), confirmedWarn, mask.maskedText(), null,
                 new GatewayResult.Timings(detectMs, maskMs, answerMs, ms(t3)), restored.restored(), false));
     }
 

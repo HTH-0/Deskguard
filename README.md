@@ -5,7 +5,9 @@
 (재정의 이전 설명) 사내 HR 중심, IT 일부 헬프데스크 챗봇으로 들어가는 프롬프트를 실제 LLM API(Google `gemini-3.6-flash`)로 전달하기 전에, 직접 만든 백엔드 게이트웨이가 패턴 필터와 판정 모델을 거쳐 프롬프트 인젝션(지시 무시, 탈옥, 시스템 프롬프트 탈취, 권한 사칭)과 도메인 정책 위반(타인 정보 열람, 권한 밖 변경, 승인 우회, 보안 구성과 자격증명 노출)을 걸러낸다.
 
 ## 상태
-현재 단계: 2026-10-29에 주제를 "사내 HR 헬프데스크 챗봇의 입력 가드레일"에서 "사내 생성형 AI 사용의 정보 유출 방지 게이트웨이"로 재정의했다. 문제 정의는 [`docs/problem.md`](./docs/problem.md), 일주일 계획은 [`docs/tasks.md`](./docs/tasks.md)에 있다. 아래 설명과 상세 로드맵 링크 일부는 재정의 이전 기준이며 완성 단계에서 다시 쓴다. 다른 컴퓨터에서 이어서 작업하려면 [`docs/handoff.md`](./docs/handoff.md)를 먼저 읽는다.
+현재 단계: 2026-10-29에 주제를 "사내 HR 헬프데스크 챗봇의 입력 가드레일"에서 "사내 생성형 AI 사용의 정보 유출 방지 게이트웨이"로 재정의했다. 문제 정의는 [`docs/problem.md`](./docs/problem.md), 일주일 계획은 [`docs/tasks.md`](./docs/tasks.md)에 있다. 게이트웨이와 사내 AI 포털이 동작한다(키 없이 시연: `cd backend`, `mvn spring-boot:run "-Dspring-boot.run.arguments=--gateway.demo-answer=true"`, http://localhost:8080). 측정은 5~6일차에 한다. 아래 설명과 상세 로드맵 링크 일부는 재정의 이전 기준이며 완성 단계에서 다시 쓴다.
+
+![사내 AI 포털 시연 화면](./docs/images/portal-demo.png) 다른 컴퓨터에서 이어서 작업하려면 [`docs/handoff.md`](./docs/handoff.md)를 먼저 읽는다.
 
 ## 개발 방식
 SDD와 TDD를 병행한다. 기획 단계는 SDD로 명세서([`spec.md`](./docs/spec.md)), 설계서([`design.md`](docs/archive/design-v1-hr.md)), 작업 목록([`tasks.md`](./docs/tasks.md)) 순서로 확정한다. 구현 단계는 TDD로 수용 기준(AC)에서 실패하는 테스트를 먼저 쓰고 최소 코드로 통과시킨다. 구현 중에 명세의 빈칸이 드러나면 코드보다 명세를 먼저 고친다. 판정 모델의 탐지율처럼 확률적인 품질은 테스트가 아니라 6단계 평가로 검증한다. 근거는 [`DECISIONS.md`](./DECISIONS.md)와 [`constitution.md`](./docs/constitution.md)에 있다.

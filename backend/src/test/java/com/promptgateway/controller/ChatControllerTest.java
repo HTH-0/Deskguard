@@ -77,13 +77,14 @@ class ChatControllerTest {
     }
 
     @Test
-    @DisplayName("AC-6.1 가림: 200, 복원된 답, 범주별 개수. 응답에 가명과 값의 위치는 없다")
+    @DisplayName("AC-6.1, 6.4 가림: 200, 복원된 답, 범주별 개수, 외부 AI로 보낸 가린 문장. 값의 위치는 없다")
     void mask() throws Exception {
         MockHttpServletResponse r = chat("김민수 010-2345-6789 정리");
 
         assertThat(r.getStatus()).isEqualTo(200);
         assertThat(body(r)).isEqualTo("{\"action\":\"MASK\",\"answer\":\"답: 김민수 010-2345-6789 정리\","
-                + "\"findings\":[{\"category\":\"D1\",\"item\":\"PHONE\",\"count\":1}]}");
+                + "\"findings\":[{\"category\":\"D1\",\"item\":\"PHONE\",\"count\":1}],"
+                + "\"sentPrompt\":\"김민수 [전화1] 정리\"}");
         assertThat(sentToAi).containsExactly("김민수 [전화1] 정리");
     }
 
@@ -124,7 +125,9 @@ class ChatControllerTest {
     @Test
     @DisplayName("AC-9.1 측정 모드가 꺼져 있으면 응답에 가린 문장과 위치가 없다")
     void measurementOffHidesDetails() throws Exception {
-        assertThat(body(chat("010-2345-6789"))).doesNotContain("maskedPrompt", "start", "[전화1]");
+        // 보낸 가린 문장(sentPrompt)은 AC-6.4로 싣지만, 측정용 항목(위치, 측정용 가린 문장, 지연)은 없다
+        assertThat(body(chat("010-2345-6789"))).doesNotContain("maskedPrompt", "spans", "\"start\"", "detectMs")
+                .contains("\"sentPrompt\":\"[전화1]\"");
     }
 
     @Test

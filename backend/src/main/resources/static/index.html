@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTH 사내 AI 포털</title>
+<style>
+/* 한 화면 채팅: 위에 안내 띠, 가운데 대화, 아래 입력. 게이트웨이가 한 일(가림, 경고, 차단)을 대화 안의 표시로 보여 준다 */
+:root {
+  --bg: #f5f6f4; --surface: #ffffff; --fg: #1f2622; --muted: #5f6b65; --line: #d9dfdb;
+  --accent: #23634f; --accent-fg: #ffffff; --user: #e4efe9;
+  --mask: #2f5d8a; --mask-soft: #e3ebf4; --warn: #8a6a12; --warn-soft: #f6efda; --block: #a8382c; --block-soft: #f7e4e1;
+  --font: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root {
+  --bg: #151a18; --surface: #1d2421; --fg: #e5ebe8; --muted: #9ba9a2; --line: #303b36;
+  --accent: #5bbd9b; --accent-fg: #0f1714; --user: #223630;
+  --mask: #8db7e3; --mask-soft: #1e2b3a; --warn: #e2c25e; --warn-soft: #362f1a; --block: #ee8a7e; --block-soft: #3b2321;
+  color-scheme: dark } }
+* { box-sizing: border-box }
+html, body { height: 100% }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.6 var(--font); display: flex; flex-direction: column }
+header { padding: 14px max(16px, env(safe-area-inset-left)); border-bottom: 1px solid var(--line); background: var(--surface) }
+header .inner, main .inner, footer .inner { max-width: 760px; margin: 0 auto }
+h1 { font-size: 17px; margin: 0; font-weight: 700 }
+.sub { color: var(--muted); font-size: 13px }
+main { flex: 1; overflow-y: auto; padding: 16px max(16px, env(safe-area-inset-left)) }
+.msg { display: grid; gap: 6px; margin-bottom: 14px }
+.bubble { padding: 10px 14px; border-radius: 10px; white-space: pre-wrap; overflow-wrap: anywhere; max-width: 100% }
+.me .bubble { background: var(--user); justify-self: end }
+.ai .bubble { background: var(--surface); border: 1px solid var(--line) }
+.notice { font-size: 13px; padding: 8px 12px; border-radius: 8px; border-left: 3px solid }
+.notice.mask { background: var(--mask-soft); border-color: var(--mask); color: var(--fg) }
+.notice.warn { background: var(--warn-soft); border-color: var(--warn) }
+.notice.block { background: var(--block-soft); border-color: var(--block) }
+.notice b { font-weight: 700 }
+.notice.mask b { color: var(--mask) } .notice.warn b { color: var(--warn) } .notice.block b { color: var(--block) }
+details.sent { font-size: 13px; color: var(--muted) }
+details.sent pre { white-space: pre-wrap; overflow-wrap: anywhere; font: 12.5px/1.5 var(--mono); background: var(--bg);
+  border: 1px solid var(--line); border-radius: 6px; padding: 8px; margin: 6px 0 0; color: var(--fg) }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px }
+button { font: inherit; cursor: pointer; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); padding: 6px 12px }
+button.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent) }
+button:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+button:disabled { opacity: .5; cursor: default }
+footer { border-top: 1px solid var(--line); background: var(--surface); padding: 12px max(16px, env(safe-area-inset-left)) }
+.examples { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px }
+.examples button { font-size: 12.5px; padding: 4px 10px; color: var(--muted) }
+form { display: flex; gap: 8px; align-items: flex-end }
+textarea { flex: 1; min-height: 52px; max-height: 200px; resize: vertical; font: inherit; color: var(--fg); background: var(--bg);
+  border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px }
+.empty { color: var(--muted); font-size: 14px; padding: 24px 0 }
+</style>
+</head>
+<body>
+<header><div class="inner">
+  <h1>HTH 사내 AI 포털</h1>
+  <div class="sub">외부 AI로 보내기 전에 개인정보, 자격증명, 회사 기밀을 검사합니다. 민감한 값은 가려서 보내고, 답에서는 원래 값으로 되돌립니다.</div>
+</div></header>
+
+<main id="log"><div class="inner" id="inner">
+  <div class="empty" id="empty">아래 예시를 눌러 보거나 직접 입력하세요. 예시의 이름, 번호, 키는 모두 가짜입니다.</div>
+</div></main>
+
+<footer><div class="inner">
+  <div class="examples" id="examples"></div>
+  <form id="form">
+    <textarea id="prompt" aria-label="보낼 내용" placeholder="외부 AI에게 보낼 내용 (Ctrl+Enter로 보내기)"></textarea>
+    <button class="primary" id="send" type="submit">보내기</button>
+  </form>
+</div></footer>
+
+<script>
+const EXAMPLES = [
+  ["가림: 고객 연락처", "아래 고객 연락처를 표로 정리해 줘\n김민수 010-2345-6789 minsu.k@mail.example\n박서연 010-9876-5432 seoyeon.p@mail.example"],
+  ["가림: 고객사와 코드명", "한결물산 미팅에서 블루웨일 출시 일정 공유한 내용으로 감사 메일 초안 써 줘"],
+  ["차단: 비밀번호", "이 설정 왜 접속이 안 될까?\nDB_URL=postgres://app_user:Qw7!zLp92x@db01.hth.internal:5432/orders"],
+  ["차단: 대외비 문서", "[대외비] 2025년 사업계획 초안 요약해 줘"],
+  ["경고: 대량 명단", Array.from({length: 22}, (_, i) => `직원${i + 1} 010-${2100 + i}-${3400 + i}`).join("\n") + "\n위 명단 부서별로 정리해 줘"],
+  ["허용: 일반 업무", "주간 회의록을 세 줄로 요약하는 방법 알려 줘"],
+  ["허용: 형식 질문", "주민등록번호는 몇 자리야?"],
+];
+const ITEM = { RRN: "주민등록번호", FRN: "외국인등록번호", CARD: "카드번호", PHONE: "휴대전화", ACCOUNT: "계좌번호", EMAIL: "이메일",
+  PRIVATE_KEY: "개인 키", CONN_STRING: "접속 정보", API_KEY: "API 키", JWT: "토큰", PASSWORD: "비밀번호",
+  CLASSIFIED: "보안 등급 표시", CODENAME: "프로젝트 코드명", CLIENT: "고객사 이름" };
+const $ = (id) => document.getElementById(id);
+
+function summary(findings) {
+  return (findings || []).map(f => `${ITEM[f.item] || f.item} ${f.count}건`).join(", ");
+}
+function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+function add(node) { $("empty")?.remove(); $("inner").appendChild(node); $("log").scrollTop = $("log").scrollHeight; }
+
+function addMine(text) { const m = el("div", "msg me"); m.appendChild(el("div", "bubble", text)); add(m); }
+
+function addResult(prompt, status, data) {
+  const m = el("div", "msg ai");
+  if (status === 400) { m.appendChild(el("div", "notice block", data.message || "보낼 수 없는 입력입니다.")); return add(m); }
+  if (!data || !data.action) { m.appendChild(el("div", "notice block", (data && data.message) || "외부 AI 호출에 실패했습니다. 잠시 후 다시 시도하세요.")); return add(m); }
+
+  if (data.action === "BLOCK") {
+    const n = el("div", "notice block"); n.appendChild(el("b", null, "보내지 않았습니다. "));
+    n.appendChild(document.createTextNode(`${summary(data.findings)} — ${data.message}`)); m.appendChild(n);
+  } else if (data.action === "WARN") {
+    const n = el("div", "notice warn"); n.appendChild(el("b", null, "확인이 필요합니다. "));
+    n.appendChild(document.createTextNode(`${summary(data.findings)}이 들어 있습니다. 보내면 값은 모두 가려서 보냅니다.`));
+    const a = el("div", "actions");
+    const ok = el("button", "primary", "가려서 보내기"); const no = el("button", null, "취소");
+    ok.type = no.type = "button";
+    ok.onclick = () => { ok.disabled = no.disabled = true; send(prompt, true); };
+    no.onclick = () => { ok.disabled = no.disabled = true; n.appendChild(el("div", null, "취소했습니다. 외부로 보낸 내용은 없습니다.")); };
+    a.append(ok, no); n.appendChild(a); m.appendChild(n);
+  } else {
+    if (data.action === "MASK") {
+      const n = el("div", "notice mask"); n.appendChild(el("b", null, "가려서 보냈습니다. "));
+      n.appendChild(document.createTextNode(summary(data.findings)));
+      if (data.sentPrompt) {
+        const d = el("details", "sent"); d.appendChild(el("summary", null, "외부 AI로 보낸 문장 보기"));
+        d.appendChild(el("pre", null, data.sentPrompt)); n.appendChild(d);
+      }
+      m.appendChild(n);
+    }
+    m.appendChild(el("div", "bubble", data.answer));
+  }
+  add(m);
+}
+
+async function send(prompt, confirmed) {
+  $("send").disabled = true;
+  try {
+    const res = await fetch("api/chat", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt, confirmed }) });
+    let data = null; try { data = await res.json(); } catch (e) { }
+    addResult(prompt, res.status, data);
+  } catch (e) {
+    addResult(prompt, 0, null);
+  } finally { $("send").disabled = false; }
+}
+
+$("form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const p = $("prompt").value;
+  if (!p.trim()) return;
+  addMine(p); $("prompt").value = ""; send(p, false);
+});
+$("prompt").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) $("form").requestSubmit(); });
+for (const [label, text] of EXAMPLES) {
+  const b = el("button", null, label); b.type = "button";
+  b.onclick = () => { $("prompt").value = text; $("prompt").focus(); };
+  $("examples").appendChild(b);
+}
+</script>
+</body>
+</html>
