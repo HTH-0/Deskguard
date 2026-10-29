@@ -54,7 +54,7 @@
 
 ### 4. 이어서 할 때 조심할 것
 
-1. **브랜치:** 반드시 `claude/compassionate-pascal-nw40fb`에서 시작한다. `main`의 `CLAUDE.md`와 `handoff.md`는 옛 내용이다.
+1. **브랜치:** `main`에서 시작한다(2026-10-29 `main`을 최신으로 갱신하고 옛 작업 브랜치를 정리했다).
 2. **JDK:** 프로젝트는 Java 25이다. 클라우드 컨테이너는 JDK 21이라 그대로는 빌드가 실패한다(`release version 25 not supported`). `handoff.md` 5절의 방법을 쓴다.
 3. **키:** 2026-10-29 세션의 환경변수에는 `GEMINI_API_KEY`, `TYPESAFE_API_KEY`가 없었다. 시험과 시연, X·Y·T 측정은 키 없이 된다. Z 측정만 키가 필요하다.
 4. **옛 Python 시험:** `test_run_batch.py`와 `test_domain_candidates.py`는 HR 시절 형식으로 통과한다. 새 측정 응답 형식과 맞지 않으므로 5일차에 바꾼다.

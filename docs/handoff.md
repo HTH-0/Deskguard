@@ -8,7 +8,7 @@
 
 - **프로젝트:** Deskguard. 회사 직원이 ChatGPT 같은 외부 AI에 보내는 프롬프트를 나가기 전에 검사하는 정보 유출 방지 게이트웨이와 사내 AI 포털이다. 왜 만드는지는 [problem.md](problem.md)(최상위 문서)에 있다.
 - **처리:** 개인정보(D1), 자격증명(D2), 회사 기밀(D3)을 게이트웨이 안의 코드로 탐지하고, 허용, 가림(가명으로 바꿔 보내고 답에서 되돌림), 경고(확인 후 가려서 보냄), 차단으로 처리한다. 운영 경로는 외부 판정 서비스를 부르지 않는다.
-- **작업 브랜치:** `claude/compassionate-pascal-nw40fb` 하나만 쓴다. `main`은 오래된 상태이며 사용자가 마지막에 검토하고 병합한다. `claude/upbeat-cori-pi0rtq`는 이 브랜치에 모두 포함되어 더 쓰지 않는다.
+- **작업 브랜치:** `main`이 기준이다(2026-10-29 정리, 이전 작업 브랜치는 모두 `main`에 포함됨). 클라우드 세션은 지정된 세션 브랜치에서 작업하고, 작업이 끝나면 `main`에 병합한다.
 - **개발 방식:** SDD와 TDD를 병행한다. 기획은 SDD(문제 정의 → 정책 → 명세 → 설계 → 작업 목록), 구현은 TDD(수용 기준 → 실패하는 시험 → 코드)이다. 각 작업의 첫 스텝은 명세 점검이고, 컴파일 오류는 빨강으로 치지 않는다.
 - **기술:** Spring Boot 4.1.1, Java 25 LTS, Maven, Python 3(측정 도구). 외부 AI는 Gemini(`gemini-3.6-flash`). Jev는 측정 경로에서 Z 채점에만 쓴다(5~6일차).
 
@@ -52,11 +52,11 @@
 git clone https://github.com/HTH-0/Deskguard.git
 cd Deskguard
 
-# 작업 내용은 작업 브랜치에 있다(main은 오래된 상태). 시작할 때마다 모든 원격 브랜치를 확인한다.
+# 기준은 main이다. 시작할 때마다 모든 원격 브랜치를 확인한다.
 git fetch origin
 git branch -r --sort=-committerdate --format="%(committerdate:short) %(refname:short)"
-git checkout claude/compassionate-pascal-nw40fb
-git pull origin claude/compassionate-pascal-nw40fb
+git checkout main
+git pull origin main
 
 # 이 저장소에만 적용하는 커밋 정보
 git config user.name "HTH-0"
