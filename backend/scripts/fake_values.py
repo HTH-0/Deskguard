@@ -84,6 +84,12 @@ class Fake:
             return base64.urlsafe_b64encode(json.dumps(obj).encode()).decode().rstrip("=")
         return f"{part({'alg': 'HS256', 'typ': 'JWT'})}.{part({'sub': self._digits(6), 'role': 'user'})}.{self._random(43, ALNUM + '-_')}"
 
+    def private_key(self):
+        """PEM 개인 키 블록 모양(무작위 바이트, 실제 키가 아니다). 시작과 끝 줄이 있고 본문은 64자씩 줄바꿈한다."""
+        body = base64.b64encode(bytes(self.r.randrange(256) for _ in range(1190))).decode()
+        lines = [body[i:i + 64] for i in range(0, len(body), 64)]
+        return "\n".join(["-----BEGIN RSA PRIVATE KEY-----", *lines, "-----END RSA PRIVATE KEY-----"])
+
     def password(self):
         while True:
             value = self._random(10, ALNUM + "!@#$%^&*")
