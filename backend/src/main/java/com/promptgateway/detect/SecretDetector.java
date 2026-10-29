@@ -18,7 +18,7 @@ public class SecretDetector implements Detector {
 
     private static final List<Rule> RULES = List.of(
             new Rule(Item.PRIVATE_KEY, Pattern.compile("-----BEGIN [A-Z ]*PRIVATE KEY-----[\\s\\S]*?(?:-----END [A-Z ]*PRIVATE KEY-----|$)"), 0),
-            new Rule(Item.CONN_STRING, Pattern.compile("\\b[a-z][a-z0-9+.-]*://([^:@\\s/]+):([^@\\s/]+)@[^\\s]+"), 2),
+            new Rule(Item.CONN_STRING, Pattern.compile("\\b[a-z][a-z0-9+.-]*://([^:@\\s/]+):([^\\s/]+)@[^\\s@/]+[^\\s]*"), 2),
             new Rule(Item.API_KEY, Pattern.compile("\\bAKIA[0-9A-Z]{16}\\b"), 0),
             new Rule(Item.API_KEY, Pattern.compile("\\bAIza[0-9A-Za-z_-]{35}\\b"), 0),
             new Rule(Item.API_KEY, Pattern.compile("\\bsk-[A-Za-z0-9_-]{20,}"), 0),

@@ -60,4 +60,10 @@ class SecretDetectorTest {
         assertThat(items("DB_PASSWORD=Password1!")).containsExactly(Item.PASSWORD);
         assertThat(items("비밀번호: secret2024!")).containsExactly(Item.PASSWORD);
     }
+
+    @Test
+    @DisplayName("비밀번호에 @가 들어 있는 접속 문자열도 하나의 접속 문자열로 찾는다 (교차 확인에서 발견)")
+    void connectionStringWithAtInPassword() {
+        assertThat(items("mysql://app_user:@7vt%A3R6D@db18.gaonnuri.internal:3306/hr")).containsExactly(Item.CONN_STRING);
+    }
 }
