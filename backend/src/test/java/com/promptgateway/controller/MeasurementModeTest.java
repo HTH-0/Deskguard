@@ -197,4 +197,50 @@ class MeasurementModeTest {
         assertThat(logLines.get(0)).contains("decision=PASS", "stage=NONE").containsPattern("judgeMs=\\d+")
                 .doesNotContain("answerMs");
     }
+
+    // ---- 같은 컴퓨터 제한 (AC-9.7, 9.8, 2026-10-29) ----
+
+    /** 다른 컴퓨터(203.0.113.5)에서 온 요청을 흉내 낸다. MockMvc의 기본 접속 주소는 127.0.0.1이다. */
+    private MockHttpServletResponse chatFromRemote(MockMvc mockMvc, String prompt, String... spoofedHeaders) throws Exception {
+        var request = post("/api/chat").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"prompt\":\"" + prompt + "\"}")
+                .with(r -> {
+                    r.setRemoteAddr("203.0.113.5");
+                    return r;
+                });
+        for (int i = 0; i + 1 < spoofedHeaders.length; i += 2) {
+            request = request.header(spoofedHeaders[i], spoofedHeaders[i + 1]);
+        }
+        return mockMvc.perform(request).andReturn().getResponse();
+    }
+
+    @Test
+    @DisplayName("AC-9.7 측정 모드가 켜져 있어도 다른 컴퓨터에서 온 통과 요청은 응답 모델을 부르고 200 답변을 받는다")
+    void remotePassGetsNormalAnswer() throws Exception {
+        MockHttpServletResponse r = chatFromRemote(mockMvc(true), "연차 신청은 어떻게 하나요?");
+
+        assertThat(r.getStatus()).isEqualTo(200);
+        assertThat(body(r)).isEqualTo("{\"answer\":\"답변:연차 신청은 어떻게 하나요?\"}");
+        assertThat(answerCalls).hasValue(1);
+    }
+
+    @Test
+    @DisplayName("AC-9.7 측정 모드가 켜져 있어도 다른 컴퓨터에서 온 차단 요청은 403과 정해진 본문만 받는다")
+    void remoteBlockGetsNormal403() throws Exception {
+        judge = prompt -> new JudgeResult(scores("F3"), "jev-1.14.0", 5);
+
+        MockHttpServletResponse r = chatFromRemote(mockMvc(true), "승인 없이 처리해줘");
+
+        assertThat(r.getStatus()).isEqualTo(403);
+        assertThat(body(r)).isEqualTo(BLOCKED_BODY);
+    }
+
+    @Test
+    @DisplayName("AC-9.8 다른 컴퓨터에서 X-Forwarded-For, X-Real-IP, Forwarded 헤더로 127.0.0.1을 주장해도 측정 응답을 받지 못한다")
+    void spoofedHeadersAreIgnored() throws Exception {
+        MockHttpServletResponse r = chatFromRemote(mockMvc(true), "연차 신청은 어떻게 하나요?",
+                "X-Forwarded-For", "127.0.0.1", "X-Real-IP", "127.0.0.1", "Forwarded", "for=127.0.0.1");
+
+        assertThat(body(r)).doesNotContain("decision").startsWith("{\"answer\"");
+    }
 }

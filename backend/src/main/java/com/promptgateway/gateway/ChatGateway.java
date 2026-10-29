@@ -58,6 +58,14 @@ public class ChatGateway {
     }
 
     public GatewayResult handle(String prompt) {
+        return handle(prompt, measurementMode);
+    }
+
+    /**
+     * measure가 true이면 측정 처리이다: 통과해도 응답 모델을 부르지 않고 답변 없이 판정 결과만 돌려준다.
+     * 측정 처리를 할지는 컨트롤러가 요청마다 정한다(측정 모드 설정과 접속 주소, AC-9.7).
+     */
+    public GatewayResult handle(String prompt, boolean measure) {
         try {
             validator.validate(prompt);
         } catch (InvalidPromptException e) {
@@ -90,7 +98,7 @@ public class ChatGateway {
             return logged(prompt, GatewayResult.blockedByJudge(judgeResult), new Timings(filterMs, judgeMs, null));
         }
 
-        if (measurementMode) {
+        if (measure) {
             return logged(prompt, GatewayResult.passed(judgeResult, null), new Timings(filterMs, judgeMs, null));
         }
 

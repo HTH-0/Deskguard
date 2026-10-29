@@ -47,4 +47,12 @@ class PromptGatewayApplicationTest {
         assertThat(gatewayProperties.maxPromptLength()).isEqualTo(1000);
         assertThat(gatewayProperties.patterns()).isEmpty();
     }
+
+    @Autowired org.springframework.core.env.Environment environment;
+
+    @Test
+    @DisplayName("AC-9.8 프록시 헤더(X-Forwarded-For 등)를 믿지 않도록 고정되어 있다 (클라우드 환경 감지로 켜지지 않게)")
+    void forwardedHeadersAreNotTrusted() {
+        assertThat(environment.getProperty("server.forward-headers-strategy")).isEqualToIgnoringCase("none");
+    }
 }

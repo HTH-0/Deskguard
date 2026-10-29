@@ -1,5 +1,8 @@
 server:
   port: 8080
+  # X-Forwarded-For 같은 프록시 헤더를 믿지 않는다. 측정 모드는 실제 접속 주소로 같은 컴퓨터인지 판단하는데,
+  # 헤더는 누구나 조작할 수 있기 때문이다. 클라우드 환경을 감지해도 자동으로 켜지지 않게 명시한다(AC-9.8).
+  forward-headers-strategy: none
   servlet:
     encoding:
       charset: UTF-8
@@ -30,7 +33,7 @@ judge:
 gateway:
   max-prompt-length: 1000
   patterns: []                 # 패턴 필터의 패턴. 비어 있으면 모든 요청을 판정 단계로 보낸다.
-  measurement-mode: false      # 개발용. true이면 응답 모델을 부르지 않고 판정 결과를 200으로 돌려준다. 사용자에게 노출하는 환경에서는 켜지 않는다.
+  measurement-mode: false      # 개발용. true이면 같은 컴퓨터에서 온 요청에만 응답 모델을 부르지 않고 판정 결과를 200으로 돌려준다(AC-9.7). 사용자에게 노출하는 환경에서는 켜지 않는다.
 
 # 요청마다 남기는 한 줄 로그(docs/design.md 7.2절). 원문 저장은 시험 환경에서만 true로 바꾼다.
 logging:

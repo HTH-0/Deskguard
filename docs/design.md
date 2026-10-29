@@ -340,6 +340,8 @@ logging:
 - 켜면 통과와 차단 모두 응답 모델을 호출하지 않고 200으로 `{"decision": "PASS|BLOCK", "stage": ..., "scores": {...}, "modelVersion": ..., "failureKind": ..., "patternId": ...}`를 돌려준다(spec 7장, AC-9.2~9.4). 측정 도구가 모든 문장에서 같은 형식으로 읽을 수 있게 하기 위해서이다.
 - 키는 항상 모두 싣고, 해당하지 않는 값은 `null`이다(예: 패턴 차단이면 `scores`와 `modelVersion`이 null). `failureKind`는 판정 호출 실패 차단일 때만 값이 있어서 정책 차단과 구분된다(R9). `patternId`는 패턴 차단일 때만 값이 있다. (2026-10-28 보강)
 - 일반 모드(꺼짐)의 응답에는 이 필드가 없다(AC-9.1). 입력 검증 실패는 측정 모드에서도 400이다.
+- 같은 컴퓨터 제한(2026-10-29, AC-9.7, 9.8): 측정 응답은 차단 이유를 드러내므로 공격자에게 우회 방법을 알려준다(DECISIONS.md 2026-10-26 차단 응답 형식). 그래서 `ChatController`가 요청마다 "측정 모드가 켜져 있고 접속 주소가 루프백(127.0.0.1, ::1)인가"를 판단하고, 그 결과를 `ChatGateway.handle(prompt, measure)`에 넘긴다. 다른 주소의 요청은 일반 처리(응답 모델 호출, 200 또는 403)를 받는다.
+- 주소 판단 기준은 실제 TCP 접속 주소(`getRemoteAddr`)이다. 출발지 주소를 위조하면 TCP 연결이 성립하지 않으므로 우회할 수 없다. 조작할 수 있는 것은 `X-Forwarded-For` 같은 헤더이므로 `server.forward-headers-strategy: none`으로 헤더를 믿지 않게 고정한다(스프링은 클라우드 환경을 감지하면 헤더 처리를 자동으로 켤 수 있다). 전제: 앞단에 역방향 프록시를 두지 않는다. 프록시를 두면 모든 요청이 프록시 주소로 보이므로 그때는 측정 모드를 켜지 않는다.
 ### 7.4 측정 도구 `run_batch.py` (T12, 2026-10-28 확정)
 
 `backend/scripts/run_batch.py`는 입력 CSV의 문장을 서버로 보내고 결과를 CSV와 요약표로 남긴다. 순수 함수(분류, 행 선택, 집계)와 네트워크 호출을 나누어 순수 함수는 서버 없이 시험한다(Python `unittest`, `backend/scripts/test_run_batch.py`).
