@@ -2,13 +2,13 @@
 
 다른 컴퓨터나 새 세션에서 이어서 작업할 때 가장 먼저 읽는 문서이다. 세션을 마칠 때마다 갱신한다. 그동안 무엇을 왜 했는지, 지금 코드가 어떻게 생겼는지, 이어서 할 때 조심할 점은 [worklog.md](worklog.md)에 있다. 주제 재정의 이전(HR 헬프데스크 챗봇)의 인수인계 문서는 [archive/handoff-v1-hr.md](archive/handoff-v1-hr.md)에 보관했다.
 
-기준일: 2026-10-29 (일주일 일정의 1일차에 4일차 작업까지 끝냄)
+기준일: 2026-10-29 저녁 (일주일 일정의 1일차에 5일차 작업과 우회 시험, 출처 표기, README 정리까지 끝냄). 다음 날 다른 컴퓨터에서 이어서 한다.
 
 ## 1. 한눈에 보기
 
 - **프로젝트:** Deskguard. 회사 직원이 ChatGPT 같은 외부 AI에 보내는 프롬프트를 나가기 전에 검사하는 정보 유출 방지 게이트웨이와 사내 AI 포털이다. 왜 만드는지는 [problem.md](problem.md)(최상위 문서)에 있다.
 - **처리:** 개인정보(D1), 자격증명(D2), 회사 기밀(D3)을 게이트웨이 안의 코드로 탐지하고, 허용, 가림(가명으로 바꿔 보내고 답에서 되돌림), 경고(확인 후 가려서 보냄), 차단으로 처리한다. 운영 경로는 외부 판정 서비스를 부르지 않는다.
-- **작업 브랜치:** `main`이 기준이다(2026-10-29 정리, 이전 작업 브랜치는 모두 `main`에 포함됨). 클라우드 세션은 지정된 세션 브랜치에서 작업하고, 작업이 끝나면 `main`에 병합한다.
+- **작업 브랜치:** `claude/inspiring-shannon-xbhl20`이다. **오늘 작업이 모두 여기에 있다.** `main`은 `b870e6b`에 머물러 있어 이 브랜치보다 25커밋 뒤처져 있다(오래된 상태). 병합은 사용자가 작업을 모두 끝낸 뒤 정한다(5절 마지막, 4절 결정 대기). 병합하기 전에는 반드시 이 브랜치를 체크아웃해서 작업한다. 다른 브랜치(`upbeat-cori`, `compassionate-pascal`)는 정리해서 없다.
 - **개발 방식:** SDD와 TDD를 병행한다. 기획은 SDD(문제 정의 → 정책 → 명세 → 설계 → 작업 목록), 구현은 TDD(수용 기준 → 실패하는 시험 → 코드)이다. 각 작업의 첫 스텝은 명세 점검이고, 컴파일 오류는 빨강으로 치지 않는다.
 - **기술:** Spring Boot 4.1.1, Java 25 LTS, Maven, Python 3(측정 도구). 외부 AI는 Gemini(`gemini-3.6-flash`). Jev는 측정 경로에서 Z 채점에만 쓴다(5~6일차).
 
@@ -20,14 +20,23 @@
 | 2 | 설계 v2, 더미 회사(HTH), D1·D2·D3 탐지기, 가짜 값 생성기 | 완료 |
 | 3 | 처리 결정, 가림과 복원, 게이트웨이 재조립, 감사 로그, 운영 경로에서 Jev 제거 | 완료 |
 | 4 | 포털 화면, 시연용 응답 모델, 가림 응답에 보낸 문장(AC-6.4) | 완료 |
-| 5 | 평가 세트 생성과 동결, X·Y·T 측정, Z 준비 | **진행 중** (X·Y·T 1차 측정 완료, Z 도구와 시험 완료. 다음은 사용자 컴퓨터에서 Z 실행, 절차는 3절) |
-| 6 | Z 측정(Jev 검증 후), 우회 소량 시험, README와 결과 | 대기 |
+| 5 | 평가 세트 생성과 동결, X·Y·T 측정, Z 준비 | 완료 (평가 세트 596문장, X·Y·T 1차 측정, Z 도구와 시험. [결과](eval/results/report_xyt_v1.md)) |
+| 6 | Z 측정(Jev 검증 후), 우회 소량 시험, README와 결과 | **진행 중** 우회 시험 완료([결과](eval/results/report_bypass_v1.md)), 출처 표기와 README 정리 완료. **Z 실행(사용자 컴퓨터)이 남음**, 그 뒤 Z 보고서 |
+| 코드 읽기 | 핵심 코드를 사용자가 읽고 설명할 수 있게 하기 | 1일차 진행 중. [docs/code-reading/](code-reading/)와 [progress.md](code-reading/progress.md) |
 | 7 | 여유분, `main` 병합 검토 | 대기 |
 
-- **시험:** Java 109건이 통과한다(`cd backend`, `mvn -B test`). Python은 `cd backend/scripts`에서 `python -m unittest test_fake_values test_measure`로 실행한다. 옛 HR용 `run_batch.py`와 `domain_candidates.py`는 시험과 함께 `backend/scripts/archive_hr/`로 옮겼다(보관, 실행하지 않는다).
-- **멈춘 지점:** 4일차 완료 직후. 모든 변경이 커밋, 푸시되어 있다. 작업 중인 파일은 없다.
+- **시험:** Java 109건과 Python 69건이 통과한다(2026-10-29 확인, 키 없이 통과). Java는 `cd backend`, `mvn -B test`. Python은 `cd backend/scripts`에서 `python -m unittest test_fake_values test_measure test_build_eval_set test_build_bypass_set test_z_measure`이다. 옛 HR용 `run_batch.py`와 `domain_candidates.py`는 시험과 함께 `backend/scripts/archive_hr/`로 옮겼다(보관, 실행하지 않는다).
+- **멈춘 지점:** Z 실행을 기다리는 중이고 코드 읽기 1일차를 하던 중이다. 모든 변경이 커밋, 푸시되어 있다. 작업 중인 파일은 없다.
 
 ## 3. 다음 작업
+
+### 내일 할 일 (순서대로)
+
+1. **Z 실행(사용자 컴퓨터, 가장 먼저)**: 아래 절차대로 5문장 시험부터 한다. 오류가 나면 키 값을 빼고 메시지만 알려 준다.
+2. **코드 읽기 이어서**: [code-reading/progress.md](code-reading/progress.md)의 "확인 대기" 항목(`ChatGateway` 질문 4, 5, `ActionDecider` 확인 질문 3개, `InputValidator` 질문 4)을 풀고, 이어서 `PersonalDataDetector`, `SecretDetector`, `DetectionEngine`을 읽는다. 하루 3개가 기준이다. 읽기 가이드는 [code-reading/day1.md](code-reading/day1.md)이고, 2일차 가이드는 아직 없다(요청하면 만든다).
+3. **Z 보고서(클라우드)**: Z 결과가 push되면 `report_z_v1.md`를 쓰고 Jev 채택 여부(사람 판정과 85% 일치)를 정한다. README의 Z 칸도 채운다.
+4. **마무리(작업이 끝난 뒤)**: 폴더 정리, `main` 병합 검토, 비공개 전환(4절 4번).
+
 
 5일차(측정 도구 v2, 업무 요청 틀 3종, 평가 세트 596문장 동결, X·Y·T 1차 측정)는 끝났다. 결과는 [eval/results/report_xyt_v1.md](eval/results/report_xyt_v1.md)이다. 6단계의 Z 도구(`backend/scripts/z_measure.py`, 시험 포함)도 만들어 두었고, **실제 호출은 키가 있는 사용자 컴퓨터에서 한다.**
 
@@ -78,7 +87,9 @@ python z_measure.py agree --human ..\..\docs\eval\results\z\human_sheet.csv
 | 1 | Z 측정(Gemini와 Jev 호출)을 어디서 실행할지 | **결정함(2026-10-29):** 사용자 컴퓨터에서 실행한다. 절차는 3절 |
 | 2 | `constitution.md` 확정 | "초안" 상태. 1장은 problem.md가 대신한다고 적어 두었다 |
 | 3 | 확장 후보의 우선순위 | 로컬 모델 문맥 판정(D3 문맥, D4), 브라우저 확장, 파일 업로드. 완성 뒤에 고른다 |
-| 4 | 저장소 공개 전 점검(R12) | 공개 전에 수행 |
+| 4 | 저장소 공개 상태와 R12 | **현재 공개 상태이다**(클라우드 작업 때문에 사용자가 공개로 바꿈). 1차 점검 결과 실제 키와 개인정보는 없다([open-risks.md](open-risks.md) R12). 사용자 결정(2026-10-29): 작업을 모두 끝낸 뒤 폴더를 정리하고 비공개로 되돌린다. 그때까지 키, 실제 개인정보, 실행 로그를 올리지 않는다 |
+| 5 | `main` 병합 시점 | 작업을 끝낸 뒤 사용자가 정한다. `main`은 `b870e6b`이고 작업 브랜치가 25커밋 앞서 있어 빨리 감기(fast-forward)로 병합된다 |
+| 6 | 이 저장소 자체의 `LICENSE` | 정하지 않았다. 비공개로 전환하므로 보류한다(다시 공개할 때 정한다). 외부 자료의 출처 표기는 [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md)에 했다 |
 
 ## 5. 새 컴퓨터에서 시작하기 (Windows 기준)
 
@@ -88,11 +99,11 @@ python z_measure.py agree --human ..\..\docs\eval\results\z\human_sheet.csv
 git clone https://github.com/HTH-0/Deskguard.git
 cd Deskguard
 
-# 기준은 main이다. 시작할 때마다 모든 원격 브랜치를 확인한다.
+# 작업 브랜치는 claude/inspiring-shannon-xbhl20이다(main은 오래된 상태). 시작할 때마다 모든 원격 브랜치를 확인한다.
 git fetch origin
 git branch -r --sort=-committerdate --format="%(committerdate:short) %(refname:short)"
-git checkout main
-git pull origin main
+git checkout claude/inspiring-shannon-xbhl20
+git pull origin claude/inspiring-shannon-xbhl20
 
 # 이 저장소에만 적용하는 커밋 정보
 git config user.name "HTH-0"
@@ -102,7 +113,7 @@ git config user.email "192852807+HTH-0@users.noreply.github.com"
 cd backend
 mvn -B -q test
 cd scripts
-python -m unittest -v test_fake_values
+python -m unittest test_fake_values test_measure test_build_eval_set test_build_bypass_set test_z_measure
 ```
 
 **포털 시연 (키 없이):** `backend` 폴더에서 아래를 실행하고 브라우저로 http://localhost:8080 을 연다. 시연용 응답 모델은 외부 AI를 부르지 않고 받은 문장을 되돌려 준다. 예시 버튼으로 가림, 차단, 경고, 허용을 확인한다.
@@ -126,7 +137,7 @@ mvn spring-boot:run "-Dspring-boot.run.arguments=--gateway.demo-answer=true"
 5. 평가 세트, 대량 기준, 탐지 규칙은 측정 전에 해시로 동결하고, 측정 결과를 보고 바꾸지 않는다.
 6. API 키를 파일, 로그, 대화에 붙여넣지 않는다.
 7. 외부 LLM이 낸 결과(Jev 채점 포함)는 검증한 뒤 채택한다(Z는 사람 판정과 85% 이상 일치).
-8. 사용자는 코드를 직접 쓰지 않고 읽기, 시험 읽기, 검수로 이해한다. 코드 읽기는 구현을 먼저 진행하고 나중에 몰아서 한다(2026-10-29 결정). 노션 정리본 완료: `BlockDecider`, `ChatGateway`(옛 버전), `GatewayResult`(옛 버전), `ChatController`, `Harness`. 보류 목록: 새 구조의 `ChatGateway`, `PersonalDataDetector`, `SecretDetector`, `DetectionEngine`, `ActionDecider`, `Masker`, `GatewayLogger`, `InputValidator`. (`JevJudge`, `PatternFilter`는 삭제되어 읽을 필요가 없다.)
+8. 사용자가 코드를 이해하고 설명할 수 있어야 한다(포트폴리오). 코드 읽기는 하루 3개가 기준이고, 확인 질문에 답하고 바로잡은 파일만 "확인 완료"로 센다. 진행은 [code-reading/progress.md](code-reading/progress.md)에 적는다. 승인은 도장이 아니라 결정이어야 하므로, Claude는 계획을 짧게(요약과 되돌릴 수 있는지) 말하고 사용자는 이해가 안 되면 "설명해 줘"로 멈춘다. 작은 수정(입력 정규화 같은 후속 개선)을 사용자가 직접 구현하는 작업은 Z 보고서 뒤에 시간이 남으면 한다. README에는 AI와 사용자의 역할을 나눠 적는다(최종 정리 때). 노션 정리본은 옛 구조 기준으로 `BlockDecider`, `ChatController` 등이 있고, 새 구조 코드의 정리본은 아직 없다.
 9. 세션을 시작하면 `git fetch origin`으로 모든 원격 브랜치를 먼저 확인한다(`CLAUDE.md` 0번).
 
 ## 7. 문서 지도
@@ -145,4 +156,6 @@ mvn spring-boot:run "-Dspring-boot.run.arguments=--gateway.demo-answer=true"
 | [worklog.md](worklog.md) | 무엇을 했고, 코드는 어떻게 생겼고, 무엇을 조심하는가 | 세션마다 추가 |
 | [images/portal-demo.png](images/portal-demo.png) | 포털 시연 화면 | 4일차 |
 | [archive/](archive/) | 재정의 이전 문서(HR 명세, 설계, 정책, 인수인계) | 보관 |
-| [eval/](eval/) | 평가 데이터. 지금 있는 것은 HR 시절 자료(후보 302개, 라벨링 시트, KOICA 25개)이며, KOICA 25개는 정상 업무 문장으로 재사용한다 | 5일차에 정리 |
+| [eval/](eval/) | 평가 데이터. `templates/`(생성기 3종의 틀), `set/`(평가 세트 596문장, 우회 세트 120문장, 동결 목록), `results/`(X·Y·T와 우회 보고서). 나머지(후보 302개, 라벨링 시트 등)는 HR 시절 자료로 쓰지 않는다 | 갱신 |
+| [code-reading/](code-reading/) | 코드 읽기 가이드와 진행 기록 | 갱신 |
+| [../THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md) | 외부 자료의 출처와 라이선스 | 확정 |
