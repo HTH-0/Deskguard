@@ -43,7 +43,7 @@ class SecretDetectorTest {
     void passwords() {
         assertThat(items("DB_PASSWORD=Qw7!zLp92x")).containsExactly(Item.PASSWORD);
         assertThat(items("서버 비밀번호: hanA2024!@")).containsExactly(Item.PASSWORD);
-        assertThat(items("비번 = gaon#7712")).containsExactly(Item.PASSWORD);
+        assertThat(items("비번 = hth#7712")).containsExactly(Item.PASSWORD);
     }
 
     @ParameterizedTest(name = "AC-2.2 자리 표시자와 설명은 찾지 않는다: {0}")
@@ -64,6 +64,6 @@ class SecretDetectorTest {
     @Test
     @DisplayName("비밀번호에 @가 들어 있는 접속 문자열도 하나의 접속 문자열로 찾는다 (교차 확인에서 발견)")
     void connectionStringWithAtInPassword() {
-        assertThat(items("mysql://app_user:@7vt%A3R6D@db18.gaonnuri.internal:3306/hr")).containsExactly(Item.CONN_STRING);
+        assertThat(items("mysql://app_user:@7vt%A3R6D@db18.hth.internal:3306/hr")).containsExactly(Item.CONN_STRING);
     }
 }

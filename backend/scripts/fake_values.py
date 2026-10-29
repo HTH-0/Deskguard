@@ -65,7 +65,7 @@ class Fake:
 
     def email(self):
         local = self.r.choice(ROMAN) + "." + self._digits(2)
-        return f"{local}@{self.r.choice(['mail', 'gaonnuri'])}.example"
+        return f"{local}@{self.r.choice(['mail', 'hth'])}.example"
 
     def _random(self, n, alphabet=ALNUM):
         return "".join(self.r.choice(alphabet) for _ in range(n))
@@ -93,7 +93,7 @@ class Fake:
     def conn_string(self):
         scheme, port = self.r.choice([("postgres", 5432), ("mysql", 3306)])
         user = self.r.choice(["app_user", "svc_order", "batch", "admin"])
-        return f"{scheme}://{user}:{self.password()}@db{self._digits(2)}.gaonnuri.internal:{port}/{self.r.choice(['orders', 'hr', 'billing'])}"
+        return f"{scheme}://{user}:{self.password()}@db{self._digits(2)}.hth.internal:{port}/{self.r.choice(['orders', 'hr', 'billing'])}"
 
 
 def _luhn(digits):

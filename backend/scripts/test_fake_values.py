@@ -65,8 +65,8 @@ class FakeTest(unittest.TestCase):
     def test_email_avoids_allowlist_and_example_domains(self):
         for _ in range(100):
             value = self.f.email()
-            self.assertRegex(value, r"^[a-z0-9.]+@(mail|gaonnuri)\.example$")
-            self.assertNotIn(value, ("contact@gaonnuri.example", "support@gaonnuri.example"))
+            self.assertRegex(value, r"^[a-z0-9.]+@(mail|hth)\.example$")
+            self.assertNotIn(value, ("contact@hth.example", "support@hth.example"))
 
     def test_secrets_match_known_formats_and_are_not_placeholders(self):
         self.assertRegex(self.f.aws_key(), r"^AKIA[0-9A-Z]{16}$")

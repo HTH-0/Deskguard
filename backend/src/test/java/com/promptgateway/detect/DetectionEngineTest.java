@@ -14,7 +14,7 @@ class DetectionEngineTest {
     final DetectionEngine engine = new DetectionEngine(
             List.of(new PersonalDataDetector(), new SecretDetector(),
                     new DictionaryDetector(List.of("블루웨일"), List.of("한결물산"), List.of("대외비"))),
-            Set.of("contact@gaonnuri.example"));
+            Set.of("contact@hth.example"));
 
     @Test
     @DisplayName("여러 범주를 한 번에 찾고 위치 순서로 돌려준다")
@@ -27,14 +27,14 @@ class DetectionEngineTest {
     @Test
     @DisplayName("AC-2.5 허용 목록의 값은 빼다")
     void allowlist() {
-        assertThat(engine.detect("문의는 contact@gaonnuri.example, 담당 kim@mail.example")).extracting(Finding::value)
+        assertThat(engine.detect("문의는 contact@hth.example, 담당 kim@mail.example")).extracting(Finding::value)
                 .containsExactly("kim@mail.example");
     }
 
     @Test
     @DisplayName("겹친 탐지는 더 긴 것 하나만 남긴다(접속 문자열 안의 이메일 모양을 따로 세지 않는다)")
     void overlapsKeepLongest() {
-        List<Finding> found = engine.detect("jdbc mysql://admin:Gx82!kqP@db.gaon.example:3306/app");
+        List<Finding> found = engine.detect("jdbc mysql://admin:Gx82!kqP@db.hth.example:3306/app");
 
         assertThat(found).extracting(Finding::item).containsExactly(Item.CONN_STRING);
     }
