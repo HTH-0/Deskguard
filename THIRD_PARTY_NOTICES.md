@@ -6,14 +6,18 @@
 
 - 출처: deepset, 「prompt-injections」, Hugging Face. <https://huggingface.co/datasets/deepset/prompt-injections>
 - 라이선스: Apache License 2.0 (카드 메타데이터 `apache-2.0`). 전문: <https://www.apache.org/licenses/LICENSE-2.0>
-- 가공: 일부 행을 골라 `label`, `type`, `split`, `lang` 열을 붙여 `dataset.csv`에 합쳤다. 원문 문장은 고치지 않았다. 영어와 독일어 문장이다.
+- 가공: 사용자가 이 데이터셋에서 골라 가져온 행(공격 문장 일부와 정상 문장 약 98건)을 `dataset.csv`에 합쳤고 `label`, `type`, `split`, `lang` 열을 붙였다. 원본에 섞여 있던 정상 항목 일부는 `normal`로 재분류했다(2026-09-16 기록). 영어와 독일어 문장이다. 행 단위 출처 열이 없어 정확한 행 수는 `DECISIONS.md`의 작성 기록에 의존하고, 문장을 한 글자도 고치지 않았는지는 원본과 대조해 확인하지 않았다.
 - 이 저장소의 `dataset.csv`는 원 데이터셋과 다른 파일이며, 원 데이터셋의 보증이나 승인을 받은 것이 아니다.
+
+## 1-1. `dataset.csv`의 직접 작성 행
+
+- `dataset.csv`의 처음 160행(공격 100건과 정상 60건)은 외부 데이터를 복사한 것이 아니라, 공개 데이터셋들에 공통적으로 보고되는 대표 패턴을 참고해 Claude가 직접 작성하거나 각색한 문장이다(`DECISIONS.md` 2026-09-16). 이후 추가한 문장 중 일부는 사용자와 Claude가 작성했다.
 
 ## 2. JailbreakBench JBB-Behaviors (`dataset.csv`의 일부 행)
 
 - 출처: JailbreakBench, 「JBB-Behaviors」, Hugging Face. <https://huggingface.co/datasets/JailbreakBench/JBB-Behaviors>
 - 라이선스: MIT License. 전문은 아래와 같다(원문: <https://github.com/JailbreakBench/jailbreakbench/blob/main/LICENSE>).
-- 가공: 유해 행동 목록 98건과 각각의 정상 짝 100건을 골라 `source_category`(원본의 세부 범주) 열과 함께 `dataset.csv`에 합쳤다. 문장은 고치지 않았다.
+- 가공: 사용자가 이 데이터셋에서 가져온 유해 행동 98건(아동 성착취 관련 2건은 제외)과 각각의 정상 짝 100건을 `source_category`(원본의 세부 범주) 열과 함께 `dataset.csv`에 합쳤다(2026-09-16 기록). 문장을 원본과 대조해 확인하지는 않았다.
 - 주의: 일부 내용은 불쾌할 수 있다. 시험용으로만 쓰며 실행 가능한 지침을 담지 않는다.
 - 인용 요청: 카드가 벤치마크 논문의 인용을 요청한다. P. Chao, E. Debenedetti, A. Robey, M. Andriushchenko, F. Croce, V. Sehwag, E. Dobriban, N. Flammarion, G. J. Pappas, F. Tramèr, H. Hassani, E. Wong, "JailbreakBench: An Open Robustness Benchmark for Jailbreaking Large Language Models", NeurIPS 2024 Datasets and Benchmarks Track. 카드는 구성 데이터셋(AdvBench: Zou et al., 2023, arXiv:2307.15043, TDC와 HarmBench: Mazeika et al., 2024, arXiv:2402.04249)도 함께 인용하기를 권한다.
 
