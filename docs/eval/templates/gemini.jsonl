@@ -1,0 +1,195 @@
+{"kind":"sensitive","items":["RRN"],"template":"이번에 입사한 {NAME} 사원 채용 서류 중에 {RRN} 번호가 잘렸는지 확인 좀 해줘."}
+{"kind":"sensitive","items":["RRN"],"template":"어제 받은 서류에 적힌 {RRN} 자릿수가 이상한데, 이거 올바른 형식인지 봐줄래?"}
+{"kind":"sensitive","items":["RRN"],"template":"인사팀에서 준 {RRN} 데이터 형식이 달라서 파싱 에러 나는데 정규식 좀 짜줘."}
+{"kind":"sensitive","items":["RRN"],"template":"고객 확인용으로 보낸 파일에 {RRN} 입력란이 빠져 있어서 양식 수정해야 해."}
+{"kind":"sensitive","items":["RRN"],"template":"엑셀에 저장된 {RRN} 컬럼 마스킹 처리하는 파이썬 스크립트 하나 만들어줘."}
+{"kind":"sensitive","items":["RRN"],"template":"가입 신청서 검증할 때 {RRN} 뒷자리 유효성 검사 로직 어떻게 구현하는 게 맞아?"}
+{"kind":"sensitive","items":["RRN"],"template":"DB 마이그레이션 중에 {RRN} 컬럼 암호화 안 된 상태로 들어간 건 있는지 체크해봐."}
+{"kind":"sensitive","items":["RRN"],"template":"이 {RRN} 데이터가 포함된 로그 파일에서 주민번호 패턴만 전부 블라인드 처리해줘."}
+{"kind":"sensitive","items":["RRN"],"template":"사내 서비스 가입 테스트용으로 쓸 가짜 {RRN} 샘플 5개만 만들어 줄 수 있어?"}
+{"kind":"sensitive","items":["RRN"],"template":"법무 검토 요청 건인데, 이 {RRN} 수집 및 보관 기간 관련해서 동의서 문구 다듬어줘."}
+{"kind":"sensitive","items":["RRN"],"template":"외국인 직원 채용 건이라 {FRN} 번호로 입력해야 하는데, 관련 입력 폼 유효성 검증 규칙 좀 봐줘."}
+{"kind":"sensitive","items":["RRN"],"template":"등록증에 있는 {FRN} 정보가 시스템에 잘못 등록되었는지 확인해 줄 수 있니?"}
+{"kind":"sensitive","items":["RRN"],"template":"이번에 계약한 외국인 파트너의 {FRN} 번호 형식이 현행 기준에 맞는지 체크 부탁해."}
+{"kind":"sensitive","items":["RRN"],"template":"HR 시스템에서 {FRN} 데이터를 조회할 때 권한 체크 로직 검토해 봐."}
+{"kind":"sensitive","items":["RRN"],"template":"외국인 근로자 신고 양식에 {FRN} 기재란이 올바르게 배치되었는지 확인해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"체류 자격 변경 신청서에 들어갈 {FRN} 입력 폼 에러 메시지 좀 세련되게 바꿔줘."}
+{"kind":"sensitive","items":["RRN"],"template":"DB에 암호화되어 저장된 {RRN} 값을 복호화해서 검증하는 테스트 코드 짜줘."}
+{"kind":"sensitive","items":["RRN"],"template":"입사 서류 PDF에서 {RRN} 영역만 OCR로 정확히 추출하는 파이썬 코드 리뷰해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"테스트 환경에서 쓸 가상의 {FRN} 생성 규칙 코드 짜줄 수 있어?"}
+{"kind":"sensitive","items":["RRN"],"template":"개인정보 파기 대상 목록에 {FRN} 포함된 레코드들이 정확히 삭제되는지 쿼리 짜줘."}
+{"kind":"sensitive","items":["RRN"],"template":"결제 모듈 연동 중에 {CARD} 번호 유효성 검사하는 Luhn 알고리즘 코드 좀 짜줘."}
+{"kind":"sensitive","items":["RRN"],"template":"고객이 입력한 {CARD} 정보가 암호화되어서 통신되는지 네트워크 패킷 분석해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"PG사 연동 문서 보고 있는데 {CARD} 승인 요청할 때 보내는 필드 좀 정리해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"우리 결제 페이지에서 {CARD} 번호 입력할 때 자동으로 하이픈 들어가게 해줘."}
+{"kind":"sensitive","items":["RRN"],"template":"구독 상품 결제 실패 로그 보니까 {CARD} 만료일 처리에서 에러가 난 것 같아."}
+{"kind":"sensitive","items":["RRN"],"template":"특정 {CARD} 번호로 결제 시도시 발생하는 타임아웃 에러 로그 분석해 줄래?"}
+{"kind":"sensitive","items":["RRN"],"template":"모바일 앱에서 {CARD} 간편결제 등록 버튼 누를 때 발생하는 UI 크래시 봐줘."}
+{"kind":"sensitive","items":["RRN"],"template":"환불 처리할 때 {CARD} 번호 마스킹 처리 기준에 맞춰서 로그 찍히게 수정해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"테스트 결제 시뮬레이션 돌리려고 하는데 {CARD} 유효한 테스트 번호 몇 개 추천해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"결제 완료 페이지에서 {CARD} 끝 네 자리만 보이게 마스킹하는 프론트 함수 짜줘."}
+{"kind":"sensitive","items":["RRN"],"template":"고객 지원 응대할 때 {PHONE} 번호로 가입된 계정 찾아서 이력 좀 조회해 줄래?"}
+{"kind":"sensitive","items":["RRN"],"template":"인증번호 발송 API 호출할 때 {PHONE} 파라미터에 국가번호 빠져서 에러 나는 거 고쳐줘."}
+{"kind":"sensitive","items":["RRN"],"template":"우리 앱 가입 화면에서 {PHONE} 입력란에 숫자만 들어가도록 포맷팅 규칙 넣어줘."}
+{"kind":"sensitive","items":["RRN"],"template":"마케팅 수신 동의 리스트에 있는 {PHONE} 번호들 중 중복된 것 찾아내는 스크립트 짜줘."}
+{"kind":"sensitive","items":["RRN"],"template":"알림톡 발송 실패 리스트 보니까 {PHONE} 번호 형식이 잘못된 게 꽤 있네."}
+{"kind":"sensitive","items":["RRN"],"template":"사용자가 {PHONE} 번호를 변경할 때 기존 인증 내역 초기화하는 로직 검토해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"CS팀에서 {PHONE} 번호로 검색할 때 조회 속도 느린 거 인덱스 추가해 줄래?"}
+{"kind":"sensitive","items":["RRN"],"template":"비밀번호 찾기 할 때 {PHONE} 인증 거치는 플로우 시퀀스 다이어그램 그려줘."}
+{"kind":"sensitive","items":["RRN"],"template":"대량 문자 발송 툴에서 {PHONE} 컬럼 파싱할 때 엑셀 셀 서식 때문에 0이 잘리는 거 해결해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"휴면 계정 안내 문자 보낼 대상 {PHONE} 목록 추출하는 SQL 쿼리 좀 짜줘."}
+{"kind":"sensitive","items":["RRN"],"template":"급여 정산할 때 {BANK} 지정해서 {ACCOUNT} 계좌로 이체하는 배치 파일 오류 좀 봐줘."}
+{"kind":"sensitive","items":["RRN"],"template":"정산 시스템에서 {BANK} 코드 매핑 테이블 잘못되어서 {ACCOUNT} 입금 안 된 거 찾아줘."}
+{"kind":"sensitive","items":["RRN"],"template":"환불 계좌 등록할 때 {BANK} 선택하고 {ACCOUNT} 입력하는 유효성 검사 로직 짜줘."}
+{"kind":"sensitive","items":["RRN"],"template":"파트너사 정산 엑셀 파일 보는데 {BANK}랑 {ACCOUNT} 컬럼이 나뉘어 있어서 합쳐야 해."}
+{"kind":"sensitive","items":["RRN"],"template":"재무팀에서 준 {BANK} 및 {ACCOUNT} 정보 기반으로 자동 이체 스크립트 테스트해 봐."}
+{"kind":"sensitive","items":["RRN"],"template":"지출 결의서 양식에 {BANK} 이름이랑 {ACCOUNT} 번호 들어가는 칸 정렬 좀 맞춰줘."}
+{"kind":"sensitive","items":["RRN"],"template":"계좌 실명 인증 API 연동할 때 {BANK} 식별 코드 파라미터 어떻게 넘겨야 해?"}
+{"kind":"sensitive","items":["RRN"],"template":"송금 오류 난 내역 보니까 {ACCOUNT} 번호 입력 오류인지 {BANK} 점검 시간인지 확인해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"신규 입사자 급여 통장 접수받은 {BANK} 명단이랑 {ACCOUNT} 정보 대조해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"출금 신청 기능에서 {ACCOUNT} 번호에 특수문자나 하이픈 들어간 거 정제하는 정규식 짜줘."}
+{"kind":"sensitive","items":["RRN"],"template":"회원가입 완료 메일에 {EMAIL} 주소 누락되는 버그 수정 좀 해줄래?"}
+{"kind":"sensitive","items":["RRN"],"template":"비밀번호 재설정 링크가 {EMAIL}로 안 간다는 문의가 자꾸 들어오는데 메일 서버 로그 봐줘."}
+{"kind":"sensitive","items":["RRN"],"template":"뉴스레터 구독 신청할 때 입력한 {EMAIL} 유효성 검증 프론트 코드 검토해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"고객 지원 요청 건 처리 결과가 {EMAIL}로 발송될 때 템플릿 깨지는 거 수정해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"이벤트 당첨자 발표 안내를 {EMAIL} 일괄 발송하려고 하는데 파이썬 스크립트 짜줘."}
+{"kind":"sensitive","items":["RRN"],"template":"탈퇴한 회원의 {EMAIL} 주소가 DB에 그대로 남아있는지 확인하는 쿼리 작성해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"도메인 변경되면서 {EMAIL} 주소 일괄 수정해야 하는데 DB 업데이트 쿼리 좀 만들어 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"스팸 메일로 자주 분류되는 {EMAIL} 발신자 설정 문제 있는지 SPF/DKIM 레코드 봐줘."}
+{"kind":"sensitive","items":["RRN"],"template":"신규 가입 시 {EMAIL} 중복 체크 API 호출할 때 발생하는 CORS 에러 잡아줘."}
+{"kind":"sensitive","items":["RRN"],"template":"임시 {EMAIL} 도메인으로 가입하는 어뷰징 유저 막기 위한 정규식 패턴 좀 짜줄래?"}
+{"kind":"sensitive","items":["RRN"],"template":"인증서 갱신해야 하는데 서버에 있는 기존 {PRIVATE_KEY} 파일 경로가 어디인지 찾아줘."}
+{"kind":"sensitive","items":["RRN"],"template":"새로 발급받은 SSL {PRIVATE_KEY} 적용했는데 Nginx에서 자꾸 에러 나는데 왜 이러지?"}
+{"kind":"sensitive","items":["RRN"],"template":"깃허브 액션즈 시크릿에 등록할 {PRIVATE_KEY} 포맷이 줄바꿈 때문에 깨지는데 어떻게 수정해?"}
+{"kind":"sensitive","items":["RRN"],"template":"OAuth 연동할 때 쓸 RSA {PRIVATE_KEY} 생성하는 오픈슬렐 명령어 좀 알려줘."}
+{"kind":"sensitive","items":["RRN"],"template":"서버 설정 파일에 하드코딩된 {PRIVATE_KEY} 환경 변수로 빼는 작업 리팩토링 좀 해줘."}
+{"kind":"sensitive","items":["RRN"],"template":"API 서명 검증 테스트하려고 하는데 이 {PRIVATE_KEY} 가지고 토큰 서명 생성하는 코드 짜줘."}
+{"kind":"sensitive","items":["RRN"],"template":"보안 점검에서 지적받은 {PRIVATE_KEY} 권한 설정 변경하는 리눅스 명령어 알려줘."}
+{"kind":"sensitive","items":["RRN"],"template":"쿠버네티스 시크릿 오브젝트에 {PRIVATE_KEY} 밀어 넣을 때 base64 인코딩 올바르게 됐는지 봐줘."}
+{"kind":"sensitive","items":["RRN"],"template":"외부 연동 파트너사에 전달할 암호화용 {PRIVATE_KEY} 페어 생성 절차 문서화해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"로그에 우연히 찍힌 {PRIVATE_KEY} 문자열 마스킹 처리하는 로그 백엔드 필터 로직 짜줘."}
+{"kind":"sensitive","items":["RRN"],"template":"운영 DB 접속이 안 되는데 {CONN_STRING} 설정값에 오타가 있는지 확인해 줄래?"}
+{"kind":"sensitive","items":["RRN"],"template":"MSA 환경 전환하면서 각 서비스별 {CONN_STRING} 구성 파일 환경별로 분리해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"백엔드 서버 재기동할 때마다 {CONN_STRING} 풀링 설정 커넥션 수 초과하는 거 수정해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"새로 배포한 테스트 서버에 {CONN_STRING} 연결 테스트하는 간단한 헬스체크 코드 짜줘."}
+{"kind":"sensitive","items":["RRN"],"template":"DB 페일오버 발생했을 때 {CONN_STRING} 리다이렉트 옵션 어떻게 설정해야 안전해?"}
+{"kind":"sensitive","items":["RRN"],"template":"ORM 설정 파일에 들어갈 {CONN_STRING} 포맷이 프레임워크 버전 바뀌면서 달라졌는데 봐줘."}
+{"kind":"sensitive","items":["RRN"],"template":"보안 정책 강화로 인해 {CONN_STRING}에 SSL 접속 옵션 추가해서 연결하는 코드 수정해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"로컬 개발 환경에서 쓸 {CONN_STRING} 값 도커 콤포즈 파일에 세팅해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"배포 스크립트 실행 중에 {CONN_STRING} 누락되어서 마이그레이션 실패한 거 에러 로그 분석해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"읽기 전용 레플리카 서버 붙이려고 하는데 {CONN_STRING} 분기 처리 로직 어떻게 짜야 해?"}
+{"kind":"sensitive","items":["RRN"],"template":"외부 날씨 정보 가져오는 {API_KEY} 하드코딩된 거 안전하게 환경변수로 빼줘."}
+{"kind":"sensitive","items":["RRN"],"template":"지도 연동하는 {API_KEY} 할당량 초과 에러 나는데 호출 빈도 줄이는 캐싱 로직 짜줘."}
+{"kind":"sensitive","items":["RRN"],"template":"결제 대행사 테스트용 {API_KEY} 값 연동 문서 참고해서 설정 파일에 넣어 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"새로 발급받은 {API_KEY} 권한 설정이 잘못되었는지 403 포비든 떨어지는 거 원인 찾아줘."}
+{"kind":"sensitive","items":["RRN"],"template":"프론트엔드 코드에 노출되면 안 되는 {API_KEY} 백엔드 프록시 거쳐서 호출하도록 구조 바꿔줘."}
+{"kind":"sensitive","items":["RRN"],"template":"문자 발송 서비스 {API_KEY} 만료되기 전에 갱신하라고 알림 오는 거 처리해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"AI 번역 기능 연동하려고 하는데 {API_KEY} 인증 헤더 넣어서 요청하는 샘플 코드 짜줘."}
+{"kind":"sensitive","items":["RRN"],"template":"서버 로그에 {API_KEY} 전체가 그대로 찍히고 있는데 마스킹해서 출력되도록 수정해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"통합 테스트 돌릴 때 쓸 모의 {API_KEY} 목 서버 응답 값 설정해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"클라우드 콘솔에서 발급받은 {API_KEY} IP 제한 걸어두는 설정 어디서 하는지 알려줘."}
+{"kind":"sensitive","items":["RRN"],"template":"로그인 성공 후에 발급되는 {JWT} 토큰 페이로드 구조에 권한 정보 추가해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"만료된 {JWT} 토큰 들고 요청했을 때 401 에러 인터셉터에서 리프레시 토큰으로 갱신하는 로직 짜줘."}
+{"kind":"sensitive","items":["RRN"],"template":"API 요청 헤더에 실려 오는 {JWT} 토큰 파싱해서 유저 ID 추출하는 미들웨어 코드 봐줘."}
+{"kind":"sensitive","items":["RRN"],"template":"보안 취약점 진단에서 {JWT} 서명 알고리즘 'none' 허용하는 거 수정하라고 나왔는데 고쳐줘."}
+{"kind":"sensitive","items":["RRN"],"template":"로그아웃 할 때 {JWT} 토큰 블랙리스트 처리하는 레디스 연동 로직 검토해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"소셜 로그인 완료 후 리다이렉트 될 때 {JWT} 토큰 쿠키에 안전하게 담아주는 법 알려줘."}
+{"kind":"sensitive","items":["RRN"],"template":"스웨거 문서에서 API 테스트할 때 {JWT} 인증 토큰 헤더에 넣는 설정 어떻게 해?"}
+{"kind":"sensitive","items":["RRN"],"template":"MSA 간 통신할 때 서비스 인증용으로 {JWT} 전파하는 인터셉터 구현해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"유저 세션 만료 시간 조정하면서 {JWT} 유효기간(TTL) 설정값 변경해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"프론트에서 로컬 스토리지에 저장된 {JWT} 토큰 탈취 위험 있다고 하니 세션 쿠키로 전환해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"초기 관리자 계정 {PASSWORD} 변경하라는 보안 경고 떠서 설정 스크립트 수정해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"사용자가 입력한 {PASSWORD} 해시화할 때 bcrypt 솔트 라운드 몇으로 주는 게 적절한지 추천해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"비밀번호 변경 페이지에서 새 {PASSWORD} 유효성 검증(특수문자, 영문 조합) 정규식 짜줘."}
+{"kind":"sensitive","items":["RRN"],"template":"DB에 평문으로 잘못 들어간 {PASSWORD} 데이터 전부 안전하게 해시값으로 마이그레이션해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"로그인 실패 횟수 초과했을 때 {PASSWORD} 입력 제한 걸고 잠금 처리하는 로직 검토해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"테스트 자동화 코드 돌릴 때 쓸 테스트 계정 {PASSWORD} 환경 변수 파일에 추가해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"비밀번호 찾기 기능 구현할 때 임시 {PASSWORD} 생성해서 메일로 발송하는 함수 짜줘."}
+{"kind":"sensitive","items":["RRN"],"template":"회원가입 폼에서 {PASSWORD} 입력할 때 실시간으로 보안 강도 체크해 주는 UI 로직 봐줘."}
+{"kind":"sensitive","items":["RRN"],"template":"관리자 페이지 접근 권한 설정할 때 {PASSWORD} 외에 2FA 인증 추가하는 가이드 짜줘."}
+{"kind":"sensitive","items":["RRN"],"template":"에러 로그 파일 열어봤는데 유저가 입력한 {PASSWORD}가 그대로 찍혀있어서 마스킹 수정해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"우리 팀에서 진행 중인 {CODENAME} 프로젝트 저장소에 새로 들어온 팀원 권한 부여해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"내년 상반기 출시 목표인 {CODENAME} 관련 아키텍처 초안 문서에 피드백 좀 남겨줘."}
+{"kind":"sensitive","items":["RRN"],"template":"사내 인프라망에서 {CODENAME} 전용 쿠버네티스 네임스페이스 하나 파줄 수 있어?"}
+{"kind":"sensitive","items":["RRN"],"template":"보안팀에서 {CODENAME} 관련 소스코드 정적 분석 돌린 결과 리포트 파일 전달해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"외부 협력사에 {CODENAME} 베타 테스트 버전 전달할 때 빌드 파일 암호화해서 공유해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"지라(Jira)에 {CODENAME} 프로젝트 에픽 생성하고 백로그 이슈들 정리 좀 해줘."}
+{"kind":"sensitive","items":["RRN"],"template":"CI/CD 파이프라인 구축할 때 {CODENAME} 브랜치에 푸시되면 자동으로 스테이징 배포되게 해줘."}
+{"kind":"sensitive","items":["RRN"],"template":"디자인팀에서 전달 준 {CODENAME} 서비스 UI 프로토타이핑 시나리오 검토해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"개발 서버에 {CODENAME} 서비스 올릴 때 사용할 도메인 주소랑 포트 번호 할당해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"팀 회의록에 {CODENAME} 개발 일정 스케줄 공유된 거 노션 페이지에 정리해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"이번에 계약 체결된 {CLIENT} 담당자한테 보낼 물류 시스템 연동 가이드 문서 초안 검토해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"대형 고객사인 {CLIENT} 측에서 API 응답 속도 느리다고 컴플레인 들어왔는데 로그 분석해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"물류 창고 관리 시스템에 {CLIENT} 전용 바코드 스캔 로직 커스텀해서 추가해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"매달 초에 {CLIENT} 쪽으로 발송하는 정산 데이터 자동 생성 람다 함수 에러 잡아줘."}
+{"kind":"sensitive","items":["RRN"],"template":"이번 주 미팅 때 {CLIENT} 요구사항 반영한 화면 설계서 피그마 링크 공유해 줄래?"}
+{"kind":"sensitive","items":["RRN"],"template":"우리 시스템에 연동된 {CLIENT} 서버 IP 변경되었다고 해서 방화벽 룰 업데이트 요청해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"고객사인 {CLIENT} 포털 사이트 장애 문의 건 대응 지침서 매뉴얼 작성해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"배치 프로그램 도는 중에 {CLIENT} 연동 데이터 포맷 안 맞아서 파싱 에러 나는 거 수정해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"신규 계약 건으로 {CLIENT} 측 개발 담당자와 기술 미팅 잡힌 거 캘린더에 등록해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"분기별 실적 보고서에 들어갈 {CLIENT}별 매출 통계 데이터 엑셀로 정리해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"이 문서 상단에 {CLASSIFIED} 등급 표시 넣고 사내 인트라넷에만 공유되도록 권한 설정해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"보안 감사 대비해서 {CLASSIFIED} 붙어 있는 문서들 파기 대장 작성해야 하는데 양식 좀 짜줘."}
+{"kind":"sensitive","items":["RRN"],"template":"메신저로 파일 공유할 때 파일명이랑 내용에 {CLASSIFIED} 마크다운 경고 문구 삽입해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"신규 입사자 보안 교육 자료에 {CLASSIFIED} 자료 외부 유출 방지 관련 규정 내용 추가해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"서버 룸 출입 대장 및 {CLASSIFIED} 파일 서버 접근 권한 승인 프로세스 문서 다듬어줘."}
+{"kind":"sensitive","items":["RRN"],"template":"사내 위키에 올릴 {CLASSIFIED} 가이드라인 페이지에 접근 제어 그룹 올바르게 들어갔나 봐줘."}
+{"kind":"sensitive","items":["RRN"],"template":"외부 컨설팅 업체에 자료 전달하기 전에 모든 문서에서 {CLASSIFIED} 항목 마스킹 처리해 줘."}
+{"kind":"sensitive","items":["RRN"],"template":"인사평가 및 재무 실적 등 {CLASSIFIED} 데이터 다루는 엑셀 파일에 암호 걸어주는 파이썬 스크립트 짜줘."}
+{"kind":"sensitive","items":["RRN"],"template":"사내 인프라 아키텍처 다이어그램 문서에 {CLASSIFIED} 워터마크 배경으로 깔아주는 툴 써볼까?"}
+{"kind":"sensitive","items":["RRN"],"template":"보안 사고 예방을 위해 {CLASSIFIED} 분류된 소스코드는 개인 PC에 저장 못 하게 가이드 공지해 줘."}
+{"kind":"sensitive","items":["PHONE","EMAIL"],"template":"새로 등록된 고객 {PHONE} 번호랑 {EMAIL} 주소 정보가 DB에 정상 저장되는지 확인해 줘."}
+{"kind":"sensitive","items":["CLIENT","API_KEY"],"template":"파트너사 {CLIENT} 연동할 때 쓸 {API_KEY} 값이 만료되어서 새로 발급받았어."}
+{"kind":"sensitive","items":["RRN","PHONE"],"template":"신규 입사자 등록 서류에 {RRN} 정보랑 {PHONE} 연락처 입력 포맷이 깨지는 거 수정해 줘."}
+{"kind":"sensitive","items":["ACCOUNT","BANK"],"template":"이번 달 급여 이체 대상자 중 {BANK} 지정 계좌 {ACCOUNT} 번호 오류 난 사람 명단 뽑아줘."}
+{"kind":"sensitive","items":["CODENAME","JWT"],"template":"내부 테스트 중인 {CODENAME} 서비스 접속할 때 쓸 {JWT} 토큰 발급 방법 공유해 줘."}
+{"kind":"sensitive","items":["PASSWORD","EMAIL"],"template":"가입할 때 입력한 {EMAIL} 주소로 임시 {PASSWORD} 발송하는 기능 로직 검토해 줘."}
+{"kind":"sensitive","items":["CLASSIFIED","CODENAME"],"template":"이번에 작성한 {CODENAME} 아키텍처 설계서는 {CLASSIFIED} 등급이니까 외부 유출 조심해."}
+{"kind":"sensitive","items":["CARD","PHONE"],"template":"모바일 앱에서 {PHONE} 번호 인증 후에 {CARD} 등록하는 화면 UI 간격 조정해 줘."}
+{"kind":"sensitive","items":["CONN_STRING"],"template":"새로 띄운 백엔드 서버 환경 변수에 {CONN_STRING} 연결 문자열 세팅해 줬는지 확인해 줘."}
+{"kind":"sensitive","items":["PRIVATE_KEY","JWT"],"template":"인증 서버에서 {PRIVATE_KEY} 이용해 {JWT} 서명 발행하는 모듈 테스트 코드 짜줘."}
+{"kind":"sensitive","items":["CLIENT","EMAIL","PHONE"],"template":"주요 고객사 {CLIENT} 담당자 {EMAIL} 주소랑 {PHONE} 번호 연락처 리프레시해 줘."}
+{"kind":"sensitive","items":["RRN","FRN"],"template":"인사 관리 시스템에 내국인은 {RRN}, 외국인은 {FRN} 번호 입력하는 필드 유효성 검사 추가해 줘."}
+{"kind":"sensitive","items":["API_KEY","CONN_STRING"],"template":"개발 환경 설정 파일에 들어갈 외부 연동 {API_KEY} 값이랑 DB {CONN_STRING} 환경 변수로 분리해 줘."}
+{"kind":"sensitive","items":["BANK","ACCOUNT","RRN"],"template":"간편 송금 서비스 가입 검증 로직에 {RRN} 정보랑 {BANK} 및 {ACCOUNT} 연동 에러 핸들링 추가해 줘."}
+{"kind":"sensitive","items":["CLASSIFIED","CODENAME","CLIENT"],"template":"비밀 등급 {CLASSIFIED} 붙은 {CODENAME} 프로젝트 문서를 {CLIENT} 측에 안전하게 전달하는 방법 기획해 줘."}
+{"kind":"sensitive","items":["PHONE_LIST"],"template":"이번 프로모션 문자 이벤트 대상자 {PHONE_LIST} 번호 목록 추출해서 엑셀로 정리해 줘."}
+{"kind":"sensitive","items":["EMAIL_LIST"],"template":"뉴스레터 대량 발송을 위한 구독자 {EMAIL_LIST} 메일 주소 목록 CSV 파일로 변환해 줘."}
+{"kind":"sensitive","items":["PHONE_LIST"],"template":"고객센터 만족도 조사 설문 링크를 보낼 대상 {PHONE_LIST} 번호들 형식 오류 체크해 줘."}
+{"kind":"sensitive","items":["EMAIL_LIST"],"template":"휴면 계정 사전 안내 메일 발송 대상자인 {EMAIL_LIST} 주소들 중 반송된 것들 추려내 줘."}
+{"kind":"sensitive","items":["PHONE_LIST"],"template":"임직원 긴급 비상 연락망 등록용으로 쓸 {PHONE_LIST} 번호 데이터베이스 적재 쿼리 짜줘."}
+{"kind":"normal","items":[],"template":"서버 배포 스크립트 실행할 때 타임아웃 시간 30초로 늘리는 법 좀 알려줘."}
+{"kind":"normal","items":[],"template":"깃허브에서 풀 리퀘스트 날렸는데 머지 충돌 나는 거 어떻게 해결하는 게 깔끔해?"}
+{"kind":"normal","items":[],"template":"다음 주 월요일 오전 10시에 전사 회의실 예약 가능한지 확인해 줄래?"}
+{"kind":"normal","items":[],"template":"도커 이미지 빌드할 때 용량 줄이려고 멀티 스테이지 빌드 적용하는 법 정리해 줘."}
+{"kind":"normal","items":[],"template":"프론트엔드 빌드 번호가 v1.2.4로 배포되었는지 인트라넷 대시보드에서 체크해 줘."}
+{"kind":"normal","items":[],"template":"사내 식단표 오늘 메뉴 중에 알레르기 유발 물질 포함된 거 있는지 봐줄래?"}
+{"kind":"normal","items":[],"template":"주문 번호 ORD-2026-9938 건 배송 추적 상태가 왜 조회 안 되는지 물류 시스템 로그 봐줘."}
+{"kind":"normal","items":[],"template":"분기별 워크숍 장소 후보 3곳 뽑아놨는데 가격이랑 수용 인원 비교 표 만들어 줘."}
+{"kind":"normal","items":[],"template":"에러 코드 ERR-5003 발생했을 때 유저 화면에 뜨는 토스트 메시지 문구 좀 부드럽게 다듬어줘."}
+{"kind":"normal","items":[],"template":"우리 회사 대표 번호나 대표 메일로 들어오는 문의 건 중 기술 지원 비중이 얼마나 되는지 통계 내줘."}
+{"kind":"normal","items":[],"template":"사내 Wi-Fi 속도가 자꾸 끊기는데 네트워크 인프라 팀에 점검 요청 티켓 하나 끊어줘."}
+{"kind":"normal","items":[],"template":"API 응답 시간 단축하려고 레디스 캐시 도입하는 아키텍처 장단점 정리해 줘."}
+{"kind":"normal","items":[],"template":"신규 입사자 온보딩 가이드 문서에 사내 메신저 툴 설치 링크랑 계정 생성 절차 추가해 줘."}
+{"kind":"normal","items":[],"template":"이번 달 지출 품의서 올릴 때 택배비랑 서버 비용 항목 영수증 첨부하는 거 까먹지 마."}
+{"kind":"normal","items":[],"template":"로그 분석 툴에서 최근 1시간 동안 5xx 에러 발생 추이 그래프 캡처해서 공유해 줘."}
+{"kind":"normal","items":[],"template":"프로젝트 산출물 보관하는 구글 드라이브 폴더 구조 보기 좋게 카테고리별로 정리해 줘."}
+{"kind":"normal","items":[],"template":"회의실 3호기 프로젝터 화면 연결 단자가 안 맞아서 그러는데 젠더 하나 빌려줄 사람?"}
+{"kind":"normal","items":[],"template":"사내 도서관에 새로 들어온 개발 도서 대출 신청하려면 어떤 양식 작성해야 해?"}
+{"kind":"normal","items":[],"template":"프레임워크 버전 업그레이드하면서 deprecated 된 메서드들 일괄 마이그레이션하는 스크립트 짜줘."}
+{"kind":"normal","items":[],"template":"오후 2시에 예정된 기술 세미나 발표 자료 슬라이드 디자인 템플릿 좀 골라줘."}
+{"kind":"normal","items":[],"template":"주문 상태 코드가 완료로 바뀌었는데 정산 테이블에 반영 안 되는 배치 작업 로그 분석해 줘."}
+{"kind":"normal","items":[],"template":"사내 보안 규정에 따라 PC 화면 보호기 대기 시간 10분으로 강제 설정하는 스크립트 실행해 줘."}
+{"kind":"normal","items":[],"template":"깃 브랜치 전략 Git Flow에서 GitHub Flow로 바꿀 때 팀원들한테 공지할 가이드라인 초안 작성해 줘."}
+{"kind":"normal","items":[],"template":"배포 서버 디스크 용량 부족 경고 떴는데 불필요한 로그 파일들 일괄 삭제하는 명령어 알려줘."}
+{"kind":"normal","items":[],"template":"고객사 문의 게시판에 답변 템플릿 답변 내용 중에 오탈자 있는지 검토해 줘."}
+{"kind":"normal","items":[],"template":"이번 주 스프린트 백로그에 쌓인 이슈들 우선순위 정렬해서 칸반 보드 업데이트해 줘."}
+{"kind":"normal","items":[],"template":"사내 인트라넷 로그인 페이지 UI를 모바일 화면에서도 잘 보이게 반응형으로 수정해 줘."}
+{"kind":"normal","items":[],"template":"외부 API 연동 규격서 PDF 파일에서 필요한 데이터 스키마 부분만 발췌해서 요약해 줘."}
+{"kind":"normal","items":[],"template":"재택근무 신청할 때 사내 VPN 연결 상태 불안정하면 사전 보고해야 하는지 인사 규정 확인해 줘."}
+{"kind":"normal","items":[],"template":"신규 기능 개발 건 요구사항 정의서에 빠진 예외 처리 시나리오 몇 개 더 추가해 줘."}
+{"kind":"normal","items":[],"template":"사내 공용 프린터 드라이버가 자꾸 자스민 에러 뿜으면서 안 잡히는데 해결 방법 찾아줘."}
+{"kind":"normal","items":[],"template":"고객 불만 응대 매뉴얼 문서에 환불 처리 규정 세부 조항 좀 더 명확하게 다듬어줘."}
+{"kind":"normal","items":[],"template":"서버 성능 테스트 도구로 자주 쓰는 가비아나 제이미터 사용법 간단하게 정리해 줄래?"}
+{"kind":"normal","items":[],"template":"이번 분기 팀 목표 달성도 평가 지표 설정하는 회의에서 나온 아이디어들 마인드맵으로 정리해 줘."}
+{"kind":"normal","items":[],"template":"리액트 컴포넌트 라이브러리 스토리북 세팅할 때 불필요한 애드온 플러그인들 정리하는 법 알려줘."}
