@@ -110,6 +110,24 @@ class GatewayFlowTest {
     }
 
     @Test
+    @DisplayName("AC-9.4 측정 처리: 가림 처리된 문장은 가린 문장을 그대로 복원해 복원 지연을 채우고, 복원한 문장은 원문과 같다")
+    void measurementRestores() {
+        GatewayResult r = gateway.handle("김민수 010-2345-6789, 한결물산 담당자", false, true);
+
+        assertThat(sentToAi).isEmpty();
+        assertThat(r.timings().restoreMs()).isNotNull().isNotNegative();
+        assertThat(r.answer()).isEqualTo("김민수 010-2345-6789, 한결물산 담당자");
+        assertThat(r.restored()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("AC-9.4 측정 처리: 가림이 없는 요청은 복원 지연이 없다")
+    void measurementNoRestoreWhenNotMasked() {
+        assertThat(gateway.handle("회의록 요약해 줘", false, true).timings().restoreMs()).isNull();
+        assertThat(gateway.handle("password=Sup3rS3cret!", false, true).timings().restoreMs()).isNull();
+    }
+
+    @Test
     @DisplayName("AC-1.1 입력 검증 실패는 외부 AI를 부르지 않고 예외로 알리며 로그를 한 줄 남긴다")
     void invalidInput() {
         assertThatThrownBy(() -> gateway.handle("   ", false, false)).isInstanceOf(InvalidPromptException.class);

@@ -71,9 +71,17 @@ public class ChatGateway {
 
         if (measure) {
             long t1 = System.nanoTime();
-            String masked = masker.mask(prompt, findings).maskedText();
-            return logged(prompt, new GatewayResult(action, counts, null, confirmedWarn, masked, findings,
-                    new GatewayResult.Timings(detectMs, ms(t1), null, null), 0, true));
+            MaskResult mask = masker.mask(prompt, findings);
+            long maskMs = ms(t1);
+            if (action != Action.MASK) {
+                return logged(prompt, new GatewayResult(action, counts, null, confirmedWarn, mask.maskedText(), findings,
+                        new GatewayResult.Timings(detectMs, maskMs, null, null), 0, true));
+            }
+            // AC-9.4: 가린 문장을 그대로 복원해 복원 지연을 잰다(외부 AI는 부르지 않는다).
+            long t2 = System.nanoTime();
+            RestoreResult echoed = masker.restore(mask.maskedText(), mask);
+            return logged(prompt, new GatewayResult(action, counts, echoed.text(), confirmedWarn, mask.maskedText(), findings,
+                    new GatewayResult.Timings(detectMs, maskMs, null, ms(t2)), echoed.restored(), true));
         }
         if (action == Action.BLOCK || action == Action.WARN) {
             return logged(prompt, new GatewayResult(action, counts, null, false, null, null,
