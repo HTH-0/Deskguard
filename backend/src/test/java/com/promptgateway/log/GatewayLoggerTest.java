@@ -1,204 +1,88 @@
 package com.promptgateway.log;
 
-import com.promptgateway.gateway.GatewayResult;
-import com.promptgateway.gateway.InvalidPromptException;
-import com.promptgateway.judge.JudgeException;
-import com.promptgateway.judge.JudgeResult;
-import com.promptgateway.judge.QuestionSet;
-import com.promptgateway.support.LogCapture;
 import ch.qos.logback.classic.Level;
+import com.promptgateway.gateway.GatewayResult;
+import com.promptgateway.support.LogCapture;
+import com.promptgateway.support.TestGateways;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.system.CapturedOutput;
-import org.springframework.boot.test.system.OutputCaptureExtension;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * GatewayLogger가 만드는 로그 한 줄의 내용을 시험한다(T10, AC-7.1~7.4).
- * 로그가 나가는 곳(sink)을 목록으로 바꿔 끼워서, 줄 하나하나를 문자열로 확인한다.
- */
-@ExtendWith(OutputCaptureExtension.class)
+/** 감사 로그(AC-7.1, 7.2). 원문, 탐지한 값, 가명 대응표가 로그에 없는지 실제 게이트웨이 흐름으로 확인한다. */
 class GatewayLoggerTest {
 
-    static final String PROMPT = "연차 신청은 어떻게 하나요?";
+    static final String SENSITIVE = "김민수 010-2345-6789, minsu@mail.example, 한결물산 / DB_PASSWORD=Qw7!zLp92x";
 
-    List<String> lines = new ArrayList<>();
-    GatewayLogger logger = new GatewayLogger(false, lines::add);
+    @Test
+    @DisplayName("AC-7.1 한 줄에 요청 ID, 처리, 범주별 개수, 원문 길이와 해시, 단계별 지연이 있다")
+    void lineHasRequiredFields() {
+        List<String> lines = new ArrayList<>();
+        TestGateways.gateway(p -> "답", new GatewayLogger(lines::add), false).handle("김민수 010-2345-6789 정리", false, false);
 
-    private static JudgeResult judgeResult(String highId, double high) {
-        Map<String, Double> scores = new LinkedHashMap<>();
-        QuestionSet.EXPECTED_IDS.forEach(id -> scores.put(id, 0.02));
-        if (highId != null) {
-            scores.put(highId, high);
+        assertThat(lines).singleElement().asString()
+                .containsPattern("requestId=[0-9a-f-]{36}")
+                .contains("action=MASK", "findings=D1.PHONE:1", "restored=0", "promptLength=",
+                        "promptHash=" + GatewayLogger.hash("김민수 010-2345-6789 정리"))
+                .containsPattern("detectMs=\\d+").containsPattern("maskMs=\\d+")
+                .containsPattern("answerMs=\\d+").containsPattern("restoreMs=\\d+");
+    }
+
+    @Test
+    @DisplayName("AC-7.2 어떤 처리든 로그에 원문, 탐지한 값, 가명이 없다")
+    void noSensitiveContentInLog() {
+        List<String> lines = new ArrayList<>();
+        var gateway = TestGateways.gateway(p -> "답: " + p, new GatewayLogger(lines::add), false);
+
+        gateway.handle(SENSITIVE, false, false);
+        gateway.handle("김민수 010-2345-6789, 한결물산", false, false);
+
+        String all = String.join("\n", lines);
+        assertThat(all).doesNotContain("김민수", "010-2345-6789", "minsu@mail.example", "한결물산", "Qw7!zLp92x", "[전화1]", "[고객사1]");
+    }
+
+    @Test
+    @DisplayName("AC-7.2 오류 줄에는 예외 메시지를 싣지 않는다")
+    void errorLineHasNoMessage() {
+        List<String> lines = new ArrayList<>();
+        new GatewayLogger(lines::add).logError("x", "ANSWER", new IllegalStateException("key=SECRET-999"));
+
+        assertThat(lines).singleElement().asString().contains("action=ERROR", "stage=ANSWER", "errorKind=IllegalStateException")
+                .doesNotContain("SECRET-999");
+    }
+
+    @Test
+    @DisplayName("SLF4J 수준: 허용과 가림은 INFO, 경고와 차단과 오류는 WARN(보안 이벤트)")
+    void levels() {
+        try (LogCapture logs = LogCapture.of(GatewayLogger.class)) {
+            var gateway = TestGateways.gateway(p -> "답", new GatewayLogger(), false);
+            gateway.handle("회의록 요약", false, false);
+            gateway.handle("010-2345-6789", false, false);
+            gateway.handle(TestGateways.phoneList(20), false, false);
+            gateway.handle("password=Qw7!zLp92x", false, false);
+
+            assertThat(logs.events()).extracting(e -> e.getLevel())
+                    .containsExactly(Level.INFO, Level.INFO, Level.WARN, Level.WARN);
         }
-        return new JudgeResult(scores, "jev-1.14.0", 12);
     }
 
     @Test
-    @DisplayName("AC-7.1 통과한 요청의 한 줄에 결정, 단계, 질문별 확률, 모델 버전, 단계별 지연 시간이 있다")
-    void passedLineHasAllFields() {
-        logger.logResult(PROMPT, GatewayResult.passed(judgeResult(null, 0), "답변"),
-                new GatewayLogger.Timings(1L, 2L, 3L));
-
-        assertThat(lines).hasSize(1);
-        String line = lines.get(0);
-        assertThat(line).contains("decision=PASS", "stage=NONE", "modelVersion=jev-1.14.0",
-                "filterMs=1", "judgeMs=2", "answerMs=3");
-        QuestionSet.EXPECTED_IDS.forEach(id -> assertThat(line).contains(id + ":0.020"));
-        assertThat(line).containsPattern("requestId=[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
-        assertThat(line).doesNotContain("\n");
-    }
-
-    @Test
-    @DisplayName("판정이 위반으로 판단해 차단한 줄은 decision=BLOCK, stage=JUDGE이고 점수를 남긴다")
-    void judgeBlockLine() {
-        logger.logResult(PROMPT, GatewayResult.blockedByJudge(judgeResult("F3", 0.9)),
-                new GatewayLogger.Timings(1L, 2L, null));
-
-        assertThat(lines.get(0)).contains("decision=BLOCK", "stage=JUDGE", "F3:0.900", "judgeMs=2")
-                .doesNotContain("answerMs", "patternId", "failureKind");
-    }
-
-    @Test
-    @DisplayName("패턴 차단 줄은 patternId가 있고, 판정을 하지 않았으므로 점수와 판정 시간이 없다")
-    void patternBlockLine() {
-        logger.logResult(PROMPT, GatewayResult.blockedByPattern("P-01"), new GatewayLogger.Timings(1L, null, null));
-
-        assertThat(lines.get(0)).contains("decision=BLOCK", "stage=PATTERN", "patternId=P-01", "filterMs=1")
-                .doesNotContain("scores=", "modelVersion", "judgeMs", "answerMs");
-    }
-
-    @Test
-    @DisplayName("판정 실패 차단 줄은 failureKind가 있고 점수가 없다")
-    void judgeFailureLine() {
-        logger.logResult(PROMPT, GatewayResult.blockedByJudgeFailure(JudgeException.Kind.TIMEOUT),
-                new GatewayLogger.Timings(1L, 3000L, null));
-
-        assertThat(lines.get(0)).contains("decision=BLOCK", "stage=JUDGE_FAILURE", "failureKind=TIMEOUT", "judgeMs=3000")
-                .doesNotContain("scores=", "modelVersion");
-    }
-
-    @Test
-    @DisplayName("AC-7.3 원문 저장이 꺼져 있으면 원문은 없고 길이와 해시만 있다")
-    void defaultHasNoRawPrompt() {
-        logger.logResult(PROMPT, GatewayResult.blockedByPattern("P-01"), new GatewayLogger.Timings(1L, null, null));
-
-        String line = lines.get(0);
-        assertThat(line).doesNotContain(PROMPT).doesNotContain("prompt=");
-        assertThat(line).contains("promptLength=" + PROMPT.length(), "promptHash=" + GatewayLogger.hash(PROMPT));
-    }
-
-    @Test
-    @DisplayName("AC-7.4 원문 저장을 켜면 원문이 한 줄 안에 기록된다(따옴표와 줄바꿈은 이스케이프한다)")
-    void rawPromptWhenEnabled() {
-        GatewayLogger raw = new GatewayLogger(true, lines::add);
-
-        raw.logResult("a\"b\nc", GatewayResult.blockedByPattern("P-01"), new GatewayLogger.Timings(1L, null, null));
-
-        assertThat(lines.get(0)).contains("prompt=\"a\\\"b\\nc\"").doesNotContain("\n");
-    }
-
-    @Test
-    @DisplayName("해시는 SHA-256의 앞 16자리(16진수)이다")
-    void hashIsFirst16HexOfSha256() {
-        // SHA-256("abc") = ba7816bf 8f01cfea 414140de 5dae2223 b00361a3 96177a9c b410ff61 f20015ad
+    @DisplayName("해시는 UTF-8 SHA-256의 앞 16자리이다")
+    void hash() {
         assertThat(GatewayLogger.hash("abc")).isEqualTo("ba7816bf8f01cfea");
     }
 
     @Test
-    @DisplayName("AC-7.5 입력 검증 실패는 decision=ERROR, stage=VALIDATION으로 한 줄 남긴다")
-    void validationErrorLine() {
-        logger.logError(" ", "VALIDATION", new InvalidPromptException("prompt는 비어 있을 수 없습니다."),
-                GatewayLogger.Timings.NONE);
+    @DisplayName("측정 처리에서도 로그에 가린 문장이나 값이 없다")
+    void measurementLogHasNoValues() {
+        List<String> lines = new ArrayList<>();
+        GatewayResult r = TestGateways.gateway(p -> "답", new GatewayLogger(lines::add), true)
+                .handle("김민수 010-2345-6789", false, true);
 
-        assertThat(lines).hasSize(1);
-        assertThat(lines.get(0)).contains("decision=ERROR", "stage=VALIDATION", "errorKind=InvalidPromptException",
-                "promptLength=1");
-    }
-
-    @Test
-    @DisplayName("AC-7.2 오류 줄에는 예외 메시지를 싣지 않는다(메시지에 키가 들어 있어도 로그에 나오지 않는다)")
-    void errorLineNeverCarriesExceptionMessage() {
-        RuntimeException leaky = new RuntimeException("https://example.test/v1?key=SECRET-KEY-123 호출 실패");
-
-        logger.logError(PROMPT, "ANSWER", leaky, new GatewayLogger.Timings(1L, 2L, 3L));
-
-        assertThat(lines.get(0)).contains("decision=ERROR", "stage=ANSWER", "errorKind=RuntimeException")
-                .doesNotContain("SECRET-KEY-123", "example.test");
-    }
-
-    @Test
-    @DisplayName("prompt가 null이어도 로그가 실패하지 않고 길이는 0이다")
-    void nullPromptIsSafe() {
-        logger.logError(null, "VALIDATION", new InvalidPromptException("없음"), GatewayLogger.Timings.NONE);
-
-        assertThat(lines.get(0)).contains("promptLength=0").doesNotContain("promptHash");
-    }
-
-    @Test
-    @DisplayName("기본 출력은 SLF4J 로그이다")
-    void defaultSinkWritesToLog(CapturedOutput output) {
-        new GatewayLogger(false).logResult(PROMPT, GatewayResult.blockedByPattern("P-01"),
-                new GatewayLogger.Timings(1L, null, null));
-
-        assertThat(output.getOut()).contains("decision=BLOCK", "stage=PATTERN");
-    }
-
-    // ---- 로그 수준과 이스케이프 (AC-7.6, 7.7, 2026-10-29) ----
-
-    private static Level levelOf(java.util.function.Consumer<GatewayLogger> call) {
-        try (LogCapture logs = LogCapture.of(GatewayLogger.class)) {
-            call.accept(new GatewayLogger(false));
-            assertThat(logs.events()).hasSize(1);
-            return logs.events().getFirst().getLevel();
-        }
-    }
-
-    @Test
-    @DisplayName("AC-7.6 통과와 정책 차단은 INFO, 판정 실패와 ERROR는 WARN, 판정 설정 오류는 ERROR 수준이다")
-    void logLevelsFollowSeverity() {
-        GatewayLogger.Timings t = GatewayLogger.Timings.NONE;
-        assertThat(levelOf(l -> l.logResult(PROMPT, GatewayResult.passed(judgeResult(null, 0), "답변"), t))).isEqualTo(Level.INFO);
-        assertThat(levelOf(l -> l.logResult(PROMPT, GatewayResult.blockedByJudge(judgeResult("F3", 0.9)), t))).isEqualTo(Level.INFO);
-        assertThat(levelOf(l -> l.logResult(PROMPT, GatewayResult.blockedByJudgeFailure(JudgeException.Kind.TIMEOUT), t))).isEqualTo(Level.WARN);
-        assertThat(levelOf(l -> l.logError(PROMPT, "ANSWER", new IllegalStateException("x"), t))).isEqualTo(Level.WARN);
-        assertThat(levelOf(l -> l.logResult(PROMPT, GatewayResult.blockedByJudgeFailure(JudgeException.Kind.CONFIG_ERROR), t))).isEqualTo(Level.ERROR);
-    }
-
-    @Test
-    @DisplayName("AC-7.7 원문의 탭과 제어 문자도 이스케이프되어 한 줄로 남는다")
-    void rawPromptControlCharsEscaped() {
-        GatewayLogger raw = new GatewayLogger(true, lines::add);
-
-        raw.logResult("가\t나\u0007다\u2028라", GatewayResult.blockedByPattern("P-001"), GatewayLogger.Timings.NONE);
-
-        assertThat(lines.get(0)).contains("prompt=\"가\\t나\\u0007다\\u2028라\"")
-                .doesNotContain("\t").doesNotContain("\u0007").doesNotContain("\u2028");
-    }
-
-    @Test
-    @DisplayName("AC-7.7 외부에서 온 모델 버전에 공백이나 줄바꿈이 있어도 가짜 항목을 만들 수 없다")
-    void externalModelVersionEscaped() {
-        JudgeResult odd = new JudgeResult(judgeResult(null, 0).scores(), "jev 1\ndecision=PASS", 3);
-
-        logger.logResult(PROMPT, GatewayResult.blockedByJudge(odd), GatewayLogger.Timings.NONE);
-
-        assertThat(lines.get(0)).doesNotContain("\n").contains("modelVersion=\"jev 1\\ndecision=PASS\"")
-                .doesNotContain(" decision=PASS");
-    }
-
-    @Test
-    @DisplayName("AC-7.7 길이는 입력 검증과 같은 기준(코드 포인트)으로 센다: 이모지는 1자이다")
-    void lengthCountsCodePoints() {
-        logger.logResult("😀가", GatewayResult.blockedByPattern("P-001"), GatewayLogger.Timings.NONE);
-
-        assertThat(lines.get(0)).contains("promptLength=2");
+        assertThat(r.maskedPrompt()).isNotNull();
+        assertThat(lines).singleElement().asString().contains("measure=true").doesNotContain("010-2345-6789", "[전화1]");
     }
 }

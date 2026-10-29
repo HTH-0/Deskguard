@@ -1,15 +1,10 @@
 package com.promptgateway.controller;
 
 import com.promptgateway.exception.GlobalExceptionHandler;
-import com.promptgateway.filter.PatternFilter;
 import com.promptgateway.gateway.ChatGateway;
-import com.promptgateway.gateway.InputValidator;
-import com.promptgateway.judge.BlockDecider;
-import com.promptgateway.judge.Judge;
-import com.promptgateway.judge.JudgeResult;
-import com.promptgateway.judge.QuestionSet;
 import com.promptgateway.log.GatewayLogger;
 import com.promptgateway.service.GeminiService;
+import com.promptgateway.support.TestGateways;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,9 +20,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
@@ -64,15 +56,9 @@ class ChatControllerCharacterizationTest {
         ReflectionTestUtils.setField(service, "apiKey", FAKE_KEY);
         ReflectionTestUtils.setField(service, "model", "test-model");
         ReflectionTestUtils.setField(service, "baseUrl", "https://gemini.test/v1beta/models");
-        // 스텝 8 이후의 컨트롤러는 ChatGateway를 거친다. 판정은 항상 통과시키는 가짜로 두어서
-        // 이 시험이 응답 모델 쪽 동작(Gemini 호출과 오류 변환)만 보게 한다.
-        Judge alwaysPass = prompt -> {
-            Map<String, Double> low = new LinkedHashMap<>();
-            QuestionSet.EXPECTED_IDS.forEach(id -> low.put(id, 0.01));
-            return new JudgeResult(low, "jev-1.14.0", 1);
-        };
-        ChatGateway gateway = new ChatGateway(new InputValidator(1000), new PatternFilter(List.of()), alwaysPass,
-                new BlockDecider(QuestionSet.EXPECTED_IDS, 0.5), service, new GatewayLogger(false, line -> { }));
+        // 운영 게이트웨이와 같은 조립(탐지, 결정, 가림)에 응답 모델만 가짜 키의 GeminiService를 쓴다.
+        // 이 시험은 "안녕"처럼 탐지가 없는 문장으로 외부 AI 쪽 동작(호출과 오류 변환)만 본다.
+        ChatGateway gateway = TestGateways.gateway(service, new GatewayLogger(line -> { }), false);
         mockMvc = MockMvcBuilders.standaloneSetup(new ChatController(gateway))
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .build();
@@ -101,7 +87,7 @@ class ChatControllerCharacterizationTest {
         MockHttpServletResponse r = chat("{\"prompt\":\"안녕\"}");
 
         assertThat(r.getStatus()).isEqualTo(200);
-        assertThat(body(r)).isEqualTo("{\"answer\":\"안녕하세요\"}");
+        assertThat(body(r)).isEqualTo("{\"action\":\"ALLOW\",\"answer\":\"안녕하세요\",\"findings\":[]}");
         server.verify();
     }
 
@@ -134,9 +120,9 @@ class ChatControllerCharacterizationTest {
     }
 
     @Test
-    @DisplayName("[T9에서 바뀜] 1,001자 입력은 400이고 Gemini를 호출하지 않는다 (FR-1)")
+    @DisplayName("[T9에서 바뀜, 명세 v2 S1에서 다시 바뀜] 4,001자 입력은 400이고 Gemini를 호출하지 않는다 (FR-1, 최대 4,000자)")
     void tooLongPromptIsRejected() throws Exception {
-        MockHttpServletResponse r = chat("{\"prompt\":\"" + "가".repeat(1001) + "\"}");
+        MockHttpServletResponse r = chat("{\"prompt\":\"" + "가".repeat(4001) + "\"}");
 
         assertThat(r.getStatus()).isEqualTo(400);
         server.verify();

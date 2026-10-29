@@ -2,16 +2,11 @@ package com.promptgateway.controller;
 
 import ch.qos.logback.classic.Level;
 import com.promptgateway.exception.GlobalExceptionHandler;
-import com.promptgateway.filter.PatternFilter;
 import com.promptgateway.gateway.ChatGateway;
-import com.promptgateway.gateway.InputValidator;
-import com.promptgateway.judge.BlockDecider;
-import com.promptgateway.judge.Judge;
-import com.promptgateway.judge.JudgeResult;
-import com.promptgateway.judge.QuestionSet;
 import com.promptgateway.log.GatewayLogger;
 import com.promptgateway.service.GeminiService;
 import com.promptgateway.support.LogCapture;
+import com.promptgateway.support.TestGateways;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,9 +19,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -57,13 +49,9 @@ class ChatControllerLogTest {
         ReflectionTestUtils.setField(service, "apiKey", FAKE_KEY);
         ReflectionTestUtils.setField(service, "model", "test-model");
         ReflectionTestUtils.setField(service, "baseUrl", "https://gemini.test/v1beta/models");
-        Judge alwaysPass = prompt -> {
-            Map<String, Double> low = new LinkedHashMap<>();
-            QuestionSet.EXPECTED_IDS.forEach(id -> low.put(id, 0.01));
-            return new JudgeResult(low, "jev-1.14.0", 1);
-        };
-        ChatGateway gateway = new ChatGateway(new InputValidator(1000), new PatternFilter(List.of()), alwaysPass,
-                new BlockDecider(QuestionSet.EXPECTED_IDS, 0.5), service, new GatewayLogger(false));
+        // 운영 게이트웨이와 같은 조립(탐지, 결정, 가림)에 응답 모델만 가짜 키의 GeminiService를 쓴다.
+        // 이 시험은 "안녕"처럼 탐지가 없는 문장으로 외부 AI 쪽 동작(호출과 오류 변환)만 본다.
+        ChatGateway gateway = TestGateways.gateway(service, new GatewayLogger(), false);
         mockMvc = MockMvcBuilders.standaloneSetup(new ChatController(gateway))
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .build();

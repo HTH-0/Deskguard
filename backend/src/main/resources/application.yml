@@ -16,25 +16,16 @@ gemini:
   model: gemini-3.6-flash
   base-url: https://generativelanguage.googleapis.com/v1beta/models
 
-# 판정 모델(Jev) 호출 설정. 기본값은 docs/design.md 6장과 같다.
-judge:
-  # 실제 키 값은 여기 적지 않는다. 환경변수 TYPESAFE_API_KEY에서 읽어온다.
-  api-key: ${TYPESAFE_API_KEY}
-  base-url: https://api.typesafe.ai
-  model: jev-1.14.0            # 별칭(jev-latest)은 쓰지 않는다. 버전 ID로 고정한다.
-  threshold: 0.5               # 질문 하나라도 이 값 이상이면 차단 (임계값과 같아도 차단)
-  connect-timeout: 2s
-  read-timeout: 3s
-  max-retries: 2               # 429, 529일 때만 다시 시도
-  retry-backoff: 200ms         # 200ms, 400ms로 두 배씩 늘어난다
-  questions-file: judge/questions.tsv
-
 # 게이트웨이 설정
 gateway:
-  max-prompt-length: 1000
-  patterns: []                 # 패턴 필터의 패턴. 비어 있으면 모든 요청을 판정 단계로 보낸다.
-  measurement-mode: false      # 개발용. true이면 같은 컴퓨터에서 온 요청에만 응답 모델을 부르지 않고 판정 결과를 200으로 돌려준다(AC-9.7). 사용자에게 노출하는 환경에서는 켜지 않는다.
+  max-prompt-length: 4000      # 명단과 설정 파일을 붙여넣는 업무 문장이 길다(명세 v2 S1)
+  measurement-mode: false      # 개발용. true이면 같은 컴퓨터에서 온 요청에만 외부 AI를 부르지 않고 탐지 결과를 200으로 돌려준다(AC-9.2, 9.3). 사용자에게 노출하는 환경에서는 켜지 않는다.
 
-# 요청마다 남기는 한 줄 로그(docs/design.md 7.2절). 원문 저장은 시험 환경에서만 true로 바꾼다.
-logging:
-  store-raw-prompt: false
+# 탐지 설정 (docs/design.md 6장). 대량 기준은 측정 전에 동결한다.
+detection:
+  bulk-threshold: 20
+
+# 가상 회사 사전(코드명, 고객사, 등급 표시, 허용 목록). company 아래 값을 CompanyProperties로 읽는다.
+spring:
+  config:
+    import: classpath:company/dictionary.yml

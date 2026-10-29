@@ -1,38 +1,24 @@
 package com.promptgateway.gateway;
 
-import com.promptgateway.judge.JudgeException;
-import com.promptgateway.judge.JudgeResult;
+import com.promptgateway.detect.Action;
+import com.promptgateway.detect.Finding;
+import com.promptgateway.detect.FindingCount;
+
+import java.util.List;
 
 /**
- * 게이트웨이가 요청 하나를 처리한 결과. "차단"은 예외가 아니라 이 값으로 돌려준다(차단은 정상 동작이기 때문이다).
+ * 게이트웨이가 요청 하나를 처리한 결과(명세 v2 1장). 차단과 경고는 예외가 아니라 이 값으로 돌려준다.
  *
- * decision: 통과(PASSED) 또는 차단(BLOCKED)
- * stage: 어디에서 막혔는지. NONE(통과), PATTERN(패턴 필터), JUDGE(판정 모델이 위반으로 판단), JUDGE_FAILURE(판정 호출 실패)
- * patternId: 패턴 필터가 막았을 때 그 패턴의 ID
- * failureKind: 판정 호출이 실패했을 때 실패 종류
- * judgeResult: 판정이 끝났다면 질문별 확률과 모델 버전 (패턴에서 막히거나 판정이 실패하면 없음)
- * answer: 통과했을 때 응답 모델의 답변
+ * action      처리. 경고를 확인해 보낸 요청은 MASK이고 confirmed가 true이다
+ * counts      범주별 개수(응답과 로그용)
+ * answer      외부 AI의 답(가림이면 복원한 답). 차단, 확인 전 경고, 측정 처리에서는 null
+ * maskedPrompt, findings  측정 처리에서만 채운다(값과 위치가 들어 있으므로 일반 응답과 로그에 싣지 않는다)
+ * restored    답에서 되돌린 가명 수
  */
-public record GatewayResult(Decision decision, Stage stage, String patternId,
-                            JudgeException.Kind failureKind, JudgeResult judgeResult, String answer) {
+public record GatewayResult(Action action, List<FindingCount> counts, String answer, boolean confirmed,
+                            String maskedPrompt, List<Finding> findings, Timings timings, int restored, boolean measured) {
 
-    public enum Decision { PASSED, BLOCKED }
-
-    public enum Stage { NONE, PATTERN, JUDGE, JUDGE_FAILURE }
-
-    public static GatewayResult passed(JudgeResult judgeResult, String answer) {
-        return new GatewayResult(Decision.PASSED, Stage.NONE, null, null, judgeResult, answer);
-    }
-
-    public static GatewayResult blockedByPattern(String patternId) {
-        return new GatewayResult(Decision.BLOCKED, Stage.PATTERN, patternId, null, null, null);
-    }
-
-    public static GatewayResult blockedByJudge(JudgeResult judgeResult) {
-        return new GatewayResult(Decision.BLOCKED, Stage.JUDGE, null, null, judgeResult, null);
-    }
-
-    public static GatewayResult blockedByJudgeFailure(JudgeException.Kind kind) {
-        return new GatewayResult(Decision.BLOCKED, Stage.JUDGE_FAILURE, null, kind, null, null);
+    /** 단계별 지연(밀리초). 실행하지 않은 단계는 null이다. */
+    public record Timings(long detectMs, Long maskMs, Long answerMs, Long restoreMs) {
     }
 }
