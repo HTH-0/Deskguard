@@ -1,0 +1,1151 @@
+{
+  "n": 120,
+  "x": {
+    "D1": {
+      "gold": 70,
+      "tp": 28,
+      "item_wrong": 0,
+      "fn": 42,
+      "rate": 0.4,
+      "ci": [
+        0.2933408057355693,
+        0.5170641692378874
+      ]
+    },
+    "D2": {
+      "gold": 26,
+      "tp": 9,
+      "item_wrong": 0,
+      "fn": 17,
+      "rate": 0.34615384615384615,
+      "ci": [
+        0.19412014972852126,
+        0.5377977099036699
+      ]
+    },
+    "D3": {
+      "gold": 24,
+      "tp": 12,
+      "item_wrong": 0,
+      "fn": 12,
+      "rate": 0.5,
+      "ci": [
+        0.31427131627763083,
+        0.6857286837223692
+      ]
+    }
+  },
+  "x_by_item": {
+    "PHONE": {
+      "category": "D1",
+      "gold": 16,
+      "tp": 8,
+      "item_wrong": 0,
+      "fn": 8,
+      "full": 8
+    },
+    "RRN": {
+      "category": "D1",
+      "gold": 12,
+      "tp": 4,
+      "item_wrong": 0,
+      "fn": 8,
+      "full": 4
+    },
+    "FRN": {
+      "category": "D1",
+      "gold": 8,
+      "tp": 4,
+      "item_wrong": 0,
+      "fn": 4,
+      "full": 4
+    },
+    "CARD": {
+      "category": "D1",
+      "gold": 12,
+      "tp": 6,
+      "item_wrong": 0,
+      "fn": 6,
+      "full": 6
+    },
+    "EMAIL": {
+      "category": "D1",
+      "gold": 12,
+      "tp": 4,
+      "item_wrong": 0,
+      "fn": 8,
+      "full": 4
+    },
+    "ACCOUNT": {
+      "category": "D1",
+      "gold": 10,
+      "tp": 2,
+      "item_wrong": 0,
+      "fn": 8,
+      "full": 2
+    },
+    "API_KEY": {
+      "category": "D2",
+      "gold": 10,
+      "tp": 3,
+      "item_wrong": 0,
+      "fn": 7,
+      "full": 3
+    },
+    "JWT": {
+      "category": "D2",
+      "gold": 8,
+      "tp": 2,
+      "item_wrong": 0,
+      "fn": 6,
+      "full": 2
+    },
+    "CONN_STRING": {
+      "category": "D2",
+      "gold": 8,
+      "tp": 4,
+      "item_wrong": 0,
+      "fn": 4,
+      "full": 4
+    },
+    "CODENAME": {
+      "category": "D3",
+      "gold": 8,
+      "tp": 4,
+      "item_wrong": 0,
+      "fn": 4,
+      "full": 4
+    },
+    "CLIENT": {
+      "category": "D3",
+      "gold": 6,
+      "tp": 2,
+      "item_wrong": 0,
+      "fn": 4,
+      "full": 2
+    },
+    "CLASSIFIED": {
+      "category": "D3",
+      "gold": 10,
+      "tp": 6,
+      "item_wrong": 0,
+      "fn": 4,
+      "full": 6
+    }
+  },
+  "by_transform": {
+    "control": {
+      "gold": 24,
+      "tp": 24,
+      "full": 24
+    },
+    "no_hyphen": {
+      "gold": 10,
+      "tp": 8,
+      "full": 8
+    },
+    "space_sep": {
+      "gold": 8,
+      "tp": 4,
+      "full": 4
+    },
+    "dot_sep": {
+      "gold": 6,
+      "tp": 2,
+      "full": 2
+    },
+    "fullwidth": {
+      "gold": 10,
+      "tp": 0,
+      "full": 0
+    },
+    "korean_digits": {
+      "gold": 6,
+      "tp": 0,
+      "full": 0
+    },
+    "zero_width": {
+      "gold": 20,
+      "tp": 2,
+      "full": 2
+    },
+    "spaced_digits": {
+      "gold": 2,
+      "tp": 0,
+      "full": 0
+    },
+    "at_word": {
+      "gold": 2,
+      "tp": 0,
+      "full": 0
+    },
+    "bracket_at": {
+      "gold": 2,
+      "tp": 0,
+      "full": 0
+    },
+    "upper": {
+      "gold": 4,
+      "tp": 4,
+      "full": 4
+    },
+    "spaced_at": {
+      "gold": 2,
+      "tp": 0,
+      "full": 0
+    },
+    "split_space": {
+      "gold": 2,
+      "tp": 0,
+      "full": 0
+    },
+    "split_newline": {
+      "gold": 4,
+      "tp": 0,
+      "full": 0
+    },
+    "lower": {
+      "gold": 6,
+      "tp": 5,
+      "full": 5
+    },
+    "jwt_dot_space": {
+      "gold": 2,
+      "tp": 0,
+      "full": 0
+    },
+    "upper_scheme": {
+      "gold": 2,
+      "tp": 0,
+      "full": 0
+    },
+    "scheme_space": {
+      "gold": 2,
+      "tp": 0,
+      "full": 0
+    },
+    "spaced_chars": {
+      "gold": 6,
+      "tp": 0,
+      "full": 0
+    }
+  },
+  "misses": [
+    {
+      "id": "bypass-phone-fullwidth-1",
+      "type": "FN",
+      "item": "PHONE",
+      "start": 14,
+      "end": 27
+    },
+    {
+      "id": "bypass-phone-fullwidth-2",
+      "type": "FN",
+      "item": "PHONE",
+      "start": 14,
+      "end": 27
+    },
+    {
+      "id": "bypass-phone-korean_digits-1",
+      "type": "FN",
+      "item": "PHONE",
+      "start": 14,
+      "end": 27
+    },
+    {
+      "id": "bypass-phone-korean_digits-2",
+      "type": "FN",
+      "item": "PHONE",
+      "start": 0,
+      "end": 13
+    },
+    {
+      "id": "bypass-phone-zero_width-1",
+      "type": "FN",
+      "item": "PHONE",
+      "start": 14,
+      "end": 28
+    },
+    {
+      "id": "bypass-phone-zero_width-2",
+      "type": "FN",
+      "item": "PHONE",
+      "start": 14,
+      "end": 28
+    },
+    {
+      "id": "bypass-phone-spaced_digits-1",
+      "type": "FN",
+      "item": "PHONE",
+      "start": 14,
+      "end": 39
+    },
+    {
+      "id": "bypass-phone-spaced_digits-2",
+      "type": "FN",
+      "item": "PHONE",
+      "start": 14,
+      "end": 39
+    },
+    {
+      "id": "bypass-rrn-space_sep-1",
+      "type": "FN",
+      "item": "RRN",
+      "start": 0,
+      "end": 14
+    },
+    {
+      "id": "bypass-rrn-space_sep-2",
+      "type": "FN",
+      "item": "RRN",
+      "start": 14,
+      "end": 28
+    },
+    {
+      "id": "bypass-rrn-fullwidth-1",
+      "type": "FN",
+      "item": "RRN",
+      "start": 14,
+      "end": 28
+    },
+    {
+      "id": "bypass-rrn-fullwidth-2",
+      "type": "FN",
+      "item": "RRN",
+      "start": 0,
+      "end": 14
+    },
+    {
+      "id": "bypass-rrn-korean_digits-1",
+      "type": "FN",
+      "item": "RRN",
+      "start": 14,
+      "end": 28
+    },
+    {
+      "id": "bypass-rrn-korean_digits-2",
+      "type": "FN",
+      "item": "RRN",
+      "start": 14,
+      "end": 28
+    },
+    {
+      "id": "bypass-rrn-zero_width-1",
+      "type": "FN",
+      "item": "RRN",
+      "start": 0,
+      "end": 15
+    },
+    {
+      "id": "bypass-rrn-zero_width-2",
+      "type": "FN",
+      "item": "RRN",
+      "start": 0,
+      "end": 15
+    },
+    {
+      "id": "bypass-frn-fullwidth-1",
+      "type": "FN",
+      "item": "FRN",
+      "start": 14,
+      "end": 28
+    },
+    {
+      "id": "bypass-frn-fullwidth-2",
+      "type": "FN",
+      "item": "FRN",
+      "start": 14,
+      "end": 28
+    },
+    {
+      "id": "bypass-frn-korean_digits-1",
+      "type": "FN",
+      "item": "FRN",
+      "start": 0,
+      "end": 14
+    },
+    {
+      "id": "bypass-frn-korean_digits-2",
+      "type": "FN",
+      "item": "FRN",
+      "start": 0,
+      "end": 14
+    },
+    {
+      "id": "bypass-card-dot_sep-1",
+      "type": "FN",
+      "item": "CARD",
+      "start": 14,
+      "end": 33
+    },
+    {
+      "id": "bypass-card-dot_sep-2",
+      "type": "FN",
+      "item": "CARD",
+      "start": 14,
+      "end": 33
+    },
+    {
+      "id": "bypass-card-fullwidth-1",
+      "type": "FN",
+      "item": "CARD",
+      "start": 14,
+      "end": 33
+    },
+    {
+      "id": "bypass-card-fullwidth-2",
+      "type": "FN",
+      "item": "CARD",
+      "start": 0,
+      "end": 19
+    },
+    {
+      "id": "bypass-card-zero_width-1",
+      "type": "FN",
+      "item": "CARD",
+      "start": 14,
+      "end": 34
+    },
+    {
+      "id": "bypass-card-zero_width-2",
+      "type": "FN",
+      "item": "CARD",
+      "start": 0,
+      "end": 20
+    },
+    {
+      "id": "bypass-email-at_word-1",
+      "type": "FN",
+      "item": "EMAIL",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "id": "bypass-email-at_word-2",
+      "type": "FN",
+      "item": "EMAIL",
+      "start": 0,
+      "end": 29
+    },
+    {
+      "id": "bypass-email-bracket_at-1",
+      "type": "FN",
+      "item": "EMAIL",
+      "start": 0,
+      "end": 23
+    },
+    {
+      "id": "bypass-email-bracket_at-2",
+      "type": "FN",
+      "item": "EMAIL",
+      "start": 14,
+      "end": 38
+    },
+    {
+      "id": "bypass-email-spaced_at-1",
+      "type": "FN",
+      "item": "EMAIL",
+      "start": 14,
+      "end": 36
+    },
+    {
+      "id": "bypass-email-spaced_at-2",
+      "type": "FN",
+      "item": "EMAIL",
+      "start": 14,
+      "end": 37
+    },
+    {
+      "id": "bypass-email-zero_width-1",
+      "type": "FN",
+      "item": "EMAIL",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "id": "bypass-email-zero_width-2",
+      "type": "FN",
+      "item": "EMAIL",
+      "start": 14,
+      "end": 37
+    },
+    {
+      "id": "bypass-account-no_hyphen-1",
+      "type": "FN",
+      "item": "ACCOUNT",
+      "start": 5,
+      "end": 16
+    },
+    {
+      "id": "bypass-account-no_hyphen-2",
+      "type": "FN",
+      "item": "ACCOUNT",
+      "start": 4,
+      "end": 17
+    },
+    {
+      "id": "bypass-account-space_sep-1",
+      "type": "FN",
+      "item": "ACCOUNT",
+      "start": 5,
+      "end": 22
+    },
+    {
+      "id": "bypass-account-space_sep-2",
+      "type": "FN",
+      "item": "ACCOUNT",
+      "start": 5,
+      "end": 22
+    },
+    {
+      "id": "bypass-account-dot_sep-1",
+      "type": "FN",
+      "item": "ACCOUNT",
+      "start": 5,
+      "end": 18
+    },
+    {
+      "id": "bypass-account-dot_sep-2",
+      "type": "FN",
+      "item": "ACCOUNT",
+      "start": 12,
+      "end": 29
+    },
+    {
+      "id": "bypass-account-fullwidth-1",
+      "type": "FN",
+      "item": "ACCOUNT",
+      "start": 4,
+      "end": 19
+    },
+    {
+      "id": "bypass-account-fullwidth-2",
+      "type": "FN",
+      "item": "ACCOUNT",
+      "start": 6,
+      "end": 23
+    },
+    {
+      "id": "bypass-api_key-split_space-1",
+      "type": "FN",
+      "item": "API_KEY",
+      "start": 14,
+      "end": 35
+    },
+    {
+      "id": "bypass-api_key-split_space-2",
+      "type": "FN",
+      "item": "API_KEY",
+      "start": 14,
+      "end": 55
+    },
+    {
+      "id": "bypass-api_key-split_newline-1",
+      "type": "FN",
+      "item": "API_KEY",
+      "start": 0,
+      "end": 21
+    },
+    {
+      "id": "bypass-api_key-split_newline-2",
+      "type": "FN",
+      "item": "API_KEY",
+      "start": 14,
+      "end": 55
+    },
+    {
+      "id": "bypass-api_key-lower-2",
+      "type": "FN",
+      "item": "API_KEY",
+      "start": 0,
+      "end": 20
+    },
+    {
+      "id": "bypass-api_key-zero_width-1",
+      "type": "FN",
+      "item": "API_KEY",
+      "start": 14,
+      "end": 35
+    },
+    {
+      "id": "bypass-api_key-zero_width-2",
+      "type": "FN",
+      "item": "API_KEY",
+      "start": 14,
+      "end": 55
+    },
+    {
+      "id": "bypass-jwt-jwt_dot_space-1",
+      "type": "FN",
+      "item": "JWT",
+      "start": 14,
+      "end": 145
+    },
+    {
+      "id": "bypass-jwt-jwt_dot_space-2",
+      "type": "FN",
+      "item": "JWT",
+      "start": 14,
+      "end": 145
+    },
+    {
+      "id": "bypass-jwt-split_newline-1",
+      "type": "FN",
+      "item": "JWT",
+      "start": 14,
+      "end": 144
+    },
+    {
+      "id": "bypass-jwt-split_newline-2",
+      "type": "FN",
+      "item": "JWT",
+      "start": 0,
+      "end": 130
+    },
+    {
+      "id": "bypass-jwt-zero_width-1",
+      "type": "FN",
+      "item": "JWT",
+      "start": 14,
+      "end": 144
+    },
+    {
+      "id": "bypass-jwt-zero_width-2",
+      "type": "FN",
+      "item": "JWT",
+      "start": 14,
+      "end": 144
+    },
+    {
+      "id": "bypass-conn_string-upper_scheme-1",
+      "type": "FN",
+      "item": "CONN_STRING",
+      "start": 14,
+      "end": 64
+    },
+    {
+      "id": "bypass-conn_string-upper_scheme-1",
+      "type": "FP",
+      "item": "EMAIL",
+      "start": 34,
+      "end": 56
+    },
+    {
+      "id": "bypass-conn_string-upper_scheme-2",
+      "type": "FN",
+      "item": "CONN_STRING",
+      "start": 14,
+      "end": 67
+    },
+    {
+      "id": "bypass-conn_string-scheme_space-1",
+      "type": "FN",
+      "item": "CONN_STRING",
+      "start": 14,
+      "end": 75
+    },
+    {
+      "id": "bypass-conn_string-scheme_space-1",
+      "type": "FP",
+      "item": "EMAIL",
+      "start": 35,
+      "end": 63
+    },
+    {
+      "id": "bypass-conn_string-scheme_space-2",
+      "type": "FN",
+      "item": "CONN_STRING",
+      "start": 14,
+      "end": 72
+    },
+    {
+      "id": "bypass-conn_string-scheme_space-2",
+      "type": "FP",
+      "item": "EMAIL",
+      "start": 41,
+      "end": 64
+    },
+    {
+      "id": "bypass-codename-spaced_chars-1",
+      "type": "FN",
+      "item": "CODENAME",
+      "start": 14,
+      "end": 29
+    },
+    {
+      "id": "bypass-codename-spaced_chars-2",
+      "type": "FN",
+      "item": "CODENAME",
+      "start": 14,
+      "end": 21
+    },
+    {
+      "id": "bypass-codename-zero_width-1",
+      "type": "FN",
+      "item": "CODENAME",
+      "start": 0,
+      "end": 6
+    },
+    {
+      "id": "bypass-codename-zero_width-2",
+      "type": "FN",
+      "item": "CODENAME",
+      "start": 0,
+      "end": 8
+    },
+    {
+      "id": "bypass-client-spaced_chars-1",
+      "type": "FN",
+      "item": "CLIENT",
+      "start": 14,
+      "end": 21
+    },
+    {
+      "id": "bypass-client-spaced_chars-2",
+      "type": "FN",
+      "item": "CLIENT",
+      "start": 0,
+      "end": 7
+    },
+    {
+      "id": "bypass-client-zero_width-1",
+      "type": "FN",
+      "item": "CLIENT",
+      "start": 0,
+      "end": 6
+    },
+    {
+      "id": "bypass-client-zero_width-2",
+      "type": "FN",
+      "item": "CLIENT",
+      "start": 0,
+      "end": 5
+    },
+    {
+      "id": "bypass-classified-spaced_chars-1",
+      "type": "FN",
+      "item": "CLASSIFIED",
+      "start": 0,
+      "end": 5
+    },
+    {
+      "id": "bypass-classified-spaced_chars-2",
+      "type": "FN",
+      "item": "CLASSIFIED",
+      "start": 14,
+      "end": 19
+    },
+    {
+      "id": "bypass-classified-zero_width-1",
+      "type": "FN",
+      "item": "CLASSIFIED",
+      "start": 0,
+      "end": 4
+    },
+    {
+      "id": "bypass-classified-zero_width-2",
+      "type": "FN",
+      "item": "CLASSIFIED",
+      "start": 0,
+      "end": 4
+    }
+  ],
+  "action_mismatches": [
+    {
+      "id": "bypass-phone-fullwidth-1",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-phone-fullwidth-2",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-phone-korean_digits-1",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-phone-korean_digits-2",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-phone-zero_width-1",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-phone-zero_width-2",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-phone-spaced_digits-1",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-phone-spaced_digits-2",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-rrn-space_sep-1",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-rrn-space_sep-2",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-rrn-fullwidth-1",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-rrn-fullwidth-2",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-rrn-korean_digits-1",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-rrn-korean_digits-2",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-rrn-zero_width-1",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-rrn-zero_width-2",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-frn-fullwidth-1",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-frn-fullwidth-2",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-frn-korean_digits-1",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-frn-korean_digits-2",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-card-dot_sep-1",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-card-dot_sep-2",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-card-fullwidth-1",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-card-fullwidth-2",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-card-zero_width-1",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-card-zero_width-2",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-email-at_word-1",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-email-at_word-2",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-email-bracket_at-1",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-email-bracket_at-2",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-email-spaced_at-1",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-email-spaced_at-2",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-email-zero_width-1",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-email-zero_width-2",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-account-no_hyphen-1",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-account-no_hyphen-2",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-account-space_sep-1",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-account-space_sep-2",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-account-dot_sep-1",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-account-dot_sep-2",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-account-fullwidth-1",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-account-fullwidth-2",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-api_key-split_space-1",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-api_key-split_space-2",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-api_key-split_newline-1",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-api_key-split_newline-2",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-api_key-lower-2",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-api_key-zero_width-1",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-api_key-zero_width-2",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-jwt-jwt_dot_space-1",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-jwt-jwt_dot_space-2",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-jwt-split_newline-1",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-jwt-split_newline-2",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-jwt-zero_width-1",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-jwt-zero_width-2",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-conn_string-upper_scheme-1",
+      "expected": "BLOCK",
+      "actual": "MASK"
+    },
+    {
+      "id": "bypass-conn_string-upper_scheme-2",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-conn_string-scheme_space-1",
+      "expected": "BLOCK",
+      "actual": "MASK"
+    },
+    {
+      "id": "bypass-conn_string-scheme_space-2",
+      "expected": "BLOCK",
+      "actual": "MASK"
+    },
+    {
+      "id": "bypass-codename-spaced_chars-1",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-codename-spaced_chars-2",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-codename-zero_width-1",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-codename-zero_width-2",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-client-spaced_chars-1",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-client-spaced_chars-2",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-client-zero_width-1",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-client-zero_width-2",
+      "expected": "MASK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-classified-spaced_chars-1",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-classified-spaced_chars-2",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-classified-zero_width-1",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    },
+    {
+      "id": "bypass-classified-zero_width-2",
+      "expected": "BLOCK",
+      "actual": "ALLOW"
+    }
+  ],
+  "x_extra_false_positives": 3,
+  "y": {
+    "n": 0,
+    "false_positives": 0,
+    "rate": null,
+    "ci": [
+      0.0,
+      0.0
+    ]
+  },
+  "action_accuracy": {
+    "correct": 49,
+    "n": 120,
+    "ci": [
+      0.3245599028350716,
+      0.4977938135251822
+    ]
+  },
+  "t": {
+    "detectMs": {
+      "n": 120,
+      "median": 0.0,
+      "p95": 0
+    },
+    "maskMs": {
+      "n": 120,
+      "median": 0.0,
+      "p95": 0
+    },
+    "restoreMs": {
+      "n": 37,
+      "median": 0,
+      "p95": 0
+    },
+    "rttMs": {
+      "n": 120,
+      "median": 3.0172675000130766,
+      "p95": 5.070501999966837
+    }
+  },
+  "dataset_sha256": "d8a160a6abdd9b84f90220dd2b175f031da20057e7535caff7ed425a810fd8eb"
+}
