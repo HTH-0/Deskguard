@@ -18,3 +18,15 @@ SDD와 TDD를 병행한다. 기획 단계는 SDD로 명세서([`spec.md`](./docs
 |---|---|---|
 | 패턴 필터만 | - | - |
 | 룰 + LLM 판정 | - | - |
+
+## 데이터 출처와 라이선스
+
+| 자료 | 어디에 있나 | 출처와 조건 |
+|---|---|---|
+| deepset/prompt-injections | `dataset.csv`의 일부 행 | deepset, Apache-2.0 |
+| JailbreakBench JBB-Behaviors | `dataset.csv`의 일부 행 | JailbreakBench Team, MIT (인용 요청 있음) |
+| KOICA 인사규정 질의응답 세트 | `docs/eval/koica_hr_questions_raw.csv` | 한국국제협력단, 공공데이터포털, 이용허락범위 제한 없음(출처 표시) |
+| 업무 요청 틀, 평가 세트의 값 | `docs/eval/` | 생성형 AI가 만든 문장과 무작위 가짜 값 |
+
+전체 출처, 라이선스 전문, 인용은 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)에 있다. 이 저장소의 자체 코드와 문서의 라이선스는 아직 정하지 않았다.
+
