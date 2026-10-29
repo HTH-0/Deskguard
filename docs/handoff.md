@@ -24,12 +24,12 @@
 | 6 | Z 측정(Jev 검증 후), 우회 소량 시험, README와 결과 | 대기 |
 | 7 | 여유분, `main` 병합 검토 | 대기 |
 
-- **시험:** Java 107건이 통과한다(`cd backend`, `mvn -B test`). Python은 `test_fake_values`가 통과한다. `test_run_batch`와 `test_domain_candidates`는 옛 형식(HR) 기준으로 통과하지만 5일차에 새 형식으로 바꾼다.
+- **시험:** Java 109건이 통과한다(`cd backend`, `mvn -B test`). Python은 `cd backend/scripts`에서 `python -m unittest test_fake_values test_measure`로 실행한다. 옛 HR용 `run_batch.py`와 `domain_candidates.py`는 시험과 함께 `backend/scripts/archive_hr/`로 옮겼다(보관, 실행하지 않는다).
 - **멈춘 지점:** 4일차 완료 직후. 모든 변경이 커밋, 푸시되어 있다. 작업 중인 파일은 없다.
 
 ## 3. 다음 작업: 5일차 (아직 승인 전)
 
-1. **측정 도구 v2:** `run_batch.py`를 새 측정 응답(`action`, `findings`, `spans`, `maskedPrompt`, `timings`)에 맞게 바꾸고, 정답(넣은 값의 항목과 위치)과 비교해 X(범주별 탐지율), Y(정상 문장의 오탐율), T(지연)를 계산한다. 옛 HR용 `domain_candidates.py`와 그 시험은 보관한다.
+1. **측정 도구 v2(완료, `measure.py`):** 새 측정 응답(`action`, `findings`, `spans`, `maskedPrompt`, `timings`)에 맞게 바꾸고, 정답(넣은 값의 항목과 위치)과 비교해 X(범주별 탐지율), Y(정상 문장의 오탐율), T(지연)를 계산한다. 옛 HR용 `domain_candidates.py`와 그 시험은 보관한다.
 2. **업무 요청 틀 받기(사용자 작업, 약 15분):** 생성기 3종(ChatGPT, 프로젝트와 무관한 Claude 새 대화, Gemini)에 "자리 표시자가 있는 업무 요청 틀"을 받는 지시문을 새로 쓴다(예: `아래 명단 표로 정리해 줘: {명단}`). 기존 `docs/eval/generation_prompt.md`는 HR용이므로 보관한다.
 3. **평가 세트 생성기:** 틀과 가짜 값(`fake_values.py`)을 합쳐 문장을 만들고, 넣은 값의 항목과 위치를 정답으로 저장한다. 민감 정보가 없는 정상 업무 문장(KOICA 실제 질문 25개와 생성기의 일반 요청)도 넣는다. 대량 기준 20과 함께 해시로 동결한다.
 4. **X·Y·T 측정:** 측정 모드 서버(`--gateway.measurement-mode=true`)에 보낸다. 외부 호출이 없으므로 키가 필요 없다.

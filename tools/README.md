@@ -53,7 +53,9 @@ Send-Chat "연차 신청은 어떻게 하나요?"
 - 응답 시간을 재려면 `(Measure-Command { Send-Chat "질문" | Out-Null }).TotalSeconds`를 쓴다.
 - 일반 모드에서는 통과한 문장이 Gemini로 간다(비용과 입력 검토 가능성이 있다). 공격 문장은 측정 모드(`gateway.measurement-mode=true`)에서만 보낸다.
 
-## run_batch.py: 측정 도구 (설계서 7.4절)
+## run_batch.py: 옛 측정 도구 (HR 시절, 보관)
+
+`backend/scripts/archive_hr/`로 옮겼다. 새 측정 도구는 `backend/scripts/measure.py`이다(평가 세트 JSONL을 측정 모드 서버로 보내 X, Y, T를 계산, 명세 AC-10.3). 아래는 옛 도구 설명이다.
 
 입력 CSV의 문장을 `/api/chat`에 순서대로 보내고, 결과 CSV와 요약표(탐지율, 오탐율, 레이블별, 유형별, 언어별, `group`별, 응답 시간)를 남긴다. 위치는 `backend/scripts/`이다.
 

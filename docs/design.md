@@ -96,7 +96,7 @@ gateway:
 
 - `backend/scripts/`의 Python 도구가 맡는다. 운영 코드(`backend/src/main`)는 Jev를 부르지 않는다.
 - 평가 세트 생성: 업무 요청 틀(생성기 출력)과 가짜 값 생성기(`fake_values.py`)를 합치고, 넣은 값의 범주와 위치를 정답으로 저장한다.
-- X, Y, T: 측정 모드 서버에 평가 세트를 보내고 정답과 비교한다(`run_batch.py` 확장).
+- X, Y, T: 측정 모드 서버에 평가 세트를 보내고 정답과 비교한다(`measure.py`, 옛 HR용 `run_batch.py`는 `backend/scripts/archive_hr/`에 보관).
 - Z: 가림 대상 문장마다 Gemini에 원문(가짜 데이터)으로 답 A를, 게이트웨이 경유로 답 B를 받고, 복원 성공률은 코드로, 쓸모는 Jev로 채점한다. Jev 채점은 사람 40~50쌍 판정과 85% 이상 일치할 때 채택한다.
 
 ## 8. 테스트 전략
