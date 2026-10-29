@@ -1,6 +1,6 @@
 # 이어서 작업하기
 
-다른 컴퓨터나 새 세션에서 이어서 작업할 때 가장 먼저 읽는 문서이다. 세션을 마칠 때마다 갱신한다. 주제 재정의 이전(HR 헬프데스크 챗봇)의 인수인계 문서는 [archive/handoff-v1-hr.md](archive/handoff-v1-hr.md)에 보관했다.
+다른 컴퓨터나 새 세션에서 이어서 작업할 때 가장 먼저 읽는 문서이다. 세션을 마칠 때마다 갱신한다. 그동안 무엇을 왜 했는지, 지금 코드가 어떻게 생겼는지, 이어서 할 때 조심할 점은 [worklog.md](worklog.md)에 있다. 주제 재정의 이전(HR 헬프데스크 챗봇)의 인수인계 문서는 [archive/handoff-v1-hr.md](archive/handoff-v1-hr.md)에 보관했다.
 
 기준일: 2026-10-29 (일주일 일정의 1일차에 4일차 작업까지 끝냄)
 
@@ -106,6 +106,7 @@ mvn spring-boot:run "-Dspring-boot.run.arguments=--gateway.demo-answer=true"
 | [constitution.md](constitution.md) | 바뀌지 않는 원칙 | 초안(1장은 problem.md가 대신) |
 | [open-risks.md](open-risks.md) | 무엇이 불확실한가 | 재정의 이전 기준, 6일차에 정리 |
 | [../DECISIONS.md](../DECISIONS.md) | 왜 그렇게 정했는가 | 누적 |
+| [worklog.md](worklog.md) | 무엇을 했고, 코드는 어떻게 생겼고, 무엇을 조심하는가 | 세션마다 추가 |
 | [images/portal-demo.png](images/portal-demo.png) | 포털 시연 화면 | 4일차 |
 | [archive/](archive/) | 재정의 이전 문서(HR 명세, 설계, 정책, 인수인계) | 보관 |
 | [eval/](eval/) | 평가 데이터. 지금 있는 것은 HR 시절 자료(후보 302개, 라벨링 시트, KOICA 25개)이며, KOICA 25개는 정상 업무 문장으로 재사용한다 | 5일차에 정리 |
