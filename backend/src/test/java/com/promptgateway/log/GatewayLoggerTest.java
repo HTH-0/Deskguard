@@ -5,6 +5,8 @@ import com.promptgateway.gateway.InvalidPromptException;
 import com.promptgateway.judge.JudgeException;
 import com.promptgateway.judge.JudgeResult;
 import com.promptgateway.judge.QuestionSet;
+import com.promptgateway.support.LogCapture;
+import ch.qos.logback.classic.Level;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -147,5 +149,56 @@ class GatewayLoggerTest {
                 new GatewayLogger.Timings(1L, null, null));
 
         assertThat(output.getOut()).contains("decision=BLOCK", "stage=PATTERN");
+    }
+
+    // ---- 로그 수준과 이스케이프 (AC-7.6, 7.7, 2026-10-29) ----
+
+    private static Level levelOf(java.util.function.Consumer<GatewayLogger> call) {
+        try (LogCapture logs = LogCapture.of(GatewayLogger.class)) {
+            call.accept(new GatewayLogger(false));
+            assertThat(logs.events()).hasSize(1);
+            return logs.events().getFirst().getLevel();
+        }
+    }
+
+    @Test
+    @DisplayName("AC-7.6 통과와 정책 차단은 INFO, 판정 실패와 ERROR는 WARN, 판정 설정 오류는 ERROR 수준이다")
+    void logLevelsFollowSeverity() {
+        GatewayLogger.Timings t = GatewayLogger.Timings.NONE;
+        assertThat(levelOf(l -> l.logResult(PROMPT, GatewayResult.passed(judgeResult(null, 0), "답변"), t))).isEqualTo(Level.INFO);
+        assertThat(levelOf(l -> l.logResult(PROMPT, GatewayResult.blockedByJudge(judgeResult("F3", 0.9)), t))).isEqualTo(Level.INFO);
+        assertThat(levelOf(l -> l.logResult(PROMPT, GatewayResult.blockedByJudgeFailure(JudgeException.Kind.TIMEOUT), t))).isEqualTo(Level.WARN);
+        assertThat(levelOf(l -> l.logError(PROMPT, "ANSWER", new IllegalStateException("x"), t))).isEqualTo(Level.WARN);
+        assertThat(levelOf(l -> l.logResult(PROMPT, GatewayResult.blockedByJudgeFailure(JudgeException.Kind.CONFIG_ERROR), t))).isEqualTo(Level.ERROR);
+    }
+
+    @Test
+    @DisplayName("AC-7.7 원문의 탭과 제어 문자도 이스케이프되어 한 줄로 남는다")
+    void rawPromptControlCharsEscaped() {
+        GatewayLogger raw = new GatewayLogger(true, lines::add);
+
+        raw.logResult("가\t나\u0007다\u2028라", GatewayResult.blockedByPattern("P-001"), GatewayLogger.Timings.NONE);
+
+        assertThat(lines.get(0)).contains("prompt=\"가\\t나\\u0007다\\u2028라\"")
+                .doesNotContain("\t").doesNotContain("\u0007").doesNotContain("\u2028");
+    }
+
+    @Test
+    @DisplayName("AC-7.7 외부에서 온 모델 버전에 공백이나 줄바꿈이 있어도 가짜 항목을 만들 수 없다")
+    void externalModelVersionEscaped() {
+        JudgeResult odd = new JudgeResult(judgeResult(null, 0).scores(), "jev 1\ndecision=PASS", 3);
+
+        logger.logResult(PROMPT, GatewayResult.blockedByJudge(odd), GatewayLogger.Timings.NONE);
+
+        assertThat(lines.get(0)).doesNotContain("\n").contains("modelVersion=\"jev 1\\ndecision=PASS\"")
+                .doesNotContain(" decision=PASS");
+    }
+
+    @Test
+    @DisplayName("AC-7.7 길이는 입력 검증과 같은 기준(코드 포인트)으로 센다: 이모지는 1자이다")
+    void lengthCountsCodePoints() {
+        logger.logResult("😀가", GatewayResult.blockedByPattern("P-001"), GatewayLogger.Timings.NONE);
+
+        assertThat(lines.get(0)).contains("promptLength=2");
     }
 }
