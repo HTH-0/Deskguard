@@ -140,7 +140,7 @@ python -m unittest -v test_run_batch
 3. 패턴 필터와 판정을 붙이기 전에는 `run_batch.py`로 공격 문장을 Gemini에 보내지 않는다. 무료 티어는 입력을 제품 개선에 쓰고 사람이 검토할 수 있다(R8, R11). 지금의 `run_batch.py`는 서버가 측정 모드가 아니면 시작 전에 중단하고, 제한 유형(`disallowed_content`, `bias_injection`)과 영어 hard negative와 `split=eval`은 기본으로 보내지 않는다(제한을 푸는 옵션 없음, eval은 `--split eval`로만).
 4. 확정한 합격 기준은 낮추지 않는다. 부족하면 점검 문장을 늘린다.
 5. 외부 LLM이 낸 결과는 코드나 실험으로 검증한 뒤 채택한다. 지금까지 두 번 모두 검증 후 결론이 달라졌다.
-6. 결정이 생기면 그 자리에서 [DECISIONS.md](../DECISIONS.md)에 후보, 선택, 이유를 기록한다.
+6. 결정이 생기면 그 자리에서 [DECISIONS.md](../DECISIONS.md)에 후보, 선택, 이유를 기록한다. 범위나 무대를 바꾸는 결정은 문제 정의서(`docs/problem.md`, 작성 예정)와 맞는지 한 줄로 확인한다(2026-10-29 회고).
 7. 금지 콘텐츠 유형(`disallowed_content`)과 영어 hard negative는 외부 서비스로 보내지 않는다.
 8. 사용자는 코드를 직접 쓰지 않고 읽기, 테스트 읽기, 한 글자 실험, 검수로 이해한다(2026-10-27 합의). 핵심 코드(`BlockDecider`, `InputValidator`, `PatternFilter`, `JevJudge`, `ChatGateway`, `GatewayLogger`)는 작업이 끝날 때마다 코드 읽기 가이드(역할, 흐름, 확인 질문)를 주고, 이해 확인 뒤에 노션 정리본(코드 전문 없는 형식)을 준다. 정리본 전달 완료(노션 기준, 2026-10-29 사용자 확인): `BlockDecider`, `ChatGateway`, `GatewayResult`, `ChatController`, `Harness`. `JevJudge`는 예전에 읽은 것 같으나 노션에 기록이 없어 다시 진행한다.
    - 코드 읽기 보류 목록(2026-10-29 사용자 결정: 구현을 먼저 진행하고 코드 읽기는 나중에 몰아서 한다). 작업이 끝날 때마다 추가한다: `GatewayLogger`(T10과 10-29 보강), `JevJudge`, `InputValidator`, `PatternFilter`, `ChatController`의 측정 모드 부분(같은 컴퓨터 판단 `isLocal`과 헤더를 믿지 않는 이유), `run_batch.py`(T12).
