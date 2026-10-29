@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestClientResponseException;
 
 /**
  * "이 프로젝트 전체에서 이런 종류의 예외가 발생하면 이렇게 응답해라"를 한 곳에 모아둔 클래스.
@@ -72,9 +73,15 @@ public class GlobalExceptionHandler {
 
     // 위에서 못 잡은 나머지 모든 예외 (예상 못한 버그 등) - 그래도 서버가 죽지 않고 JSON으로 응답하게 함.
     // 자세한 내용은 사용자에게 보내지 않고 로그에만 남긴다.
+    // 단, 외부 응답 오류(예: Gemini 500)는 예외 메시지에 외부 응답 본문이 들어 있고, 본문이 키가 붙은 요청 주소를
+    // 되돌려줄 수 있으므로 상태 코드와 예외 종류만 남긴다(AC-7.2).
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleUnknown(Exception ex) {
-        log.error("처리하지 못한 오류가 발생했습니다: {}", ex.getClass().getSimpleName(), ex);
+        if (ex instanceof RestClientResponseException upstream) {
+            log.error("응답 모델이 오류를 돌려주었습니다: {} {}", upstream.getStatusCode(), ex.getClass().getSimpleName());
+        } else {
+            log.error("처리하지 못한 오류가 발생했습니다: {}", ex.getClass().getSimpleName(), ex);
+        }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ApiErrorResponse("INTERNAL_ERROR", "서버 내부 오류가 발생했습니다."));
     }
