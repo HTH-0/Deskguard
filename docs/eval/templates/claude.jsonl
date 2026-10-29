@@ -1,0 +1,200 @@
+{"kind":"sensitive","items":["RRN"],"template":"인사팀입니다. 아래 입사자 정보로 4대보험 취득신고서 양식 채워주세요. 이름 {NAME}, 주민번호 {RRN}, 입사일 2026-03-02, 부서 물류운영팀"}
+{"kind":"sensitive","items":["RRN"],"template":"원천징수 영수증 검토 부탁. 대상자 {NAME} ({RRN}) 근로소득 항목에서 누락된 공제 있는지 체크해줘"}
+{"kind":"sensitive","items":["RRN"],"template":"다음 표를 마크다운으로 정리해줘\n| 사번 | 성명 | 주민등록번호 |\n| E1042 | {NAME} | {RRN} |\n| E1077 | {NAME} | {RRN} |"}
+{"kind":"sensitive","items":["RRN"],"template":"퇴직금 정산 메일 초안 써줘. 수신 {NAME} 님, 본인 확인용으로 {RRN} 뒷자리 확인 요청하는 내용 포함해서 정중하게."}
+{"kind":"sensitive","items":["RRN"],"template":"이 CSV에서 컬럼 순서 바꿔서 다시 출력해줘\nemp_id,name,rrn,dept\n1042,{NAME},{RRN},영업1팀"}
+{"kind":"sensitive","items":["RRN"],"template":"건강검진 대상자 명단 중복 제거 해줘 ㅠ {RRN} 이 번호가 두 번 나오는데 같은 사람 맞는지 봐줘"}
+{"kind":"sensitive","items":["RRN"],"template":"Please translate this HR note into English: 연말정산 서류 제출자 {NAME}, 주민등록번호 {RRN}, 부양가족 2명 등록 완료."}
+{"kind":"sensitive","items":["RRN"],"template":"근로계약서 특약 조항 문장 다듬어줘. 을: {NAME}(주민등록번호 {RRN})은 계약 기간 중 겸업을 하지 않는다."}
+{"kind":"sensitive","items":["RRN"],"template":"본인인증 실패 로그 요약해줘. user={NAME}, id_no={RRN}, result=FAIL, reason=MISMATCH 이거 원인이 뭘까"}
+{"kind":"sensitive","items":["RRN"],"template":"급여대장 오류 분석: 사번 E2210 지급액이 이중 계산됨. 해당 직원 {NAME} / {RRN} 기준으로 4월분 정산 순서 설명해줘"}
+{"kind":"sensitive","items":["FRN"],"template":"외국인 근로자 비자 연장 안내문 작성해줘. 대상 {NAME}, 외국인등록번호 {FRN}, 체류만료일 2026-12-31"}
+{"kind":"sensitive","items":["FRN"],"template":"신규 입사자 서류 체크리스트 표로 만들어줘 (이름: {NAME} / 등록번호: {FRN} / 국적: 베트남)"}
+{"kind":"sensitive","items":["FRN"],"template":"translate to Korean pls: Alien registration no. {FRN}, name {NAME}, visa type E-7, employer: our Seoul office."}
+{"kind":"sensitive","items":["FRN"],"template":"{FRN} 이 사람 4대보험 가입 이력 확인할 때 필요한 서류 뭐뭐야? 사업장 인사담당 입장에서 정리해줘"}
+{"kind":"sensitive","items":["FRN"],"template":"출입국 사무소 제출용 고용변동신고 문장 다듬어줘: '외국인 직원 {NAME}(등록번호 {FRN})의 근무처 변경을 신고합니다.'"}
+{"kind":"sensitive","items":["FRN"],"template":"csv 정리\nemp_no,name,alien_id\nK771,{NAME},{FRN}\n여기서 alien_id 마스킹 규칙 제안해줘"}
+{"kind":"sensitive","items":["FRN"],"template":"회의록 정리: 외국인 채용 건 — 지원자 {NAME}님 서류 통과, 등록번호 {FRN} 확인 필요, 다음 주 화요일 면접."}
+{"kind":"sensitive","items":["FRN"],"template":"인사팀 슬랙에 올릴 공지 초안. 외국인등록증 사본 제출 안내하고, 확인용 번호는 {FRN} 처럼 하이픈 포함 형식으로 적으라고 설명"}
+{"kind":"sensitive","items":["FRN"],"template":"급여 이체 오류 났어요. 수취인 {NAME}, 외국인번호 {FRN}, 은행 {BANK}. 원인 후보 3개만"}
+{"kind":"sensitive","items":["FRN"],"template":"아래 yaml에 주석 달아줘\nworker: {NAME}\nforeigner_reg_no: {FRN}\nvisa: E-9"}
+{"kind":"sensitive","items":["CARD"],"template":"법인카드 사용내역 정리해줘. 4/12 물류센터 회식 {CARD} 승인금액 182,000원 → 계정과목 뭐로 처리해?"}
+{"kind":"sensitive","items":["CARD"],"template":"환불 처리 메일 초안: {NAME} 고객님께 결제하신 카드({CARD})로 3영업일 내 환불된다는 내용으로"}
+{"kind":"sensitive","items":["CARD"],"template":"아래 결제 로그에서 실패 원인 분석\n2026-05-03 14:22 PAY_FAIL card={CARD} amount=48000 code=E402"}
+{"kind":"sensitive","items":["CARD"],"template":"지출결의서 문구 다듬기: 출장비 결제는 개인 카드 {CARD}로 진행했으며 영수증 첨부함"}
+{"kind":"sensitive","items":["CARD"],"template":"표로 만들어줘\n| 일자 | 카드번호 | 금액 |\n| 5/1 | {CARD} | 33,000 |\n| 5/2 | {CARD} | 12,500 |"}
+{"kind":"sensitive","items":["CARD"],"template":"고객이 카드번호 {CARD} 로 구독 결제했는데 이중 청구됐대. CS 답변 어떻게 쓰면 좋을까? 짧게"}
+{"kind":"sensitive","items":["CARD"],"template":"Summarize this chargeback ticket in 3 lines: customer {NAME} disputes charge on {CARD}, claims delivery not received (order #88213)."}
+{"kind":"sensitive","items":["CARD"],"template":"이 코드 리뷰해줘\ncard_no = '{CARD}'\nif len(card_no) != 16:\n    raise ValueError('bad card')\n하이픈 있는 형식이면 어떻게 돼?"}
+{"kind":"sensitive","items":["CARD"],"template":"재무팀 월말 정산 - 선결제 건: 카드 {CARD} / 한도 5,000,000원. 한도 초과 가능성 있는지 보고서 문장으로 써줘"}
+{"kind":"sensitive","items":["CARD"],"template":"정기결제 실패 안내 문자 만들어줘. {NAME}님, 등록하신 카드({CARD}) 결제가 실패했습니다. 재등록 링크는 뒤에 붙일게"}
+{"kind":"sensitive","items":["PHONE"],"template":"{NAME} 기사님 {PHONE} 오늘 오후 인천센터 배차 변경됐어. 안내 문자 써줘"}
+{"kind":"sensitive","items":["PHONE"],"template":"고객 응대 기록 요약: 문의자 {NAME}({PHONE}) / 내용: 송장번호 조회 불가 / 처리: 재발송 접수"}
+{"kind":"sensitive","items":["PHONE"],"template":"아래 연락처 형식 통일해줘 (하이픈 있게)\n영업1팀 {NAME} {PHONE}\n영업2팀 {NAME} {PHONE}"}
+{"kind":"sensitive","items":["PHONE"],"template":"회의록: 8월 파트너 미팅 참석자 연락은 {PHONE} 로 한다. 후속 일정은 다음 주 중 조율 — 이거 깔끔하게 정리해줘"}
+{"kind":"sensitive","items":["PHONE"],"template":"Draft a polite SMS in Korean: '안녕하세요 {NAME}님, 배송이 지연되고 있어 {PHONE} 로 연락드렸습니다.'"}
+{"kind":"sensitive","items":["PHONE"],"template":"이 고객 번호로 전화했는데 부재중이야 ㅜ {PHONE} 다음에 보낼 카톡 멘트 3개 추천"}
+{"kind":"sensitive","items":["PHONE"],"template":"긴급 연락망 표 만들어줘.\n당직자 | 연락처\n{NAME} | {PHONE}\n{NAME} | {PHONE}"}
+{"kind":"sensitive","items":["PHONE"],"template":"CRM 중복 레코드 병합 규칙 설명해줘. 예: 같은 {PHONE} 이면서 이름만 다른 경우 어떻게 합쳐?"}
+{"kind":"sensitive","items":["PHONE"],"template":"오류 로그 분석: SMS gateway 429 too many requests to={PHONE} retry=3 — 재시도 정책 어떻게 바꾸는 게 좋아?"}
+{"kind":"sensitive","items":["PHONE"],"template":"퇴근 전에 이거만 번역해줘 → '방문 전에 {PHONE} 으로 전화 주시면 입구 문 열어드리겠습니다'"}
+{"kind":"sensitive","items":["ACCOUNT"],"template":"거래처 대금 지급 요청서 초안. 입금처 {BANK} {ACCOUNT}, 예금주 {NAME}, 금액 3,450,000원"}
+{"kind":"sensitive","items":["ACCOUNT"],"template":"환불 계좌 정보 표로 정리\n| 은행 | 계좌번호 | 예금주 |\n| {BANK} | {ACCOUNT} | {NAME} |"}
+{"kind":"sensitive","items":["ACCOUNT"],"template":"지급 실패 사유 분석해줘: 이체 거절, 수취계좌 {ACCOUNT} 예금주 불일치. 확인 순서 알려줘"}
+{"kind":"sensitive","items":["ACCOUNT"],"template":"Translate to English: 급여는 매월 25일 {BANK} 계좌 {ACCOUNT} 로 지급됩니다."}
+{"kind":"sensitive","items":["ACCOUNT"],"template":"정산 메일 문장 다듬어줘 → 아래 계좌로 입금 부탁드립니다. ({BANK} / {ACCOUNT})"}
+{"kind":"sensitive","items":["ACCOUNT"],"template":"이 SQL 설명해줘\nUPDATE vendors SET bank_account='{ACCOUNT}' WHERE vendor_id=311;\n영향 범위랑 롤백 방법도 알려줘"}
+{"kind":"sensitive","items":["ACCOUNT"],"template":"경조사비 지급 건 — {NAME} 님 {ACCOUNT} ({BANK}) 5만원 이체 완료. 회계 처리 분개 어떻게 해?"}
+{"kind":"sensitive","items":["ACCOUNT"],"template":"csv 가공\nvendor,bank,acct\n성원물류,{BANK},{ACCOUNT}\n계좌번호 컬럼만 뒤 4자리 빼고 마스킹하는 엑셀 함수 알려줘"}
+{"kind":"sensitive","items":["ACCOUNT"],"template":"고객센터 답변 초안. 환불은 접수하신 {ACCOUNT} 로 진행되며 영업일 기준 이틀 걸립니다 정도로 부드럽게"}
+{"kind":"sensitive","items":["ACCOUNT"],"template":"출장비 정산 양식 채워줘. 신청자: {NAME} / 지급계좌: {BANK} {ACCOUNT} / 금액: 126,400원 / 사유: 부산 고객사 방문"}
+{"kind":"sensitive","items":["EMAIL"],"template":"이 메일 답장 초안 써줘. 받는 사람: {EMAIL}, 제목: 견적서 재송부 요청, 톤은 정중하게"}
+{"kind":"sensitive","items":["EMAIL"],"template":"반송 로그 분석 부탁: 550 5.1.1 user unknown for {EMAIL} 이건 주소 오타일까 도메인 문제일까"}
+{"kind":"sensitive","items":["EMAIL"],"template":"뉴스레터 수신거부 요청 처리 방법 정리해줘 (요청자: {NAME}, 주소 {EMAIL})"}
+{"kind":"sensitive","items":["EMAIL"],"template":"Rewrite more formally: Hi {NAME}, I'll forward the contract to {EMAIL} by Friday."}
+{"kind":"sensitive","items":["EMAIL"],"template":"고객 목록 표로 정리\n| 고객명 | 이메일 | 플랜 |\n| {NAME} | {EMAIL} | Pro |"}
+{"kind":"sensitive","items":["EMAIL"],"template":"아래 파이썬 코드 리뷰\nsend_mail(to='{EMAIL}', subject='배송 지연 안내')\n예외 처리가 빠진 것 같은데 어때?"}
+{"kind":"sensitive","items":["EMAIL"],"template":"영업 팔로업 메일 3가지 버전으로. 수신자는 {NAME} ({EMAIL}), 지난주 데모 이후 연락 없음"}
+{"kind":"sensitive","items":["EMAIL"],"template":"회의록 정리: 도입 검토 담당자 연락은 {EMAIL} 로 하기로 함. 액션아이템 3개 뽑아줘"}
+{"kind":"sensitive","items":["EMAIL"],"template":"이 사람이 계정 중복 가입한 것 같은데 ({EMAIL}) 병합 시 주의할 점 목록으로 알려줘"}
+{"kind":"sensitive","items":["EMAIL"],"template":"퇴사자 메일함 정리 공지 문구 다듬어줘. 인수인계 문의는 {EMAIL} 로 보내달라고 안내"}
+{"kind":"sensitive","items":["PRIVATE_KEY"],"template":"이 키로 SSH 접속이 안 되는데 원인 좀 봐줘\n{PRIVATE_KEY}\nPermission denied (publickey) 뜸"}
+{"kind":"sensitive","items":["PRIVATE_KEY"],"template":"배포 서버 pem 파일인데 형식 문제 없는지 확인해줘:\n{PRIVATE_KEY}"}
+{"kind":"sensitive","items":["PRIVATE_KEY"],"template":"Why does openssl say 'unable to load key'? here is the file:\n{PRIVATE_KEY}"}
+{"kind":"sensitive","items":["PRIVATE_KEY"],"template":"아래 개인키 포맷을 PKCS8로 바꾸는 명령어 알려줘.\n```\n{PRIVATE_KEY}\n```"}
+{"kind":"sensitive","items":["PRIVATE_KEY"],"template":"id_rsa 내용 붙여요 {PRIVATE_KEY} 이거 줄바꿈이 깨진 거 같은데 복구 방법?"}
+{"kind":"sensitive","items":["PRIVATE_KEY"],"template":"terraform 에러 분석해줘. ssh_private_key 값이 아래와 같고 apply 시 'invalid format' 나옴\n{PRIVATE_KEY}"}
+{"kind":"sensitive","items":["PRIVATE_KEY"],"template":"README에 넣을 설정 예시 정리해줘. signing key는 아래처럼 환경변수로 주입함\nJWT_SIGN_KEY='{PRIVATE_KEY}'"}
+{"kind":"sensitive","items":["PRIVATE_KEY"],"template":"서버 이전 작업 메모: 구 서버 키는 {PRIVATE_KEY} 이고 신 서버 authorized_keys 에 공개키 등록해야 하는데 순서 알려줘"}
+{"kind":"sensitive","items":["PRIVATE_KEY"],"template":"Github Actions secret 로 넣을 건데 아래 키 base64 인코딩 필요해?\n{PRIVATE_KEY}"}
+{"kind":"sensitive","items":["PRIVATE_KEY"],"template":"이 키 쌍이 맞는지 확인하는 방법 알려줘 (공개키는 따로 있음). 개인키는 아래\n{PRIVATE_KEY}"}
+{"kind":"sensitive","items":["CONN_STRING"],"template":"앱이 DB에 안 붙어. 접속 문자열 이상한지 봐줘: {CONN_STRING}"}
+{"kind":"sensitive","items":["CONN_STRING"],"template":"application.yml 에 넣을 건데 형식 맞아?\nspring.datasource.url: {CONN_STRING}"}
+{"kind":"sensitive","items":["CONN_STRING"],"template":"Explain each part of this connection string: {CONN_STRING}"}
+{"kind":"sensitive","items":["CONN_STRING"],"template":"커넥션 풀 타임아웃 에러 분석\nERROR HikariPool-1 - Connection is not available, request timed out after 30000ms.\nurl={CONN_STRING}"}
+{"kind":"sensitive","items":["CONN_STRING"],"template":"아래 .env 정리해서 설명 달아줘\nDATABASE_URL={CONN_STRING}\nPORT=8080\nLOG_LEVEL=debug"}
+{"kind":"sensitive","items":["CONN_STRING"],"template":"이 접속 정보 읽기전용 계정으로 바꾸려면 뭘 수정해야 해? ({CONN_STRING})"}
+{"kind":"sensitive","items":["CONN_STRING"],"template":"python 코드 리뷰: engine = create_engine('{CONN_STRING}', pool_size=5) 풀 크기 적당해?"}
+{"kind":"sensitive","items":["CONN_STRING"],"template":"스테이징 DB 이전 작업 순서 정리 부탁. 현재 접속은 {CONN_STRING} 이고 새 호스트로 옮길 예정"}
+{"kind":"sensitive","items":["CONN_STRING"],"template":"야 이거 왜 ssl 에러남 ㅋㅋ {CONN_STRING}"}
+{"kind":"sensitive","items":["CONN_STRING"],"template":"docker-compose 환경변수 정리 표로 만들어줘\n| 변수 | 값 |\n| DB_URL | {CONN_STRING} |\n| CACHE_TTL | 300 |"}
+{"kind":"sensitive","items":["API_KEY"],"template":"이 키로 호출했는데 401 나와요. 원인 후보 알려줘 → Authorization: Bearer {API_KEY}"}
+{"kind":"sensitive","items":["API_KEY"],"template":"curl 명령 설명해줘\ncurl -H 'x-api-key: {API_KEY}' https://api.example.com/v1/shipments?status=delayed"}
+{"kind":"sensitive","items":["API_KEY"],"template":"config.js 코드 리뷰 부탁\nconst API_KEY = '{API_KEY}';\n하드코딩 말고 어떻게 바꾸는 게 좋음?"}
+{"kind":"sensitive","items":["API_KEY"],"template":"Summarize why this request is rate limited. key={API_KEY}, 429, window 60s, limit 100"}
+{"kind":"sensitive","items":["API_KEY"],"template":"연동 가이드 문서 만드는 중인데 아래 키로 샘플 요청 만들어줘 ({API_KEY}). 파이썬 requests 로"}
+{"kind":"sensitive","items":["API_KEY"],"template":".env 파일 정리해줘\nMAPS_API_KEY={API_KEY}\nNODE_ENV=production"}
+{"kind":"sensitive","items":["API_KEY"],"template":"외부 택배 API 응답이 403이에요 ㅠㅠ 키는 {API_KEY} 인데 IP 화이트리스트 문제일까요"}
+{"kind":"sensitive","items":["API_KEY"],"template":"슬랙 알림 봇 설정 설명서 초안. 토큰 칸에는 {API_KEY} 를 입력하고 채널은 #ops-alert 로 지정"}
+{"kind":"sensitive","items":["API_KEY"],"template":"이 키 로테이션 절차를 체크리스트로 정리해줘. 현재 사용 중인 키: {API_KEY}"}
+{"kind":"sensitive","items":["API_KEY"],"template":"postman 컬렉션 변수 표 만들어줘\n| key | value |\n| api_key | {API_KEY} |\n| base_url | https://sandbox.example.com |"}
+{"kind":"sensitive","items":["JWT"],"template":"이 토큰 디코딩해서 claims 설명해줘 {JWT}"}
+{"kind":"sensitive","items":["JWT"],"template":"로그인 후에 계속 401. 토큰 만료 문제인지 봐줘\nAuthorization: Bearer {JWT}"}
+{"kind":"sensitive","items":["JWT"],"template":"Why is this token rejected with 'invalid signature'? {JWT}"}
+{"kind":"sensitive","items":["JWT"],"template":"refresh 토큰 로직 코드 리뷰\nlocalStorage.setItem('token', '{JWT}');\n보안상 문제 있어?"}
+{"kind":"sensitive","items":["JWT"],"template":"고객이 보내준 로그인 에러 텍스트 요약해줘: token={JWT} status=expired user={NAME}"}
+{"kind":"sensitive","items":["JWT"],"template":"아래 curl 응답이 이상한 이유 분석\ncurl -H 'Authorization: Bearer {JWT}' https://api.example.com/me → 403"}
+{"kind":"sensitive","items":["JWT"],"template":"테스트 코드에 쓸 mock 토큰 만들려고 하는데 구조 설명 부탁 (참고용으로 실제 토큰 붙임: {JWT})"}
+{"kind":"sensitive","items":["JWT"],"template":"세션 쿠키에 {JWT} 이게 들어있는데 만료시간 필드 읽는 법 알려줘"}
+{"kind":"sensitive","items":["JWT"],"template":"디버깅 중 ㅜ 헤더 값 붙여넣음: {JWT} 서버가 왜 aud 불일치라 하는지 설명해줘"}
+{"kind":"sensitive","items":["JWT"],"template":"Postman 환경변수 정리\n| name | value |\n| access_token | {JWT} |\n| env | staging |"}
+{"kind":"sensitive","items":["PASSWORD"],"template":"관리자 페이지 로그인이 안 되네요. id는 admin_ops, 비번은 {PASSWORD} 인데 계정 잠김 문제일까?"}
+{"kind":"sensitive","items":["PASSWORD"],"template":"신규 입사자 계정 안내 메일 초안. 임시 비밀번호 {PASSWORD} 로 로그인 후 바로 변경하도록 안내해줘"}
+{"kind":"sensitive","items":["PASSWORD"],"template":"이 스크립트 리뷰해줘\nmysql -u root -p'{PASSWORD}' -e 'SHOW DATABASES;'\n보안 개선점 알려줘"}
+{"kind":"sensitive","items":["PASSWORD"],"template":"Why does my login fail? user={NAME} pass={PASSWORD} error=ACCOUNT_LOCKED"}
+{"kind":"sensitive","items":["PASSWORD"],"template":"게스트 와이파이 안내문 만들어줘. SSID: LogiGuest / 비밀번호: {PASSWORD} 영어 번역도 같이"}
+{"kind":"sensitive","items":["PASSWORD"],"template":"docker-compose 환경변수 정리\nPOSTGRES_PASSWORD={PASSWORD}\nPOSTGRES_USER=app\n설명 주석 달아줘"}
+{"kind":"sensitive","items":["PASSWORD"],"template":"비번 정책 점검: {PASSWORD} 이 정도면 사내 기준(12자 이상, 특수문자) 통과함?"}
+{"kind":"sensitive","items":["PASSWORD"],"template":"VPN 접속 가이드 쓰는 중인데 로그인 예시로 사번 E1042 / {PASSWORD} 넣어서 단계별로 정리해줘"}
+{"kind":"sensitive","items":["PASSWORD"],"template":"이 로그 분석해줘\nauth failed: user=svc_batch password={PASSWORD} attempts=5\n무차별 대입 같아?"}
+{"kind":"sensitive","items":["PASSWORD"],"template":"공유 계정 인수인계 문서 표로 정리\n| 계정 | 암호 | 변경 주기 |\n| svc_report | {PASSWORD} | 90일 |"}
+{"kind":"sensitive","items":["CODENAME"],"template":"다음 분기 {CODENAME} 출시 일정 요약해줘. 개발 6월, QA 7월, 베타 8월 첫째 주"}
+{"kind":"sensitive","items":["CODENAME"],"template":"{CODENAME} 프로젝트 킥오프 회의록 정리해줘. 참석 8명, 범위/예산/리스크 순서로"}
+{"kind":"sensitive","items":["CODENAME"],"template":"Translate to English: {CODENAME} 베타 테스터는 내부 직원 20명으로 한정합니다."}
+{"kind":"sensitive","items":["CODENAME"],"template":"보고서 문장 다듬기 → 신규 라우팅 엔진({CODENAME})은 배송 시간을 12% 단축할 것으로 기대된다."}
+{"kind":"sensitive","items":["CODENAME"],"template":"주간 업무 보고 양식 채워줘\n프로젝트: {CODENAME}\n진행률: 65%\n이슈: 외부 지도 API 비용"}
+{"kind":"sensitive","items":["CODENAME"],"template":"슬랙 공지 초안 부탁 - {CODENAME} 관련 문서는 개발팀 외 공유 금지, 문의는 PM에게"}
+{"kind":"sensitive","items":["CODENAME"],"template":"이 커밋 로그 요약해줘\nfeat({CODENAME}): add route optimizer\nfix({CODENAME}): null check on warehouse id"}
+{"kind":"sensitive","items":["CODENAME"],"template":"투자자용 자료 문장 만들어줘 ㅎㅎ 하반기 핵심 프로젝트는 {CODENAME} 이고 시장 규모가 크다는 걸 강조"}
+{"kind":"sensitive","items":["CODENAME"],"template":"리스크 표 정리\n| 항목 | 담당 |\n| {CODENAME} 인프라 증설 | 박팀장 |\n| {CODENAME} 보안 점검 | 보안팀 |"}
+{"kind":"sensitive","items":["CODENAME"],"template":"브랜치 이름 컨벤션 제안해줘. 예를 들어 release/{CODENAME}-v1 같은 식으로 해도 괜찮아?"}
+{"kind":"sensitive","items":["CLIENT"],"template":"{CLIENT} 와의 계약 갱신 메일 초안 써줘. 단가 5% 인상 요청, 정중한 톤"}
+{"kind":"sensitive","items":["CLIENT"],"template":"회의록 정리: 오늘 {CLIENT} 담당자 미팅, 납기 단축 요청 및 SLA 변경 논의, 후속 조치 3건"}
+{"kind":"sensitive","items":["CLIENT"],"template":"Summarize this complaint in English: 고객사 {CLIENT} 가 3일 연속 배송 지연을 이유로 위약금을 요구함."}
+{"kind":"sensitive","items":["CLIENT"],"template":"영업 보고서 문장 다듬어줘 → 이번 분기 최대 매출처는 {CLIENT}이며 전년 대비 18% 성장."}
+{"kind":"sensitive","items":["CLIENT"],"template":"표로 정리해줘\n| 고객사 | 월 물량 |\n| {CLIENT} | 12,400건 |\n| {CLIENT} | 8,300건 |"}
+{"kind":"sensitive","items":["CLIENT"],"template":"장애 보고서 초안. 영향 고객: {CLIENT}, 지속시간 47분, 원인: 라우팅 서버 메모리 부족"}
+{"kind":"sensitive","items":["CLIENT"],"template":"제안서 도입부 써줘 (대상: {CLIENT} 물류본부, 목적: 풀필먼트 비용 절감)"}
+{"kind":"sensitive","items":["CLIENT"],"template":"다음 주 {CLIENT} 방문 준비물 체크리스트 만들어줘 짧게"}
+{"kind":"sensitive","items":["CLIENT"],"template":"CS 티켓 분류 규칙 설명해줘. 예를 들면 제목에 [{CLIENT}] 가 붙은 건은 우선순위 높음으로 처리"}
+{"kind":"sensitive","items":["CLIENT"],"template":"계약서 조항 다듬기: 을은 {CLIENT}에 대하여 월 1회 정기 점검 보고서를 제출한다."}
+{"kind":"sensitive","items":["CLASSIFIED"],"template":"이 문서 맨 위에 {CLASSIFIED} 찍혀 있는데 본문 요약만 해줘. 내용은 2026 물류센터 증설 계획이고 투자비 총 40억"}
+{"kind":"sensitive","items":["CLASSIFIED"],"template":"{CLASSIFIED}\n아래 보고서 문단 다듬어줘. 3분기 영업이익은 전년 동기 대비 7% 증가했으며 물류 원가는 소폭 하락했다."}
+{"kind":"sensitive","items":["CLASSIFIED"],"template":"Translate to English (keep the header): [{CLASSIFIED}] 신규 요금제 개편안 — 12월 적용 예정"}
+{"kind":"sensitive","items":["CLASSIFIED"],"template":"회의록 정리해줘. 문서등급: {CLASSIFIED} / 안건: 하반기 채용 계획 공유, 센터별 인력 배치안 검토"}
+{"kind":"sensitive","items":["CLASSIFIED"],"template":"메일 제목이 {CLASSIFIED} 신규 파트너사 조건표 송부 인데, 더 깔끔한 제목 3개 제안해줘"}
+{"kind":"sensitive","items":["CLASSIFIED"],"template":"보고서 표지 문구 만들어줘. 우측 상단에 ({CLASSIFIED}) 표기하고 작성부서/작성일 칸 포함"}
+{"kind":"sensitive","items":["CLASSIFIED"],"template":"PPT 노트 요약 부탁. 등급 {CLASSIFIED}, 슬라이드 12장, 핵심은 원가 구조 개선과 단가 협상 전략"}
+{"kind":"sensitive","items":["CLASSIFIED"],"template":"내부 감사 결과 요약해줘 ({CLASSIFIED}). 지적사항 4건: 재고 실사 누락, 결재 순서 위반 등"}
+{"kind":"sensitive","items":["CLASSIFIED"],"template":"워드 템플릿 footer 에 {CLASSIFIED} 넣는 설정 방법 알려줘. 페이지마다 자동으로 들어가게"}
+{"kind":"sensitive","items":["CLASSIFIED"],"template":"아래 문장 어색한데 고쳐줘\n{CLASSIFIED} 본 자료는 사내 임직원에 한하여 열람 가능하며 무단 반출을 금합니다."}
+{"kind":"sensitive","items":["PHONE","EMAIL"],"template":"고객 {NAME} 연락처 정리: 휴대폰 {PHONE}, 메일 {EMAIL}. CRM 입력용 한 줄 포맷으로 바꿔줘"}
+{"kind":"sensitive","items":["RRN","ACCOUNT"],"template":"급여 정정 요청서 작성해줘. 대상 {NAME} / {RRN} / 지급계좌 {BANK} {ACCOUNT}"}
+{"kind":"sensitive","items":["API_KEY","CONN_STRING"],"template":".env 점검 부탁\nDB={CONN_STRING}\nKEY={API_KEY}\n운영 배포 전에 빠진 거 없는지 봐줘"}
+{"kind":"sensitive","items":["PASSWORD","EMAIL"],"template":"계정 복구 안내 메일 써줘. 수신 {EMAIL}, 임시 비번 {PASSWORD}, 로그인 후 즉시 변경 안내 포함"}
+{"kind":"sensitive","items":["CLIENT","CODENAME"],"template":"{CLIENT} 대상 {CODENAME} 파일럿 제안서 목차 만들어줘"}
+{"kind":"sensitive","items":["CARD","PHONE"],"template":"결제 문의 응대 기록 요약: {NAME}({PHONE}) 고객, 카드 {CARD} 로 이중 결제 주장, 확인 후 회신 예정"}
+{"kind":"sensitive","items":["JWT","API_KEY"],"template":"디버깅 로그 읽어줘\nAuthorization: Bearer {JWT}\nx-api-key: {API_KEY}\n응답은 401 이었음"}
+{"kind":"sensitive","items":["FRN","PHONE","ACCOUNT"],"template":"외국인 직원 {NAME} 서류: 등록번호 {FRN}, 연락처 {PHONE}, 급여계좌 {BANK} {ACCOUNT}. 누락 항목 체크표로 만들어줘"}
+{"kind":"sensitive","items":["CLASSIFIED","CLIENT","CODENAME"],"template":"({CLASSIFIED}) {CLIENT} 납품 일정과 {CODENAME} 연동 계획 한 페이지로 요약해줘"}
+{"kind":"sensitive","items":["PRIVATE_KEY","CONN_STRING"],"template":"배포 스크립트 점검 부탁\nssh -i key.pem deploy@host\n키:\n{PRIVATE_KEY}\nDB: {CONN_STRING}"}
+{"kind":"sensitive","items":["EMAIL","CLIENT"],"template":"{CLIENT} 담당자 {EMAIL} 에게 보낼 납기 지연 사과 메일 초안 부탁해요"}
+{"kind":"sensitive","items":["RRN","PHONE","EMAIL"],"template":"인사 DB 이관 전 검증 규칙 정리해줘. 샘플 row: {NAME}, {RRN}, {PHONE}, {EMAIL}"}
+{"kind":"sensitive","items":["PASSWORD","CONN_STRING"],"template":"이 설정 파일 리뷰\ndb.url={CONN_STRING}\ndb.pw={PASSWORD}\n평문 저장 대신 권장 방식은?"}
+{"kind":"sensitive","items":["EMAIL","CARD","ACCOUNT"],"template":"환불 케이스 정리 표\n| 고객 | 이메일 | 카드 | 환불계좌 |\n| {NAME} | {EMAIL} | {CARD} | {BANK} {ACCOUNT} |"}
+{"kind":"sensitive","items":["CODENAME","PASSWORD","API_KEY"],"template":"{CODENAME} 스테이징 접속 가이드: 관리자 비번 {PASSWORD}, 연동 키 {API_KEY}. 신규 개발자 온보딩 문서로 다듬어줘"}
+{"kind":"sensitive","items":["PHONE_LIST"],"template":"아래 번호들 중복 제거하고 지역별로 묶어줘\n{PHONE_LIST}"}
+{"kind":"sensitive","items":["PHONE_LIST"],"template":"이벤트 당첨자 연락처야. 문자 발송용으로 한 줄에 하나씩 정리해줘: {PHONE_LIST}"}
+{"kind":"sensitive","items":["PHONE_LIST"],"template":"Count unique numbers and flag malformed ones:\n{PHONE_LIST}"}
+{"kind":"sensitive","items":["PHONE_LIST"],"template":"고객지원팀 콜백 대상 목록임 ㅠ 우선순위 정하는 기준 알려주고 이 목록 정렬해줘\n{PHONE_LIST}"}
+{"kind":"sensitive","items":["PHONE_LIST"],"template":"엑셀에 붙일 수 있게 CSV로 바꿔줘 (컬럼명: 번호)\n{PHONE_LIST}"}
+{"kind":"sensitive","items":["EMAIL_LIST"],"template":"뉴스레터 발송 대상이야. 도메인별로 개수 세어줘.\n{EMAIL_LIST}"}
+{"kind":"sensitive","items":["EMAIL_LIST"],"template":"이 메일 목록에서 오타 의심되는 주소만 골라줘 (gmial 같은 거)\n{EMAIL_LIST}"}
+{"kind":"sensitive","items":["EMAIL_LIST"],"template":"Remove duplicates and sort alphabetically: {EMAIL_LIST}"}
+{"kind":"sensitive","items":["EMAIL_LIST"],"template":"세미나 신청자 명단 → 참조(CC)에 넣을 수 있게 세미콜론으로 이어줘\n{EMAIL_LIST}"}
+{"kind":"sensitive","items":["EMAIL_LIST"],"template":"설문 요청 메일 초안 쓰고, 수신자는 BCC 처리하라는 안내 문구도 넣어줘. 목록:\n{EMAIL_LIST}"}
+{"kind":"normal","items":[],"template":"v3.2.1에서 v3.3.0으로 올릴 때 breaking change 위주로 릴리스 노트 초안 써줘. 변경점은 API 타임아웃 기본값 30초 → 20초, 로그 포맷 JSON 전환."}
+{"kind":"normal","items":[],"template":"주문번호 ORD-20260412-00871 배송 지연 건 고객 답변 초안 부탁. 사과 + 새 도착 예정일 4/16 안내 포함."}
+{"kind":"normal","items":[],"template":"4층 회의실 B-402 예약이 겹쳤어요. 영업팀이 먼저 잡았으니 개발팀은 B-403으로 옮겨달라는 공지 문구 만들어줘."}
+{"kind":"normal","items":[],"template":"HTTP 502 Bad Gateway가 간헐적으로 나는데 nginx 앞단 로드밸런서 쪽 원인 후보를 우선순위 순으로 정리해줘."}
+{"kind":"normal","items":[],"template":"이 파이썬 함수 리뷰해줘\ndef total(items):\n    s = 0\n    for i in items:\n        s += i.price * i.qty\n    return s\n빈 리스트일 때랑 음수 수량 처리가 궁금해."}
+{"kind":"normal","items":[],"template":"영어로 번역해줘: 금요일 22시부터 24시까지 정기 점검이 예정되어 있어 서비스 이용이 일시 중단될 수 있습니다."}
+{"kind":"normal","items":[],"template":"3분기 KPI 표 정리 부탁\n| 지표 | 목표 | 실적 |\n| 정시배송률 | 97% | 95.8% |\n| 평균 배송일 | 1.8일 | 1.9일 |\n| 클레임율 | 0.5% | 0.6% |"}
+{"kind":"normal","items":[],"template":"재고 시스템에서 오류코드 E-1042가 떴는데 보통 어떤 의미야? 입고 수량 불일치일 때 확인 순서 알려줘."}
+{"kind":"normal","items":[],"template":"메일 서명 문구 다듬어줘. 문의는 평일 9시~18시에 대표번호 {HQ_PHONE} 로 연락 주세요, 라는 내용이고 너무 딱딱하지 않게."}
+{"kind":"normal","items":[],"template":"FAQ 문장 만들어줘 → 배송 관련 일반 문의는 {HQ_EMAIL} 로 보내주시면 영업일 기준 1일 이내에 답변드립니다."}
+{"kind":"normal","items":[],"template":"SQL 최적화 팁 부탁\nSELECT * FROM shipments WHERE status='DELAYED' ORDER BY created_at DESC;\n수백만 건인데 인덱스 어떻게 잡는 게 좋아?"}
+{"kind":"normal","items":[],"template":"회의록 정리해줘. 안건: 물류센터 야간조 인력 부족. 결정: 12월까지 단기 인력 6명 충원, 근무표는 인사팀과 재협의."}
+{"kind":"normal","items":[],"template":"보고서 문장 다듬기: 11월 한 달간 반품률이 낮아졌는데 이유는 포장 규격 변경 때문인 것으로 보여진다."}
+{"kind":"normal","items":[],"template":"송장번호 123456789012 같은 12자리 숫자 형식이 맞는지 정규식으로 검증하고 싶어. 파이썬 코드 예시 줘."}
+{"kind":"normal","items":[],"template":"팀 회식 공지 써줘 ㅎㅎ 날짜는 다음 주 목요일 저녁 7시, 장소는 회사 근처 고깃집, 참석 여부는 수요일까지 답장 달라고."}
+{"kind":"normal","items":[],"template":"서울에서 부산까지 화물 리드타임을 계산하는 방법 알려줘. 상차 2시간, 운송 5시간, 하차 1시간이고 중간에 휴게 30분 두 번 넣으면?"}
+{"kind":"normal","items":[],"template":"Dockerfile 리뷰 부탁\nFROM node:20-alpine\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\nCOPY . .\nCMD ['node','server.js']"}
+{"kind":"normal","items":[],"template":"Translate into Korean: This pallet must be kept below 8 degrees Celsius and must not be stacked more than two high."}
+{"kind":"normal","items":[],"template":"다익스트라 알고리즘이랑 A*의 차이를 신입 개발자가 이해하기 쉽게 설명해줘. 배송 경로 탐색 예시로."}
+{"kind":"normal","items":[],"template":"연차 사용 규정 요약해줘. 입사 1년 미만 월 1일 발생, 1년 이상 15일, 3년 이상부터 2년마다 1일 가산, 최대 25일."}
+{"kind":"normal","items":[],"template":"TypeError: Cannot read properties of undefined (reading 'map') 에러가 주문 목록 화면에서 나요. 보통 어떤 원인이 있고 어떻게 방어해?"}
+{"kind":"normal","items":[],"template":"Git 브랜치 전략 비교해줘. git-flow랑 trunk-based 중 10명 규모 팀에서 주 2회 배포하는 경우 뭐가 나아?"}
+{"kind":"normal","items":[],"template":"주소 입력 폼 검증 정규식 만들어줘. 우편번호는 5자리 숫자(예: 06236), 상세주소는 최대 100자."}
+{"kind":"normal","items":[],"template":"가격표 VAT 계산해서 표로 만들어줘\n| 상품 | 공급가 |\n| 박스 소 | 1,200원 |\n| 박스 중 | 1,800원 |\n| 박스 대 | 2,500원 |"}
+{"kind":"normal","items":[],"template":"신입 온보딩 첫 주 일정표 짜줘. 월요일 오리엔테이션, 화요일 시스템 교육, 수요일 현장 견학, 목요일 팀 소개, 금요일 회고."}
+{"kind":"normal","items":[],"template":"버전 1.14.2 기준 호환성 매트릭스 만들어줘. 열은 Node 18/20/22, 행은 Chrome, Safari, Edge 최신 두 버전."}
+{"kind":"normal","items":[],"template":"Write a short English email to our partner: the Thursday sync is moved to 3 PM KST, please confirm by end of day."}
+{"kind":"normal","items":[],"template":"사내 교육 후기 3줄 요약해줘. 강의는 좋았는데 실습 시간이 짧았고, 자료를 미리 공유해주면 좋겠다는 의견이 많았음."}
+{"kind":"normal","items":[],"template":"슬랙 메시지 톤 좀 부드럽게 바꿔줘 → 어제 요청한 거 아직도 안 됐어요? 오늘 퇴근 전까지 꼭 해주세요."}
+{"kind":"normal","items":[],"template":"cron 표현식 0 2 * * 1-5 가 정확히 언제 실행되는 건지 설명해줘. 공휴일은 어떻게 건너뛰어?"}
+{"kind":"normal","items":[],"template":"고객 만족도 설문 문항 8개 만들어줘. 배송 속도, 포장 상태, 응대 친절도, 재이용 의향 항목 포함하고 5점 척도로."}
+{"kind":"normal","items":[],"template":"창고 재고 회전율 공식이랑 계산 예시 알려줘. 연간 출고 원가 12억, 평균 재고 3억이면 몇 회전이야?"}
+{"kind":"normal","items":[],"template":"라벨 문구 번역해줘. 제조번호 LOT-2026-0415, 유통기한 2027-04-14까지, 개봉 후 냉장 보관 및 7일 이내 소비."}
+{"kind":"normal","items":[],"template":"전화 응대 스크립트 만들어줘. 인사 → 용건 확인 → 담당 부서 연결 순서이고, 연결 불가 시 대표번호 {HQ_PHONE} 안내하는 멘트 포함."}
+{"kind":"normal","items":[],"template":"보도자료 초안 써줘. 신규 풀필먼트 센터 개소 소식이고, 언론 문의는 {HQ_EMAIL} 로 받는다는 문구를 맨 끝에 넣어줘."}
