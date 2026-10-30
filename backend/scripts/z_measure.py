@@ -107,7 +107,7 @@ def _post(url, body, headers, timeout=120):
 
 class _Client:
     RETRY_STATUS = (429, 503)
-    BACKOFF = (2, 5, 15)
+    BACKOFF = (15, 45, 120)
 
     def __init__(self, sleep=time.sleep):
         self.sleep = sleep
@@ -126,6 +126,22 @@ class _Client:
             if 400 <= status < 500:
                 raise FatalError(f"HTTP {status}")
             raise TransientError(f"HTTP {status}")
+
+
+class Pacer:
+    """응답 모델을 부르는 호출 사이에 최소 간격을 둔다(분당 요청 한도 RPM 대비).
+    간격은 직전 호출을 시작한 때부터 잰다. 답 A(직접)와 답 B(게이트웨이 경유)가 같은 한도를 쓰므로 한 조절기를 함께 쓴다."""
+
+    def __init__(self, min_interval, clock=time.monotonic, sleep=time.sleep):
+        self.min_interval, self.clock, self.sleep = min_interval, clock, sleep
+        self._last = None
+
+    def wait(self):
+        if self._last is not None:
+            remaining = self.min_interval - (self.clock() - self._last)
+            if remaining > 0:
+                self.sleep(remaining)
+        self._last = self.clock()
 
 
 class GeminiClient(_Client):
@@ -191,7 +207,7 @@ def _stop_reason(exc):
     return {RateLimitError: "rate_limit", TransientError: "server_error", FatalError: "fatal"}[type(exc)]
 
 
-def collect(records, out_path, gemini, gateway):
+def collect(records, out_path, gemini, gateway, pacer=None):
     done_ids = {r["id"] for r in _read_jsonl(out_path)}
     done = skipped = 0
     for rec in records:
@@ -199,7 +215,11 @@ def collect(records, out_path, gemini, gateway):
             skipped += 1
             continue
         try:
+            if pacer:
+                pacer.wait()
             answer_a = gemini.answer(rec["text"])
+            if pacer:
+                pacer.wait()
             b = gateway.chat(rec["text"])
         except (FatalError, RateLimitError, TransientError) as e:
             return {"done": done, "skipped": skipped, "stopped": _stop_reason(e)}
@@ -209,13 +229,15 @@ def collect(records, out_path, gemini, gateway):
     return {"done": done, "skipped": skipped, "stopped": None}
 
 
-def collect_baseline(records, a2_path, gemini):
+def collect_baseline(records, a2_path, gemini, pacer=None):
     done_ids = {r["id"] for r in _read_jsonl(a2_path)}
     done = 0
     for rec in records:
         if rec["id"] in done_ids:
             continue
         try:
+            if pacer:
+                pacer.wait()
             answer = gemini.answer(rec["text"])
         except (FatalError, RateLimitError, TransientError) as e:
             return {"done": done, "stopped": _stop_reason(e)}
@@ -356,7 +378,10 @@ def main(argv=None):
     ap.add_argument("--dir", default="../../docs/eval/results/z", help="중간 결과와 보고서 폴더")
     ap.add_argument("--gateway", default="http://localhost:8080")
     ap.add_argument("--gemini-base", default="https://generativelanguage.googleapis.com/v1beta/models")
-    ap.add_argument("--gemini-model", default="gemini-3.6-flash")
+    ap.add_argument("--gemini-model", default="gemini-3.5-flash-lite",
+                    help="게이트웨이의 gemini.model과 반드시 같아야 한다(A와 B가 같은 응답 모델이어야 비교가 성립한다)")
+    ap.add_argument("--min-interval", type=float, default=5.0,
+                    help="응답 모델 호출 사이 최소 간격(초). 분당 15회 한도라면 4초 이상, 분당 5회라면 12초 이상")
     ap.add_argument("--jev-base", default="https://api.typesafe.ai")
     ap.add_argument("--jev-model", default="jev-1.14.0")
     ap.add_argument("--limit", type=int, default=0, help="앞에서 몇 문장만(시험 실행용, 0이면 전체)")
@@ -374,12 +399,13 @@ def main(argv=None):
 
     if args.command == "collect":
         res = collect(targets, collected, GeminiClient(args.gemini_base, args.gemini_model, _env("GEMINI_API_KEY")),
-                      GatewayClient(args.gateway))
+                      GatewayClient(args.gateway), pacer=Pacer(args.min_interval))
         print(res)
         return 0 if res["stopped"] is None else 2
     if args.command == "baseline":
         picked = [r for r in targets if r["id"] in {x["id"] for x in _pick_ids(targets, args.count)}]
-        res = collect_baseline(picked, a2, GeminiClient(args.gemini_base, args.gemini_model, _env("GEMINI_API_KEY")))
+        res = collect_baseline(picked, a2, GeminiClient(args.gemini_base, args.gemini_model, _env("GEMINI_API_KEY")),
+                               pacer=Pacer(args.min_interval))
         print(res)
         return 0 if res["stopped"] is None else 2
     if args.command == "score":

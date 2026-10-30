@@ -105,6 +105,41 @@ class PureTest(unittest.TestCase):
         self.assertEqual([r["id"] for r in z.select_targets(recs)], ["r1"])
 
 
+class PacerTest(unittest.TestCase):
+    def make(self, interval=5.0):
+        self.now, self.slept = 100.0, []
+
+        def sleep(s):
+            self.slept.append(s)
+            self.now += s
+        return z.Pacer(interval, clock=lambda: self.now, sleep=sleep)
+
+    def test_첫_호출은_기다리지_않는다(self):
+        self.make().wait()
+        self.assertEqual(self.slept, [])
+
+    def test_직전_호출_시작_후_간격이_안_지났으면_남은_시간만_기다린다(self):
+        p = self.make(5.0)
+        p.wait()
+        self.now += 2.0
+        p.wait()
+        self.assertEqual(self.slept, [3.0])
+
+    def test_간격이_지났으면_기다리지_않는다(self):
+        p = self.make(5.0)
+        p.wait()
+        self.now += 7.0
+        p.wait()
+        self.assertEqual(self.slept, [])
+
+    def test_간격은_호출이_끝난_때가_아니라_시작한_때부터_잰다(self):
+        p = self.make(5.0)
+        p.wait()
+        self.now += 16.0  # 호출 하나가 16초 걸렸다
+        p.wait()
+        self.assertEqual(self.slept, [])
+
+
 class CollectTest(unittest.TestCase):
     def setUp(self):
         self.srv = FakeServer()
@@ -143,6 +178,37 @@ class CollectTest(unittest.TestCase):
         self.srv.rate_limit_on = set()
         status = z.collect([record(1), record(2), record(3)], self.out, self.gem, self.gw)
         self.assertEqual((status["done"], status["skipped"], status["stopped"]), (2, 1, None))
+
+    def test_속도_제한이면_서버가_회복할_시간을_두고_점점_길게_기다린다(self):
+        waits = []
+        gem = z.GeminiClient(self.srv.url + "/v1beta/models", "m", SECRET, sleep=waits.append)
+        self.srv.rate_limit_on = {1, 2, 3, 4}  # 첫 문장 A가 재시도 3번까지 모두 429
+        status = z.collect([record(1)], self.out, gem, self.gw)
+        self.assertEqual(status["stopped"], "rate_limit")
+        self.assertEqual(len(waits), 3)
+        self.assertGreaterEqual(waits[0], 15)
+        self.assertEqual(waits, sorted(waits))
+        self.assertGreaterEqual(waits[-1], 2 * waits[0])
+
+    def test_조절기는_문장마다_답_A와_B_호출_앞에서_각각_기다린다(self):
+        class Counter:
+            n = 0
+
+            def wait(self):
+                self.n += 1
+        pacer = Counter()
+        z.collect([record(1), record(2)], self.out, self.gem, self.gw, pacer=pacer)
+        self.assertEqual(pacer.n, 4)  # 문장 2개 x (A, B)
+
+    def test_기준선_수집도_호출_앞에서_기다린다(self):
+        class Counter:
+            n = 0
+
+            def wait(self):
+                self.n += 1
+        pacer = Counter()
+        z.collect_baseline([record(1), record(2)], self.tmp / "a2.jsonl", self.gem, pacer=pacer)
+        self.assertEqual(pacer.n, 2)
 
     def test_인증_오류는_즉시_멈춘다(self):
         class Denied(z.GeminiClient):

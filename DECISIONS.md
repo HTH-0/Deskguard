@@ -660,3 +660,13 @@
 - 결정: `main`에 빨리 감기(fast-forward)로 병합하고 원격 `main`을 `0b68383`으로 올렸다. 원격 브랜치 `claude/inspiring-shannon-xbhl20`과 로컬 브랜치 `claude/inspiring-shannon-xbhl20`, `claude/upbeat-cori-pi0rtq`를 삭제했다. 이후 `main` 하나에서 직접 작업한다.
 - 확인: `upbeat-cori`에는 작업 브랜치에 없는 고유 커밋이 없었다. 삭제 전 해시: `inspiring-shannon` 로컬 04c41fc와 원격 0b68383, `upbeat-cori` 9df245d. 필요하면 이 해시로 복구한다.
 - 문서: `CLAUDE.md` 시작 절차 0번, `handoff.md`(한눈에 보기, 4절 5번, 새 컴퓨터 시작, Z 실행 절차), `worklog.md`, `tasks.md`를 `main` 하나 기준으로 고쳤다. 다른 컴퓨터에서는 `git fetch --prune` 후 `git switch main`과 `git pull`이 필요하다.
+
+## 2026-10-30 Z 측정의 응답 모델을 gemini-3.5-flash-lite로 변경 (사용자 결정)
+- 상황: Z 5문장 시험에서 `gemini-3.6-flash`가 429와 503을 반복했다. AI Studio에서 이 프로젝트의 무료 한도를 확인했다: 3.6 Flash는 분당 5회, 일일 20회이다(3 Flash, 3.8 Flash도 같다). Z 전체는 호출이 약 576회(답 A, B 526회 + 기준선 50회)라서 하루 20회로는 약 29일이 걸린다. 503도 일일 한도를 소모하는 것으로 보인다(그날 요청 11회 = 성공 4 + 503 7, 추정). 포럼에는 같은 증상의 보고가 있고 Google의 공식 해결은 없다.
+- 후보: (1) 3.5 Flash Lite 또는 3.1 Flash Lite(무료 분당 15회, 일일 500회), (2) 결제 설정 후 3.6 Flash 유지, (3) 결제 설정 후 Flash Lite, (4) 로컬 모델, (5) 규모 축소, (6) 프로젝트를 여럿 만들어 한도 회피(Google 정책상 권하지 않아 제외).
+- 선택: (1) 중 더 최신인 `gemini-3.5-flash-lite`. 무료이고, 일일 500회 안에서 이틀이면 끝난다. 모델 ID는 모델 목록 조회로 확인했다(`gemini-flash-lite-latest` 같은 별칭은 가리키는 모델이 바뀔 수 있어 쓰지 않는다).
+- 한계: Lite는 3.6 Flash보다 성능이 낮다. Z는 같은 응답 모델에 원문(A)과 가린 문장(B)을 보내 비교하므로(AC-10.4b) 비교 자체는 성립하지만, 이 결과가 3.6 Flash에서도 같다는 근거는 되지 않는다. Z 보고서의 한계에 적는다.
+- 동결 규칙(AC-10.2) 준수: `application.yml`을 고치지 않고 게이트웨이 실행 인자 `--gemini.model=gemini-3.5-flash-lite`로 덮어쓴다(프로세스 인자로 적용 확인). `z_measure.py`의 `--gemini-model` 기본값도 같은 모델로 맞췄다. 두 값이 다르면 A와 B 비교가 무효이다.
+- 정리: 3.6 Flash로 받은 시험 1건은 `collected.jsonl`에서 빼서(삭제하지 않고 임시 폴더로 이동) 한 측정에 모델이 섞이지 않게 했다.
+- 도구 변경: (a) 재시도 대기를 15초, 45초, 120초로 늘렸다. (b) 호출 간격 조절기 `Pacer`를 추가했다(`--min-interval`, 기본 5초). 직전 호출 시작 후 간격을 재며, 답 A와 B가 같은 한도를 쓰므로 한 조절기를 함께 쓴다. Python 시험 76건 통과.
+- 5문장 시험(Flash Lite): 수집 5/5, Jev 채점 5/5, 보고 생성까지 동작했다. 표본이 5개라 수치는 해석하지 않는다.
