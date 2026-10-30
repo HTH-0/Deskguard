@@ -8,7 +8,7 @@
 
 - **프로젝트:** Deskguard. 회사 직원이 ChatGPT 같은 외부 AI에 보내는 프롬프트를 나가기 전에 검사하는 정보 유출 방지 게이트웨이와 사내 AI 포털이다. 왜 만드는지는 [problem.md](problem.md)(최상위 문서)에 있다.
 - **처리:** 개인정보(D1), 자격증명(D2), 회사 기밀(D3)을 게이트웨이 안의 코드로 탐지하고, 허용, 가림(가명으로 바꿔 보내고 답에서 되돌림), 경고(확인 후 가려서 보냄), 차단으로 처리한다. 운영 경로는 외부 판정 서비스를 부르지 않는다.
-- **작업 브랜치:** `claude/inspiring-shannon-xbhl20`이다. **오늘 작업이 모두 여기에 있다.** `main`은 `b870e6b`에 머물러 있어 이 브랜치보다 20여 커밋 뒤처져 있다(오래된 상태). 병합은 사용자가 작업을 모두 끝낸 뒤 정한다(5절 마지막, 4절 결정 대기). 병합하기 전에는 반드시 이 브랜치를 체크아웃해서 작업한다. 다른 브랜치(`upbeat-cori`, `compassionate-pascal`)는 정리해서 없다.
+- **브랜치:** `main` 하나만 쓴다(2026-10-30 정리). 클라우드 작업을 쓰지 않으므로 작업 브랜치를 따로 두지 않고 `main`에서 바로 작업하고 커밋한다. 이전 작업 브랜치(`inspiring-shannon`, `upbeat-cori`, `compassionate-pascal`)는 `main`에 합친 뒤 원격과 로컬에서 모두 삭제했다. 삭제 직전 해시는 `inspiring-shannon` 04c41fc(원격은 0b68383), `upbeat-cori` 9df245d이다.
 - **개발 방식:** SDD와 TDD를 병행한다. 기획은 SDD(문제 정의 → 정책 → 명세 → 설계 → 작업 목록), 구현은 TDD(수용 기준 → 실패하는 시험 → 코드)이다. 각 작업의 첫 스텝은 명세 점검이고, 컴파일 오류는 빨강으로 치지 않는다.
 - **기술:** Spring Boot 4.1.1, Java 25 LTS, Maven, Python 3(측정 도구). 외부 AI는 Gemini(`gemini-3.6-flash`). Jev는 측정 경로에서 Z 채점에만 쓴다(5~6일차).
 
@@ -23,7 +23,7 @@
 | 5 | 평가 세트 생성과 동결, X·Y·T 측정, Z 준비 | 완료 (평가 세트 596문장, X·Y·T 1차 측정, Z 도구와 시험. [결과](eval/results/report_xyt_v1.md)) |
 | 6 | Z 측정(Jev 검증 후), 우회 소량 시험, README와 결과 | **진행 중** 우회 시험 완료([결과](eval/results/report_bypass_v1.md)), 출처 표기와 README 정리 완료. **Z 실행(사용자 컴퓨터)이 남음**, 그 뒤 Z 보고서 |
 | 코드 읽기 | 핵심 코드를 사용자가 읽고 설명할 수 있게 하기 | 1일차 진행 중. [docs/code-reading/](code-reading/)와 [progress.md](code-reading/progress.md) |
-| 7 | 여유분, `main` 병합 검토 | 대기 |
+| 7 | 여유분, 마무리 정리 | 대기 (`main` 병합은 2026-10-30 끝냄) |
 
 - **시험:** Java 109건과 Python 69건이 통과한다(2026-10-29 확인, 키 없이 통과). Java는 `cd backend`, `mvn -B test`. Python은 `cd backend/scripts`에서 `python -m unittest test_fake_values test_measure test_build_eval_set test_build_bypass_set test_z_measure`이다. 옛 HR용 `run_batch.py`와 `domain_candidates.py`는 시험과 함께 `backend/scripts/archive_hr/`로 옮겼다(보관, 실행하지 않는다).
 - **멈춘 지점:** Z 실행을 기다리는 중이고 코드 읽기 1일차를 하던 중이다. 모든 변경이 커밋, 푸시되어 있다. 작업 중인 파일은 없다.
@@ -35,7 +35,7 @@
 1. **Z 실행(사용자 컴퓨터, 가장 먼저)**: 아래 절차대로 5문장 시험부터 한다. 오류가 나면 키 값을 빼고 메시지만 알려 준다.
 2. **코드 읽기 이어서**: [code-reading/progress.md](code-reading/progress.md)의 "확인 대기" 항목(`ChatGateway` 질문 4, 5, `ActionDecider` 확인 질문 3개, `InputValidator` 질문 4)을 풀고, 이어서 `PersonalDataDetector`, `SecretDetector`, `DetectionEngine`을 읽는다. 하루 3개가 기준이다. 읽기 가이드는 [code-reading/day1.md](code-reading/day1.md)이고, 2일차 가이드는 아직 없다(요청하면 만든다).
 3. **Z 보고서(클라우드)**: Z 결과가 push되면 `report_z_v1.md`를 쓰고 Jev 채택 여부(사람 판정과 85% 일치)를 정한다. README의 Z 칸도 채운다.
-4. **마무리(작업이 끝난 뒤)**: 폴더 정리, `main` 병합 검토, 비공개 전환(4절 4번).
+4. **마무리(작업이 끝난 뒤)**: 폴더 정리, 비공개 전환(4절 4번).
 
 
 5일차(측정 도구 v2, 업무 요청 틀 3종, 평가 세트 596문장 동결, X·Y·T 1차 측정)는 끝났다. 결과는 [eval/results/report_xyt_v1.md](eval/results/report_xyt_v1.md)이다. 6단계의 Z 도구(`backend/scripts/z_measure.py`, 시험 포함)도 만들어 두었고, **실제 호출은 키가 있는 사용자 컴퓨터에서 한다.**
@@ -46,9 +46,9 @@ Z는 평가 세트에서 가림 처리되는 문장 263개에 대해 답 A(원�
 
 ```powershell
 # 0. 최신 작업을 받는다 (새 터미널에서, 키는 setx로 이미 설정되어 있어야 한다)
-git fetch origin
-git checkout claude/inspiring-shannon-xbhl20
-git pull origin claude/inspiring-shannon-xbhl20
+git fetch origin --prune
+git switch main
+git pull
 
 # 1. 게이트웨이를 일반 모드로 띄운다 (창 하나, 측정 모드와 시연 모드를 켜지 않는다. GEMINI_API_KEY가 필요하다)
 cd backend
@@ -88,7 +88,7 @@ python z_measure.py agree --human ..\..\docs\eval\results\z\human_sheet.csv
 | 2 | `constitution.md` 확정 | "초안" 상태. 1장은 problem.md가 대신한다고 적어 두었다 |
 | 3 | 확장 후보의 우선순위 | 로컬 모델 문맥 판정(D3 문맥, D4), 브라우저 확장, 파일 업로드. 완성 뒤에 고른다 |
 | 4 | 저장소 공개 상태와 R12 | **현재 공개 상태이다**(클라우드 작업 때문에 사용자가 공개로 바꿈). 1차 점검 결과 실제 키와 개인정보는 없다([open-risks.md](open-risks.md) R12). 사용자 결정(2026-10-29): 작업을 모두 끝낸 뒤 폴더를 정리하고 비공개로 되돌린다. 그때까지 키, 실제 개인정보, 실행 로그를 올리지 않는다 |
-| 5 | `main` 병합 시점 | 작업을 끝낸 뒤 사용자가 정한다. `main`은 `b870e6b`이고 작업 브랜치가 20여 커밋 앞서 있어 빨리 감기(fast-forward)로 병합된다 |
+| 5 | `main` 병합 시점 | **결정함(2026-10-30):** 작업 브랜치를 `main`에 빨리 감기로 합쳤고(`0b68383`), 이후 `main` 하나만 쓴다 |
 | 6 | 이 저장소 자체의 `LICENSE` | 정하지 않았다. 비공개로 전환하므로 보류한다(다시 공개할 때 정한다). 외부 자료의 출처 표기는 [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md)에 했다 |
 
 ## 5. 새 컴퓨터에서 시작하기 (Windows 기준)
@@ -99,11 +99,11 @@ python z_measure.py agree --human ..\..\docs\eval\results\z\human_sheet.csv
 git clone https://github.com/HTH-0/Deskguard.git
 cd Deskguard
 
-# 작업 브랜치는 claude/inspiring-shannon-xbhl20이다(main은 오래된 상태). 시작할 때마다 모든 원격 브랜치를 확인한다.
-git fetch origin
-git branch -r --sort=-committerdate --format="%(committerdate:short) %(refname:short)"
-git checkout claude/inspiring-shannon-xbhl20
-git pull origin claude/inspiring-shannon-xbhl20
+# 브랜치는 main 하나만 쓴다. 시작할 때마다 다른 원격 브랜치가 없는지 확인한다.
+git fetch origin --prune
+git branch -r
+git switch main
+git pull
 
 # 이 저장소에만 적용하는 커밋 정보
 git config user.name "HTH-0"

@@ -85,7 +85,7 @@
 
 ### 이어서 할 때 조심할 것
 
-1. **브랜치:** `claude/inspiring-shannon-xbhl20`에서 작업한다. `main`은 오래되었다.
+1. **브랜치:** `main` 하나만 쓴다. 이 절을 쓴 당시에는 `claude/inspiring-shannon-xbhl20`에서 작업했으나, 2026-10-30에 `main`에 합치고 삭제했다.
 2. **클라우드 환경:** 컨테이너는 JDK 21이다. Temurin(GitHub, Adoptium)은 프록시가 막아서, Oracle JDK 25(`download.oracle.com/java/25/latest/jdk-25_linux-x64_bin.tar.gz`)를 세션 임시 폴더에 받아 `JAVA_HOME`으로 지정했다. 환경변수에 API 키가 없고, `ai.google.dev` 같은 일부 호스트는 네트워크 허용 목록에 없다.
 3. **동결 파일을 바꾸지 않는다:** `docs/eval/set/freeze.json`, `freeze_bypass.json`과 거기에 적힌 해시 대상(평가 세트, 우회 세트, `detect/` 코드, `dictionary.yml`, `application.yml`). 바꾸면 이미 한 측정과 비교할 수 없다. 탐지 규칙 개선은 새 문장으로 검증한 뒤에만 한다.
 4. **측정 도구를 고쳐도 되는 것과 안 되는 것:** `measure.py` 같은 도구(보고 방식)는 고칠 수 있지만, 고친 뒤 같은 세트로 다시 측정해 숫자가 같은지 확인한다(우회 시험 때 이렇게 했다).

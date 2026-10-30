@@ -654,3 +654,9 @@
 - 결과: 대조 24/24 탐지, 변형 96문장 중 25개 탐지(26%). 전각 숫자, 한글 숫자, 이메일 `at` 표기, 키 쪼개기, 사전어 띄어쓰기, 보이지 않는 문자는 거의 통과한다. 접속 문자열 스킴 변형 4건 중 3건은 일부가 이메일로 가려지고 나머지가 외부로 나가는 형태였고 1건은 그대로 통과했다. 상세는 `docs/eval/results/report_bypass_v1.md`이다.
 - 도구 변경: `measure.py`에 정답 구간 완전 덮음 지표(`full`)와 변형별 집계(`by_transform`)를 추가했다(시험 포함). 5일차 결과의 숫자는 바뀌지 않는다.
 - 후속: 입력 정규화는 개선 후보이며, 새 문장으로 검증한 뒤에만 채택한다.
+
+## 2026-10-30 브랜치를 main 하나로 정리 (사용자 결정)
+- 상황: 클라우드 작업을 더 쓰지 않는다. 작업 브랜치 `claude/inspiring-shannon-xbhl20`이 `main`보다 26커밋 앞서 있었고, `main`은 그 조상이었다.
+- 결정: `main`에 빨리 감기(fast-forward)로 병합하고 원격 `main`을 `0b68383`으로 올렸다. 원격 브랜치 `claude/inspiring-shannon-xbhl20`과 로컬 브랜치 `claude/inspiring-shannon-xbhl20`, `claude/upbeat-cori-pi0rtq`를 삭제했다. 이후 `main` 하나에서 직접 작업한다.
+- 확인: `upbeat-cori`에는 작업 브랜치에 없는 고유 커밋이 없었다. 삭제 전 해시: `inspiring-shannon` 로컬 04c41fc와 원격 0b68383, `upbeat-cori` 9df245d. 필요하면 이 해시로 복구한다.
+- 문서: `CLAUDE.md` 시작 절차 0번, `handoff.md`(한눈에 보기, 4절 5번, 새 컴퓨터 시작, Z 실행 절차), `worklog.md`, `tasks.md`를 `main` 하나 기준으로 고쳤다. 다른 컴퓨터에서는 `git fetch --prune` 후 `git switch main`과 `git pull`이 필요하다.
